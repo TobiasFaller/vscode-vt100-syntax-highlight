@@ -2,7 +2,7 @@
 	"name": "vt100-syntax-highlighting",
 	"displayName": "VT100 Syntax Highlighting",
 	"description": "VT100 Color and Style Highlighting in the Text Editor",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"author": {
 		"name": "Tobias Faller"
 	},
@@ -42,185 +42,221 @@
 				]
 			}
 		],
-		"semanticTokenTypes": [
+		"configuration":[
 			{
-				"id": "vt100-text",
-				"superType": "text",
-				"description": "VT100 text"
-			},
-			{
-				"id": "vt100-escape-sequence",
-				"superType": "text",
-				"description": "VT100 text escape sequence"
-			}
-		],
-		"semanticTokenModifiers": [
-			{
-				"id": "vt100-bold",
-				"description": "VT100 bold text"
-			},
-			{
-				"id": "vt100-dim",
-				"description": "VT100 dim text"
-			},
-			{
-				"id": "vt100-underlined",
-				"description": "VT100 underlined text"
-			},
-			{
-				"id": "vt100-blink",
-				"description": "VT100 blinking text"
-			},
-			{
-				"id": "vt100-inverted",
-				"description": "VT100 inverted text"
-			},
-			{
-				"id": "vt100-hidden",
-				"description": "VT100 hidden text"
-			},
-			{
-				"id": "vt100-foreground-default",
-				"description": "VT100 default foreground text color"
-			},
-			{
-				"id": "vt100-foreground-black",
-				"description": "VT100 black foreground text color"
-			},
-			{
-				"id": "vt100-foreground-red",
-				"description": "VT100 red foreground text color"
-			},
-			{
-				"id": "vt100-foreground-green",
-				"description": "VT100 green foreground text color"
-			},
-			{
-				"id": "vt100-foreground-yellow",
-				"description": "VT100 yellow foreground text color"
-			},
-			{
-				"id": "vt100-foreground-blue",
-				"description": "VT100 blue foreground text color"
-			},
-			{
-				"id": "vt100-foreground-magenta",
-				"description": "VT100 magenta foreground text color"
-			},
-			{
-				"id": "vt100-foreground-cyan",
-				"description": "VT100 cyan foreground text color"
-			},
-			{
-				"id": "vt100-foreground-light-gray",
-				"description": "VT100 light gray foreground text color"
-			},
-			{
-				"id": "vt100-foreground-dark-gray",
-				"description": "VT100 dark gray foreground text color"
-			},
-			{
-				"id": "vt100-foreground-light-red",
-				"description": "VT100 light red foreground text color"
-			},
-			{
-				"id": "vt100-foreground-light-green",
-				"description": "VT100 light green foreground text color"
-			},
-			{
-				"id": "vt100-foreground-light-yellow",
-				"description": "VT100 light yellow foreground text color"
-			},
-			{
-				"id": "vt100-foreground-light-blue",
-				"description": "VT100 light blue foreground text color"
-			},
-			{
-				"id": "vt100-foreground-light-magenta",
-				"description": "VT100 light magenta foreground text color"
-			},
-			{
-				"id": "vt100-foreground-light-cyan",
-				"description": "VT100 light cyan foreground text color"
-			},
-			{
-				"id": "vt100-foreground-white",
-				"description": "VT100 white foreground text color"
-			}
-		],
-		"semanticTokenScopes": [
-			{
-				"language": "vt100",
-				"scopes": {
-					"vt100-bold": [
-						"text.vt100.attribute.bold"
-					],
-					"vt100-dim": [
-						"text.vt100.attribute.dim"
-					],
-					"vt100-underlined": [
-						"text.vt100.attribute.underlined"
-					],
-					"vt100-blink": [
-						"text.vt100.attribute.blink"
-					],
-					"vt100-inverted": [
-						"text.vt100.attribute.inverted"
-					],
-					"vt100-hidden": [
-						"text.vt100.attribute.hidden"
-					],
-					"vt100-foreground-default": [
-						"text.vt100.color.foreground.default"
-					],
-					"vt100-foreground-black": [
-						"text.vt100.color.foreground.black"
-					],
-					"vt100-foreground-red": [
-						"text.vt100.color.foreground.red"
-					],
-					"vt100-foreground-green": [
-						"text.vt100.color.foreground.green"
-					],
-					"vt100-foreground-yellow": [
-						"text.vt100.color.foreground.yellow"
-					],
-					"vt100-foreground-blue": [
-						"text.vt100.color.foreground.blue"
-					],
-					"vt100-foreground-magenta": [
-						"text.vt100.color.foreground.magenta"
-					],
-					"vt100-foreground-cyan": [
-						"text.vt100.color.foreground.cyan"
-					],
-					"vt100-foreground-light-gray": [
-						"text.vt100.color.foreground.light-gray"
-					],
-					"vt100-foreground-dark-gray": [
-						"text.vt100.color.foreground.dark-gray"
-					],
-					"vt100-foreground-light-red": [
-						"text.vt100.color.foreground.light-red"
-					],
-					"vt100-foreground-light-green": [
-						"text.vt100.color.foreground.light-green"
-					],
-					"vt100-foreground-light-yellow": [
-						"text.vt100.color.foreground.light-yellow"
-					],
-					"vt100-foreground-light-blue": [
-						"text.vt100.color.foreground.light-blue"
-					],
-					"vt100-foreground-light-magenta": [
-						"text.vt100.color.foreground.light-magenta"
-					],
-					"vt100-foreground-light-cyan": [
-						"text.vt100.color.foreground.light-cyan"
-					],
-					"vt100-foreground-white": [
-						"text.vt100.color.foreground.white"
-					]
+				"title": "VT100 Syntax Highlighting Configuration",
+				"properties": {
+					"vt100.foreground-color-default": {
+						"type": "object",
+						"default": { "color":  "#FFFFFF" },
+						"description": "The VT100 default foreground color style"
+					},
+					"vt100.foreground-color-inverted": {
+						"type": "object",
+						"default": { "color":  "#000000" },
+						"description": "The VT100 default (inverted) foreground color style"
+					},
+					"vt100.foreground-color-black": {
+						"type": "object",
+						"default": { "color":  "#555555" },
+						"description": "The VT100 black foreground color style"
+					},
+					"vt100.foreground-color-red": {
+						"type": "object",
+						"default": { "color":  "#FF0000" },
+						"description": "The VT100 red foreground color style"
+					},
+					"vt100.foreground-color-green": {
+						"type": "object",
+						"default": { "color":  "#00FF00" },
+						"description": "The VT100 green foreground color style"
+					},
+					"vt100.foreground-color-yellow": {
+						"type": "object",
+						"default": { "color":  "#FFFF00" },
+						"description": "The VT100 yellow foreground color style"
+					},
+					"vt100.foreground-color-blue": {
+						"type": "object",
+						"default": { "color":  "#0000FF" },
+						"description": "The VT100 blue foreground color style"
+					},
+					"vt100.foreground-color-magenta": {
+						"type": "object",
+						"default": { "color":  "#FF00FF" },
+						"description": "The VT100 magenta foreground color style"
+					},
+					"vt100.foreground-color-cyan": {
+						"type": "object",
+						"default": { "color":  "#00FFFF" },
+						"description": "The VT100 cyan foreground color style"
+					},
+					"vt100.foreground-color-light-gray": {
+						"type": "object",
+						"default": { "color":  "#BBBBBB" },
+						"description": "The VT100 light gray foreground color style"
+					},
+					"vt100.foreground-color-dark-gray": {
+						"type": "object",
+						"default": { "color":  "#777777" },
+						"description": "The VT100 dark gray foreground color style"
+					},
+					"vt100.foreground-color-light-red": {
+						"type": "object",
+						"default": { "color":  "#FF7777" },
+						"description": "The VT100 light red foreground color style"
+					},
+					"vt100.foreground-color-light-green": {
+						"type": "object",
+						"default": { "color":  "#77FF77" },
+						"description": "The VT100 light green foreground color style"
+					},
+					"vt100.foreground-color-light-yellow": {
+						"type": "object",
+						"default": { "color":  "#FFFF77" },
+						"description": "The VT100 light yellow foreground color style"
+					},
+					"vt100.foreground-color-light-blue": {
+						"type": "object",
+						"default": { "color":  "#7777FF" },
+						"description": "The VT100 light blue foreground color style"
+					},
+					"vt100.foreground-color-light-magenta": {
+						"type": "object",
+						"default": { "color":  "#FF77FF" },
+						"description": "The VT100 light magenta foreground color style"
+					},
+					"vt100.foreground-color-light-cyan": {
+						"type": "object",
+						"default": { "color":  "#77FFFF" },
+						"description": "The VT100 light cyan foreground color style"
+					},
+					"vt100.foreground-color-white": {
+						"type": "object",
+						"default": { "color":  "#FFFFFF" },
+						"description": "The VT100 white foreground color style"
+					},
+
+					"vt100.background-color-default": {
+						"type": "object",
+						"default": { },
+						"description": "The VT100 default background color style"
+					},
+					"vt100.background-color-inverted": {
+						"type": "object",
+						"default": { },
+						"description": "The VT100 default (inverted) background color style"
+					},
+					"vt100.background-color-black": {
+						"type": "object",
+						"default": { "backgroundColor":  "#000000" },
+						"description": "The VT100 black background color style"
+					},
+					"vt100.background-color-red": {
+						"type": "object",
+						"default": { "backgroundColor":  "#770000" },
+						"description": "The VT100 red background color style"
+					},
+					"vt100.background-color-green": {
+						"type": "object",
+						"default": { "backgroundColor":  "#007700" },
+						"description": "The VT100 green background color style"
+					},
+					"vt100.background-color-yellow": {
+						"type": "object",
+						"default": { "backgroundColor":  "#777700" },
+						"description": "The VT100 yellow background color style"
+					},
+					"vt100.background-color-blue": {
+						"type": "object",
+						"default": { "backgroundColor":  "#000077" },
+						"description": "The VT100 blue background color style"
+					},
+					"vt100.background-color-magenta": {
+						"type": "object",
+						"default": { "backgroundColor":  "#770077" },
+						"description": "The VT100 magenta background color style"
+					},
+					"vt100.background-color-cyan": {
+						"type": "object",
+						"default": { "backgroundColor":  "#007777" },
+						"description": "The VT100 cyan background color style"
+					},
+					"vt100.background-color-light-gray": {
+						"type": "object",
+						"default": { "backgroundColor":  "#666666" },
+						"description": "The VT100 light gray background color style"
+					},
+					"vt100.background-color-dark-gray": {
+						"type": "object",
+						"default": { "backgroundColor":  "#222222" },
+						"description": "The VT100 dark gray background color style"
+					},
+					"vt100.background-color-light-red": {
+						"type": "object",
+						"default": { "backgroundColor":  "#773333" },
+						"description": "The VT100 light red background color style"
+					},
+					"vt100.background-color-light-green": {
+						"type": "object",
+						"default": { "backgroundColor":  "#337733" },
+						"description": "The VT100 light green background color style"
+					},
+					"vt100.background-color-light-yellow": {
+						"type": "object",
+						"default": { "backgroundColor":  "#777733" },
+						"description": "The VT100 light yellow background color style"
+					},
+					"vt100.background-color-light-blue": {
+						"type": "object",
+						"default": { "backgroundColor":  "#333377" },
+						"description": "The VT100 light blue background color style"
+					},
+					"vt100.background-color-light-magenta": {
+						"type": "object",
+						"default": { "backgroundColor":  "#773377" },
+						"description": "The VT100 light magenta background color style"
+					},
+					"vt100.background-color-light-cyan": {
+						"type": "object",
+						"default": { "backgroundColor":  "#337777" },
+						"description": "The VT100 light cyan background color style"
+					},
+					"vt100.background-color-white": {
+						"type": "object",
+						"default": { "backgroundColor":  "#AAAAAA" },
+						"description": "The VT100 white background color style"
+					},
+					"vt100.attribute-bold": {
+						"type": "object",
+						"default": { "fontWeight": "bold" },
+						"description": "The VT100 bold style"
+					},
+					"vt100.attribute-dim": {
+						"type": "object",
+						"default": { "opacity": "0.7" },
+						"description": "The VT100 dim style"
+					},
+					"vt100.attribute-underlined": {
+						"type": "object",
+						"default": { "textDecoration": "underline solid" },
+						"description": "The VT100 underlined style"
+					},
+					"vt100.attribute-blink": {
+						"type": "object",
+						"default": { "border": "1px dotted #FFFFFF77" },
+						"description": "The VT100 blinking style"
+					},
+					"vt100.attribute-hidden": {
+						"type": "object",
+						"default": { "opacity": "0.3" },
+						"description": "The VT100 hidden style"
+					},
+					"vt100.escape-sequence": {
+						"type": "object",
+						"default": { },
+						"description": "The VT100 escape sequence style"
+					}
 				}
 			}
 		]

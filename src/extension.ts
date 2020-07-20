@@ -1,76 +1,200 @@
 import * as vscode from 'vscode';
 
-const legend = (function () {
-	const tokenTypesLegend = [
-		'vt100-text',
-		'vt100-escape-sequence'
-	];
-	const tokenModifiersLegend = [
-		'vt100-bold',
-		'vt100-dim',
-		'vt100-underlined',
-		'vt100-blink',
-		'vt100-inverted',
-		'vt100-hidden',
-
-		'vt100-foreground-default',
-		'vt100-foreground-black',
-		'vt100-foreground-red',
-		'vt100-foreground-green',
-		'vt100-foreground-yellow',
-		'vt100-foreground-blue',
-		'vt100-foreground-magenta',
-		'vt100-foreground-cyan',
-		'vt100-foreground-light-gray',
-		'vt100-foreground-dark-gray',
-		'vt100-foreground-light-red',
-		'vt100-foreground-light-green',
-		'vt100-foreground-light-yellow',
-		'vt100-foreground-light-blue',
-		'vt100-foreground-light-magenta',
-		'vt100-foreground-light-cyan',
-		'vt100-foreground-white'
-
-		// Removed background support since the Uint32Array,
-		// which is used internally to hold all token modifiers,
-		// can not store more than 32 different modifiers
-		// This would result in an overflow at color "light-gray"
-		// 'vt100-background-default',
-		// 'vt100-background-black',
-		// 'vt100-background-red',
-		// 'vt100-background-green',
-		// 'vt100-background-yellow',
-		// 'vt100-background-blue',
-		// 'vt100-background-magenta',
-		// 'vt100-background-cyan',
-		// 'vt100-background-light-gray',
-		// 'vt100-background-dark-gray',
-		// 'vt100-background-light-red',
-		// 'vt100-background-light-green',
-		// 'vt100-background-light-yellow',
-		// 'vt100-background-light-blue',
-		// 'vt100-background-light-magenta',
-		// 'vt100-background-light-cyan',
-		// 'vt100-background-white'
-	];
-	return new vscode.SemanticTokensLegend(tokenTypesLegend, tokenModifiersLegend);
-})();
-
 export function activate(context: vscode.ExtensionContext) {
-	context.subscriptions.push(
-		vscode.languages.registerDocumentSemanticTokensProvider(
-			{ language: 'vt100' },
-			new DocumentSemanticTokensProvider(),
-			legend
-		)
-	);
+	const decorator = new Decorator();
+
+	vscode.window.onDidChangeActiveTextEditor(editor => {
+		if (editor != null && editor.document.languageId === 'vt100')
+		{
+			decorator.decorateEditor(editor);
+		}
+	}, null, context.subscriptions);
+
+	vscode.workspace.onDidChangeTextDocument(event => {
+		const editor = vscode.window.activeTextEditor;
+		if (editor != null && editor.document.languageId === 'vt100'
+				&& event.document == editor.document) {
+			decorator.decorateEditor(editor);
+		}
+	}, null, context.subscriptions);
+
+	const editor = vscode.window.activeTextEditor;
+	if (editor != null && editor.document.languageId === 'vt100') {
+		decorator.decorateEditor(editor);
+	}
+
+	vscode.workspace.onDidChangeConfiguration(event => {
+		decorator.reloadDecorations();
+
+		for (let editor of vscode.window.visibleTextEditors) {
+			if (editor != null && editor.document.languageId === 'vt100') {
+				decorator.decorateEditor(editor);
+			}
+		}
+	}, null, context.subscriptions);
 }
 
-class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensProvider {
-	async provideDocumentSemanticTokens(document: vscode.TextDocument, token: vscode.CancellationToken): Promise<vscode.SemanticTokens> {
-		const builder = new vscode.SemanticTokensBuilder(legend);
-		const tokenModifiers = new Map<string, string>();
+const COLORS: string[] = [
+	'default', 'inverted', 'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'light-gray', 'dark-gray',
+	'light-red', 'light-green', 'light-yellow', 'light-blue', 'light-magenta', 'light-cyan', 'white'
+];
+const ATTRIBUTES: string[] = [
+	'bold', 'dim', 'underlined', 'blink', 'hidden'
+];
 
+class Decorator {
+
+	decorations: Map<string, vscode.TextEditorDecorationType>;
+
+	constructor() {
+		this.decorations = new Map();
+
+		this._registerDecorations();
+	}
+
+	private _registerDecorations() {
+		const configuration = vscode.workspace.getConfiguration('vt100');
+
+		for (let color of COLORS) {
+			const name = 'foreground-color-' + color;
+			const style: vscode.DecorationRenderOptions = configuration[name] || { color: this._getDefaultColor(name) };
+			this.decorations.set(name, vscode.window.createTextEditorDecorationType(style));
+		}
+
+		for (let color of COLORS) {
+			const name = 'background-color-' + color;
+			const style: vscode.DecorationRenderOptions = configuration[name] || { backgroundColor: this._getDefaultColor(name) };
+			this.decorations.set(name, vscode.window.createTextEditorDecorationType(style));
+		}
+
+		for (let attribute of ATTRIBUTES) {
+			const name = 'attribute-' + attribute;
+			const style: vscode.DecorationRenderOptions = configuration[name] || this._getDefaultStyle(name);
+			this.decorations.set(name, vscode.window.createTextEditorDecorationType(style));
+		}
+
+		const escapeStyle: vscode.DecorationRenderOptions = configuration['escape-sequence'] || this._getDefaultStyle('escape-sequence');
+		this.decorations.set('escape-sequence', vscode.window.createTextEditorDecorationType(escapeStyle));
+	}
+
+	public reloadDecorations() {
+		for (let [key, value] of this.decorations) {
+			value.dispose();
+		}
+
+		this.decorations.clear();
+		this._registerDecorations();
+	}
+
+	private _getDefaultColor(name: string): string {
+		switch(name) {
+			case 'foreground-color-default':
+				return '#FFFFFF';
+			case 'foreground-color-inverted':
+				return '#000000';
+			case 'foreground-color-black':
+				return '#555555';
+			case 'foreground-color-red':
+				return '#FF0000';
+			case 'foreground-color-green':
+				return '#00FF00';
+			case 'foreground-color-yellow':
+				return '#FFFF00';
+			case 'foreground-color-blue':
+				return '#0000FF';
+			case 'foreground-color-magenta':
+				return '#FF00FF';
+			case 'foreground-color-cyan':
+				return '#00FFFF';
+			case 'foreground-color-light-gray':
+				return '#BBBBBB';
+			case 'foreground-color-dark-gray':
+				return '#777777';
+			case 'foreground-color-light-red':
+				return '#FF7777';
+			case 'foreground-color-light-green':
+				return '#77FF77';
+			case 'foreground-color-light-yellow':
+				return '#FFFF77';
+			case 'foreground-color-light-blue':
+				return '#7777FF';
+			case 'foreground-color-light-magenta':
+				return '#FF77FF';
+			case 'foreground-color-light-cyan':
+				return '#77FFFF';
+			case 'foreground-color-white':
+				return '#FFFFFF';
+
+			case 'background-color-default':
+				return '#000000';
+			case 'background-color-inverted':
+				return '#FFFFFF';
+			case 'background-color-black':
+				return '#000000';
+			case 'background-color-red':
+				return '#770000';
+			case 'background-color-green':
+				return '#007700';
+			case 'background-color-yellow':
+				return '#777700';
+			case 'background-color-blue':
+				return '#000077';
+			case 'background-color-magenta':
+				return '#770077';
+			case 'background-color-cyan':
+				return '#007777';
+			case 'background-color-light-gray':
+				return '#666666';
+			case 'background-color-dark-gray':
+				return '#222222';
+			case 'background-color-light-red':
+				return '#773333';
+			case 'background-color-light-green':
+				return '#337733';
+			case 'background-color-light-yellow':
+				return '#777733';
+			case 'background-color-light-blue':
+				return '#333377';
+			case 'background-color-light-magenta':
+				return '#773377';
+			case 'background-color-light-cyan':
+				return '#337777';
+			case 'background-color-white':
+				return '#AAAAAA';
+
+			default:
+				return '#FFFFFF';
+		}
+	}
+
+	private _getDefaultStyle(style: string): vscode.DecorationRenderOptions {
+		switch(style) {
+			case 'attribute-bold':
+				return { fontWeight: 'bold' };
+			case 'attribute-dim':
+				return { opacity: '0.7' };
+			case 'attribute-underlined':
+				return { textDecoration: "underline solid" };
+			case 'attribute-blink':
+				return { border: '1px dotted #FFFFFF77' };
+			case 'attribute-hidden':
+				return { opacity: '0.3' };
+
+			case 'escape-sequence':
+				return { };
+
+			default:
+				return { };
+		}
+	}
+
+	public decorateEditor(editor: vscode.TextEditor) {
+		const appliedDecorations: Map<string, vscode.Range[]> = new Map();
+		for (let decorationName of this.decorations.keys()) {
+			appliedDecorations.set(decorationName, []);
+		}
+
+		const tokenModifiers = new Map<string, string>();
 		tokenModifiers.set('foreground-color', 'default');
 		tokenModifiers.set('background-color', 'default');
 		tokenModifiers.set('bold', 'no');
@@ -80,8 +204,9 @@ class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensPro
 		tokenModifiers.set('inverted', 'no');
 		tokenModifiers.set('hidden', 'no');
 
+		const document = editor.document;
 		const lines = document.getText().split(/\r\n|\r|\n/);
-		for (let i = 0; i < lines.length && !token.isCancellationRequested; i++) {
+		for (let i = 0; i < lines.length; i++) {
 			const escapeRegex: RegExp = /\x1B\[((?:[0-9]+;)*?[0-9]+)m/g;
 			const line = lines[i];
 
@@ -90,61 +215,60 @@ class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensPro
 			while ((match = escapeRegex.exec(line)) !== null) {
 				// Push last result
 				if (match.index - lastIndex > 0) {
-					builder.push(
-						new vscode.Range(i, lastIndex, i, match.index),
-						'vt100-text',
-						this._getTokenModifiers(tokenModifiers)
-					);
+					const range = new vscode.Range(i, lastIndex, i, match.index);
+					this._applyDecorations(range, tokenModifiers, appliedDecorations);
 				}
-	
+
 				this._applyParams(match[1], tokenModifiers);
-				builder.push(
-					new vscode.Range(i, match.index, i, escapeRegex.lastIndex),
-					'vt100-escape-sequence',
-					this._getTokenModifiers(tokenModifiers)
-				);
 	
+				const range = new vscode.Range(i, match.index, i, escapeRegex.lastIndex);
+				this._applyDecorations(range, tokenModifiers, appliedDecorations);
+				appliedDecorations.get('escape-sequence')!.push(range);
+
 				lastIndex = escapeRegex.lastIndex;
 			}
 
 			if (line.length - lastIndex > 0)
 			{
-				builder.push(
-					new vscode.Range(i, lastIndex, i, line.length),
-					'vt100-text',
-					this._getTokenModifiers(tokenModifiers)
-				);
+				const range = new vscode.Range(i, lastIndex, i, line.length);
+				this._applyDecorations(range, tokenModifiers, appliedDecorations);
 			}
 		}
 
-		return builder.build();
+		for (let [key, value] of appliedDecorations) {
+			editor.setDecorations(this.decorations.get(key)!, value);
+		}
 	}
 
-
-	private _getTokenModifiers(tokenModifiers: Map<string, string>): string[] {
+	private _applyDecorations(range: vscode.Range, tokenModifiers: Map<string, string>, decorations: Map<string, vscode.Range[]>) {
 		let foregroundColor;
 		let backgroundColor;
 
 		if (tokenModifiers.get('inverted') === 'yes') {
 			foregroundColor = tokenModifiers.get('background-color');
 			backgroundColor = tokenModifiers.get('foreground-color');
+
+			if (foregroundColor === 'default') {
+				foregroundColor = 'inverted';
+			}
+			if (backgroundColor === 'default') {
+				backgroundColor = 'inverted';
+			}
 		} else {
 			foregroundColor = tokenModifiers.get('foreground-color');
 			backgroundColor = tokenModifiers.get('background-color');
 		}
 
-		let result: string[] = [];
+		decorations.get('foreground-color-' + foregroundColor)!.push(range);
+		decorations.get('background-color-' + backgroundColor)!.push(range);
 
-		result.push('vt100-foreground-' + foregroundColor);
-		// result.push('vt100-background-' + backgroundColor);
-
-		for (let attribute of ['bold', 'dim', 'underlined', 'blink', 'inverted', 'hidden']) {
-			if (tokenModifiers.get(attribute) === 'yes') {
-				result.push('vt100-' + attribute);
+		for (let attribute of ATTRIBUTES) {
+			if (attribute !== 'inverted') {
+				if (tokenModifiers.get(attribute) === 'yes') {
+					decorations.get('attribute-' + attribute)!.push(range);
+				}
 			}
 		}
-
-		return result;
 	}
 
 	private _applyParams(params: string, tokenModifiers: Map<string, string>): void {
