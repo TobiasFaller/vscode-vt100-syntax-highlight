@@ -164,9 +164,3 @@ Run the program with `python3 generate_sample.py > sample.vt100`.
 The output looks similar to the image shown below on a terminal.
 
 ![Example Result on a Terminal](sample/ExampleSource.png)
-
-## Release Notes
-
-### 0.0.1
-
-First test release of this plugin.
