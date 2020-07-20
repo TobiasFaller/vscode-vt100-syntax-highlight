@@ -16,159 +16,107 @@ This extension does not need any other dependencies.
 
 ## Extension Settings
 
-Edit the global or project local VS Code configuration and add your custom token colors as shown in the example below.
-Setting background colors is currently not supported.
+Edit the global or project local VS Code configuration and apply your custom colors.
+The configuration values shown below are the defaults set by the plugin.
 
 ```json
 {
     // Associate the VT100 extension with *.log files if you want to
-    "files.associations": {
-        "*.log": "vt100"
-    },
+    // "files.associations": {
+    //     "*.log": "vt100"
+    // },
 
-    "editor.semanticTokenColorCustomizations": {
-        // Enable semantic highlighting for all themes.
-        "enabled": true,
+    // Default foreground color and inverted default foreground color
+    "vt100.foreground-color-default": { "color":  "#FFFFFF" },
+    "vt100.foreground-color-inverted": { "color":  "#000000" },
 
-        // Define all vt100 foreground colors and some attributes.
-        // The background color attribute in VS Code is currently not supported,
-        // therefore no background colors are defined.
-        //
-        // Each rule has one of the following styles:
-        //   - "semantic-token"
-        //   - "semantic-token.semantic-modifier"
-        //   - "*.semantic-modifier"
-        // Or (by explicitly defining the language):
-        //   - "semantic-token:vt100"
-        //   - "semantic-token.semantic-modifier:vt100"
-        //   - "*.semantic-modifier:vt100"
-        //
-        "rules": {
-            "*.vt100-foreground-default": {
-                "foreground": "#FFFFFF"
-            },
-            "*.vt100-foreground-black": {
-                "foreground": "#555555"
-            },
-            "*.vt100-foreground-red": {
-                "foreground": "#FF0000"
-            },
-            "*.vt100-foreground-green": {
-                "foreground": "#00FF00"
-            },
-            "*.vt100-foreground-yellow": {
-                "foreground": "#FFFF00"
-            },
-            "*.vt100-foreground-blue": {
-                "foreground": "#0000FF"
-            },
-            "*.vt100-foreground-magenta": {
-                "foreground": "#FF00FF"
-            },
-            "*.vt100-foreground-cyan": {
-                "foreground": "#00FFFF"
-            },
-            "*.vt100-foreground-light-gray": {
-                "foreground": "#BBBBBB"
-            },
-            "*.vt100-foreground-dark-gray": {
-                "foreground": "#777777"
-            },
-            "*.vt100-foreground-light-red": {
-                "foreground": "#FF7777"
-            },
-            "*.vt100-foreground-light-green": {
-                "foreground": "#77FF77"
-            },
-            "*.vt100-foreground-light-yellow": {
-                "foreground": "#FFFF77"
-            },
-            "*.vt100-foreground-light-blue": {
-                "foreground": "#7777FF"
-            },
-            "*.vt100-foreground-light-magenta": {
-                "foreground": "#FF77FF"
-            },
-            "*.vt100-foreground-light-cyan": {
-                "foreground": "#77FFFF"
-            },
-            "*.vt100-foreground-white": {
-                "foreground": "#FFFFFF"
-            },
-            "*.vt100-bold": {
-                "fontStyle": "bold"
-            },
-            "*.vt100-dim": {
-                "fontStyle": "italic"
-            },
-            "*.vt100-underlined": {
-                "fontStyle": "underline"
-            }
+    // Standard foreground colors
+    "vt100.foreground-color-black": { "color":  "#555555" },
+    "vt100.foreground-color-red": { "color":  "#FF0000" },
+    "vt100.foreground-color-green": { "color":  "#00FF00" },
+    "vt100.foreground-color-yellow": { "color":  "#FFFF00" },
+    "vt100.foreground-color-blue": { "color":  "#0000FF" },
+    "vt100.foreground-color-magenta": { "color":  "#FF00FF" },
+    "vt100.foreground-color-cyan": { "color":  "#00FFFF" },
+    "vt100.foreground-color-light-gray": { "color":  "#BBBBBB" },
+    "vt100.foreground-color-dark-gray": { "color":  "#777777" },
+    "vt100.foreground-color-light-red": { "color":  "#FF7777" },
+    "vt100.foreground-color-light-green": { "color":  "#77FF77" },
+    "vt100.foreground-color-light-yellow": { "color":  "#FFFF77" },
+    "vt100.foreground-color-light-blue": { "color":  "#7777FF" },
+    "vt100.foreground-color-light-magenta": { "color":  "#FF77FF" },
+    "vt100.foreground-color-light-cyan": { "color":  "#77FFFF" },
+    "vt100.foreground-color-white": { "color":  "#FFFFFF" },
 
-            // Use black font for all escape sequences if you want them to
-            // be editable and only barely visible on dark theme.
-            // Highlighing the escape sequences in the editor makes them better visible.
-            // "vt100-escape-sequence": {
-            //     "foreground": "#000000"
-            // }
+    // Default background color and inverted default background color
+    "vt100.background-color-default": {},
+    "vt100.background-color-inverted": {},
 
-            // Use transparent font for all escape sequences if you want them to
-            // be invisible in all cases (even highlighting does not make them visible).
-            // "vt100-escape-sequence": {
-            //     "foreground": "#00000000"
-            // }
-        }
-    }
+    // Standard background colors
+    "vt100.background-color-black": { "backgroundColor":  "#000000" },
+    "vt100.background-color-red": { "backgroundColor":  "#770000" },
+    "vt100.background-color-green": { "backgroundColor":  "#007700" },
+    "vt100.background-color-yellow": { "backgroundColor":  "#777700" },
+    "vt100.background-color-blue": { "backgroundColor":  "#000077" },
+    "vt100.background-color-magenta": { "backgroundColor":  "#770077" },
+    "vt100.background-color-cyan": { "backgroundColor":  "#007777" },
+    "vt100.background-color-light-gray": { "backgroundColor":  "#666666" },
+    "vt100.background-color-dark-gray": { "backgroundColor":  "#222222" },
+    "vt100.background-color-light-red": { "backgroundColor":  "#773333" },
+    "vt100.background-color-light-green": { "backgroundColor":  "#337733" },
+    "vt100.background-color-light-yellow": { "backgroundColor":  "#777733" },
+    "vt100.background-color-light-blue": { "backgroundColor":  "#333377" },
+    "vt100.background-color-light-magenta": { "backgroundColor":  "#773377" },
+    "vt100.background-color-light-cyan": { "backgroundColor":  "#337777" },
+    "vt100.background-color-white": { "backgroundColor":  "#AAAAAA" },
+
+    // VT100 attributes
+    "vt100.attribute-bold": { "fontWeight": "bold" },
+    "vt100.attribute-dim": { "opacity": "0.7" },
+    "vt100.attribute-underlined": { "textDecoration": "underline solid" },
+    "vt100.attribute-blink": { "border": "1px dotted #FFFFFF77" },
+    "vt100.attribute-hidden": { "opacity": "0.3" },
+
+    // VT100 escape sequences
+    // Do not apply additional styling to escape sequences (default)
+    "vt100.escape-sequence": { }
+
+    // Make escape sequences white and fully visible
+    // "vt100.escape-sequence": { "color": "#FFFFFF !important", "opacity": "1.0 !important"  }
+
+    // Make escape sequences invisible
+    // "vt100.escape-sequence": { "opacity": "0.0 !important" }
 }
 ```
 
-The following semantic token types are defined:
-
-- vt100-text
-- vt100-escape-sequence
-
-The following semantic token modifiers are defined:
-
-- vt100-bold
-- vt100-dim
-- vt100-underlined
-- vt100-blink
-- vt100-inverted
-- vt100-hidden
-- vt100-foreground-default
-- vt100-foreground-black
-- vt100-foreground-red
-- vt100-foreground-green
-- vt100-foreground-yellow
-- vt100-foreground-blue
-- vt100-foreground-magenta
-- vt100-foreground-cyan
-- vt100-foreground-light-gray
-- vt100-foreground-dark-gray
-- vt100-foreground-light-red
-- vt100-foreground-light-green
-- vt100-foreground-light-yellow
-- vt100-foreground-light-blue
-- vt100-foreground-light-magenta
-- vt100-foreground-light-cyan
-- vt100-foreground-white
-
 ## Test with Example
 
-Use the python program below to generate a sample file which containts VT100 escape sequences.
+Use the python program below to generate a sample file which contains VT100 escape sequences.
 
 ```python
 #!/bin/env python3
-COLORS = [
-    30, 31, 32, 33, 34, 35, 36, 37,
-    90, 91, 92, 93, 94, 95, 96, 97
-]
 
-for fgColor in COLORS:
-    line = ""
-    for style in [1, 2, 4, 5, 7, 8]:
-        line += f"\x1b[{style};{fgColor}m {style};{fgColor} \x1b[0m"
-    print(line)
+FGCOLORS = [
+    39,
+	30, 31, 32, 33, 34, 35, 36, 37,
+	90, 91, 92, 93, 94, 95, 96, 97
+]
+BGCOLORS = [
+    49,
+    40, 41, 42, 43, 44, 45, 46, 47,
+    100, 101, 102, 103, 104, 105, 106, 107
+]
+ATTRIBUTES = [ 0, 1, 2, 4, 5, 7, 8 ]
+
+for bgColor in BGCOLORS:
+    for fgColor in FGCOLORS:
+        line = ""
+        for attribute in ATTRIBUTES:
+            style = f"{attribute};{fgColor};{bgColor}"
+            line += f"\x1b[0;{style}m {style}"
+        line += "\x1b[0m"
+        print(line)
+    print()
 ```
 
 Run the program with `python3 generate_sample.py > sample.vt100`.
