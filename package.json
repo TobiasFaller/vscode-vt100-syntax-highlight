@@ -6,7 +6,7 @@
 	"author": {
 		"name": "Tobias Faller"
 	},
-	"publisher": "TobiasFaller",
+	"publisher": "Tobias-Faller",
 	"license": "MIT",
 	"repository": {
 		"url": "https://github.com/TobiasFaller/vscode-vt100-syntax-highlight"
