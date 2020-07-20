@@ -18,11 +18,6 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}, null, context.subscriptions);
 
-	const editor = vscode.window.activeTextEditor;
-	if (editor != null && editor.document.languageId === 'vt100') {
-		decorator.decorateEditor(editor);
-	}
-
 	vscode.workspace.onDidChangeConfiguration(event => {
 		decorator.reloadDecorations();
 
@@ -32,6 +27,12 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		}
 	}, null, context.subscriptions);
+
+	for (let editor of vscode.window.visibleTextEditors) {
+		if (editor != null && editor.document.languageId === 'vt100') {
+			decorator.decorateEditor(editor);
+		}
+	}
 }
 
 const COLORS: string[] = [
