@@ -4,6 +4,7 @@ out/test/**
 out/**/*.map
 src/**
 sample/**
+images/**/*.rli
 .gitignore
 tsconfig.json
 tslint.json
