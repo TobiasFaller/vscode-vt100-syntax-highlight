@@ -98,8 +98,8 @@ Use the python program below to generate a sample file which contains VT100 esca
 
 FGCOLORS = [
     39,
-	30, 31, 32, 33, 34, 35, 36, 37,
-	90, 91, 92, 93, 94, 95, 96, 97
+    30, 31, 32, 33, 34, 35, 36, 37,
+    90, 91, 92, 93, 94, 95, 96, 97
 ]
 BGCOLORS = [
     49,
