@@ -21,22 +21,22 @@ Setting background colors is currently not supported.
 ```json
 {
     "editor.semanticTokenColorCustomizations": {
-		// Enable semantic highlighting for all themes.
+        // Enable semantic highlighting for all themes.
         "enabled": true,
 
-		// Define all vt100 foreground colors and some attributes.
-		// The background color attribute in VS Code is currently not supported,
-		// therefore no background colors are defined.
-		//
-		// Each rule has one of the following styles:
-		//   - "semantic-token"
-		//   - "semantic-token.semantic-modifier"
-		//   - "*.semantic-modifier"
-		// Or (by explicitly defining the language):
-		//   - "semantic-token:vt100"
-		//   - "semantic-token.semantic-modifier:vt100"
-		//   - "*.semantic-modifier:vt100"
-		//
+        // Define all vt100 foreground colors and some attributes.
+        // The background color attribute in VS Code is currently not supported,
+        // therefore no background colors are defined.
+        //
+        // Each rule has one of the following styles:
+        //   - "semantic-token"
+        //   - "semantic-token.semantic-modifier"
+        //   - "*.semantic-modifier"
+        // Or (by explicitly defining the language):
+        //   - "semantic-token:vt100"
+        //   - "semantic-token.semantic-modifier:vt100"
+        //   - "*.semantic-modifier:vt100"
+        //
         "rules": {
             "*.vt100-foreground-default": {
                 "foreground": "#FFFFFF"
@@ -99,9 +99,9 @@ Setting background colors is currently not supported.
                 "fontStyle": "underline"
             }
 
-			// Use black font for all escape sequences.
-			// Use this if you don't want to see the escape sequences
-			// itself on a dark theme.
+            // Use black font for all escape sequences.
+            // Use this if you don't want to see the escape sequences
+            // itself on a dark theme.
             // "vt100-escape-sequence": {
             //     "foreground": "#000000"
             // }
@@ -148,8 +148,8 @@ Use the python program below to generate a sample file which containts VT100 esc
 ```python
 #!/bin/env python3
 COLORS = [
-	30, 31, 32, 33, 34, 35, 36, 37,
-	90, 91, 92, 93, 94, 95, 96, 97
+    30, 31, 32, 33, 34, 35, 36, 37,
+    90, 91, 92, 93, 94, 95, 96, 97
 ]
 
 for fgColor in COLORS:
