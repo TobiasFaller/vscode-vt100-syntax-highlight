@@ -5,6 +5,7 @@
 This extension provides highlighting for VT100 color escape sequences.
 Below is a screenshot how the highlighted sample file might look by applying this plugin.
 The highligh colors and styles can be customized via the global or project configuration.
+Select the file type "VT100 Terminal" on the lower right corner to enable highlighting of a file.
 
 ![Example Result](sample/ExampleResult.png)
 
