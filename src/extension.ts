@@ -72,7 +72,7 @@ class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensPro
 		const tokenModifiers = new Map<string, string>();
 
 		tokenModifiers.set('foreground-color', 'default');
-		// tokenModifiers.set('background-color', 'default');
+		tokenModifiers.set('background-color', 'default');
 		tokenModifiers.set('bold', 'no');
 		tokenModifiers.set('dim', 'no');
 		tokenModifiers.set('underlined', 'no');
@@ -122,8 +122,16 @@ class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensPro
 
 
 	private _getTokenModifiers(tokenModifiers: Map<string, string>): string[] {
-		const foregroundColor = tokenModifiers.get('foreground-color');
-		// const backgroundColor = tokenModifiers.get('background-color');
+		let foregroundColor;
+		let backgroundColor;
+
+		if (tokenModifiers.get('inverted') === 'yes') {
+			foregroundColor = tokenModifiers.get('background-color');
+			backgroundColor = tokenModifiers.get('foreground-color');
+		} else {
+			foregroundColor = tokenModifiers.get('foreground-color');
+			backgroundColor = tokenModifiers.get('background-color');
+		}
 
 		let result: string[] = [];
 
@@ -146,7 +154,7 @@ class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensPro
 		for (var param of splittedParams) {
 			if (param === "0") {
 				tokenModifiers.set('foreground-color', 'default');
-				// tokenModifiers.set('background-color', 'default');
+				tokenModifiers.set('background-color', 'default');
 				tokenModifiers.set('bold', 'no');
 				tokenModifiers.set('dim', 'no');
 				tokenModifiers.set('underlined', 'no');
@@ -163,7 +171,7 @@ class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensPro
 			} else if (param === "5") {
 				tokenModifiers.set('blink', 'yes');
 			} else if (param === "7") {
-				tokenModifiers.set('reverse', 'yes');
+				tokenModifiers.set('inverted', 'yes');
 			} else if (param === "8") {
 				tokenModifiers.set('hidden', 'yes');
 
@@ -176,7 +184,7 @@ class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensPro
 			} else if (param === "25") {
 				tokenModifiers.set('blink', 'no');
 			} else if (param === "27") {
-				tokenModifiers.set('reverse', 'no');
+				tokenModifiers.set('inverted', 'no');
 			} else if (param === "28") {
 				tokenModifiers.set('hidden', 'no');
 
@@ -214,43 +222,42 @@ class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensPro
 				tokenModifiers.set('foreground-color', 'light-cyan');
 			} else if (param === "97") {
 				tokenModifiers.set('foreground-color', 'white');
-			}
 
-			// } else if (param === "49") {
-			// 	tokenModifiers.set('background-color', 'default');
-			// } else if (param === "40") {
-			// 	tokenModifiers.set('background-color', 'black');
-			// } else if (param === "41") {
-			// 	tokenModifiers.set('background-color', 'red');
-			// } else if (param === "42") {
-			// 	tokenModifiers.set('background-color', 'green');
-			// } else if (param === "43") {
-			// 	tokenModifiers.set('background-color', 'yellow');
-			// } else if (param === "44") {
-			// 	tokenModifiers.set('background-color', 'blue');
-			// } else if (param === "45") {
-			// 	tokenModifiers.set('background-color', 'magenta');
-			// } else if (param === "46") {
-			// 	tokenModifiers.set('background-color', 'cyan');
-			// } else if (param === "47") {
-			// 	tokenModifiers.set('background-color', 'light-gray');
-			// } else if (param === "100") {
-			// 	tokenModifiers.set('background-color', 'dark-gray');
-			// } else if (param === "101") {
-			// 	tokenModifiers.set('background-color', 'light-red');
-			// } else if (param === "102") {
-			// 	tokenModifiers.set('background-color', 'light-green');
-			// } else if (param === "103") {
-			// 	tokenModifiers.set('background-color', 'light-yellow');
-			// } else if (param === "104") {
-			// 	tokenModifiers.set('background-color', 'light-blue');
-			// } else if (param === "105") {
-			// 	tokenModifiers.set('background-color', 'light-magenta');
-			// } else if (param === "106") {
-			// 	tokenModifiers.set('background-color', 'light-cyan');
-			// } else if (param === "107") {
-			// 	tokenModifiers.set('background-color', 'white');
-			// }
+			} else if (param === "49") {
+				tokenModifiers.set('background-color', 'default');
+			} else if (param === "40") {
+				tokenModifiers.set('background-color', 'black');
+			} else if (param === "41") {
+				tokenModifiers.set('background-color', 'red');
+			} else if (param === "42") {
+				tokenModifiers.set('background-color', 'green');
+			} else if (param === "43") {
+				tokenModifiers.set('background-color', 'yellow');
+			} else if (param === "44") {
+				tokenModifiers.set('background-color', 'blue');
+			} else if (param === "45") {
+				tokenModifiers.set('background-color', 'magenta');
+			} else if (param === "46") {
+				tokenModifiers.set('background-color', 'cyan');
+			} else if (param === "47") {
+				tokenModifiers.set('background-color', 'light-gray');
+			} else if (param === "100") {
+				tokenModifiers.set('background-color', 'dark-gray');
+			} else if (param === "101") {
+				tokenModifiers.set('background-color', 'light-red');
+			} else if (param === "102") {
+				tokenModifiers.set('background-color', 'light-green');
+			} else if (param === "103") {
+				tokenModifiers.set('background-color', 'light-yellow');
+			} else if (param === "104") {
+				tokenModifiers.set('background-color', 'light-blue');
+			} else if (param === "105") {
+				tokenModifiers.set('background-color', 'light-magenta');
+			} else if (param === "106") {
+				tokenModifiers.set('background-color', 'light-cyan');
+			} else if (param === "107") {
+				tokenModifiers.set('background-color', 'white');
+			}
 		}
 	}
 }
