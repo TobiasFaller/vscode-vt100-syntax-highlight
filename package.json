@@ -1,0 +1,188 @@
+{
+	"name": "vt100-syntax-highlighting",
+	"displayName": "VT100 Syntax Highlighting",
+	"description": "VT100 Color and Style Highlighting in the Text Editor",
+	"version": "0.0.1",
+	"author": {
+		"name": "Tobias Faller"
+	},
+	"publisher": "Tobias Faller",
+	"repository": {
+		"url": "https://github.com/TobiasFaller/vscode-vt100-syntax-highlight"
+	},
+	"engines": {
+		"vscode": "^1.42.0"
+	},
+	"categories": [
+		"Programming Languages",
+		"Other"
+	],
+	"activationEvents": [
+		"onLanguage:vt100"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"languages": [
+			{
+				"id": "vt100",
+				"aliases": [ "VT100 Terminal" ],
+				"extensions": [
+					".vt100",
+					".vt100.txt",
+					".vt100.log"
+				]
+			}
+		],
+		"semanticTokenTypes": [
+			{
+				"id": "vt100-text",
+				"superType": "text",
+				"description": "VT100 text"
+			},
+			{
+				"id": "vt100-escape-sequence",
+				"superType": "text",
+				"description": "VT100 text escape sequence"
+			}
+		],
+		"semanticTokenModifiers": [
+			{
+				"id": "vt100-bold",
+				"description": "VT100 bold text"
+			},
+			{
+				"id": "vt100-dim",
+				"description": "VT100 dim text"
+			},
+			{
+				"id": "vt100-underlined",
+				"description": "VT100 underlined text"
+			},
+			{
+				"id": "vt100-blink",
+				"description": "VT100 blinking text"
+			},
+			{
+				"id": "vt100-inverted",
+				"description": "VT100 inverted text"
+			},
+			{
+				"id": "vt100-hidden",
+				"description": "VT100 hidden text"
+			},
+			{
+				"id": "vt100-foreground-default",
+				"description": "VT100 default foreground text color"
+			},
+			{
+				"id": "vt100-foreground-black",
+				"description": "VT100 black foreground text color"
+			},
+			{
+				"id": "vt100-foreground-red",
+				"description": "VT100 red foreground text color"
+			},
+			{
+				"id": "vt100-foreground-green",
+				"description": "VT100 green foreground text color"
+			},
+			{
+				"id": "vt100-foreground-yellow",
+				"description": "VT100 yellow foreground text color"
+			},
+			{
+				"id": "vt100-foreground-blue",
+				"description": "VT100 blue foreground text color"
+			},
+			{
+				"id": "vt100-foreground-magenta",
+				"description": "VT100 magenta foreground text color"
+			},
+			{
+				"id": "vt100-foreground-cyan",
+				"description": "VT100 cyan foreground text color"
+			},
+			{
+				"id": "vt100-foreground-light-gray",
+				"description": "VT100 light gray foreground text color"
+			},
+			{
+				"id": "vt100-foreground-dark-gray",
+				"description": "VT100 dark gray foreground text color"
+			},
+			{
+				"id": "vt100-foreground-light-red",
+				"description": "VT100 light red foreground text color"
+			},
+			{
+				"id": "vt100-foreground-light-green",
+				"description": "VT100 light green foreground text color"
+			},
+			{
+				"id": "vt100-foreground-light-yellow",
+				"description": "VT100 light yellow foreground text color"
+			},
+			{
+				"id": "vt100-foreground-light-blue",
+				"description": "VT100 light blue foreground text color"
+			},
+			{
+				"id": "vt100-foreground-light-magenta",
+				"description": "VT100 light magenta foreground text color"
+			},
+			{
+				"id": "vt100-foreground-light-cyan",
+				"description": "VT100 light cyan foreground text color"
+			},
+			{
+				"id": "vt100-foreground-white",
+				"description": "VT100 white foreground text color"
+			}
+		],
+		"semanticTokenScopes": [
+			{
+				"language": "vt100",
+				"scopes": {
+					"vt100-bold": [ "text.vt100.attribute.bold" ],
+					"vt100-dim": [ "text.vt100.attribute.dim" ],
+					"vt100-underlined": [ "text.vt100.attribute.underlined" ],
+					"vt100-blink": [ "text.vt100.attribute.blink" ],
+					"vt100-inverted": [ "text.vt100.attribute.inverted" ],
+					"vt100-hidden": [ "text.vt100.attribute.hidden" ],
+
+					"vt100-foreground-default": [ "text.vt100.color.foreground.default" ],
+					"vt100-foreground-black": [ "text.vt100.color.foreground.black" ],
+					"vt100-foreground-red": [ "text.vt100.color.foreground.red" ],
+					"vt100-foreground-green": [ "text.vt100.color.foreground.green" ],
+					"vt100-foreground-yellow": [ "text.vt100.color.foreground.yellow" ],
+					"vt100-foreground-blue": [ "text.vt100.color.foreground.blue" ],
+					"vt100-foreground-magenta": [ "text.vt100.color.foreground.magenta" ],
+					"vt100-foreground-cyan": [ "text.vt100.color.foreground.cyan" ],
+					"vt100-foreground-light-gray": [ "text.vt100.color.foreground.light-gray" ],
+					"vt100-foreground-dark-gray": [ "text.vt100.color.foreground.dark-gray" ],
+					"vt100-foreground-light-red": [ "text.vt100.color.foreground.light-red" ],
+					"vt100-foreground-light-green": [ "text.vt100.color.foreground.light-green" ],
+					"vt100-foreground-light-yellow": [ "text.vt100.color.foreground.light-yellow" ],
+					"vt100-foreground-light-blue": [ "text.vt100.color.foreground.light-blue" ],
+					"vt100-foreground-light-magenta": [ "text.vt100.color.foreground.light-magenta" ],
+					"vt100-foreground-light-cyan": [ "text.vt100.color.foreground.light-cyan" ],
+					"vt100-foreground-white": [ "text.vt100.color.foreground.white" ]
+				}
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"lint": "eslint . --ext .ts,.tsx",
+		"watch": "tsc -watch -p ./"
+	},
+	"devDependencies": {
+		"@types/node": "^12.12.0",
+		"@types/vscode": "^1.42.0",
+		"@typescript-eslint/eslint-plugin": "^3.0.2",
+		"@typescript-eslint/parser": "^3.0.2",
+		"eslint": "^7.1.0",
+		"typescript": "^3.9.4"
+	}
+}
