@@ -18,6 +18,12 @@
 		"Programming Languages",
 		"Other"
 	],
+	"icon": "images/icon.png",
+	"galleryBanner": {
+		"color": "#0055CC",
+		"theme": "dark"
+	},
+	"homepage": "https://github.com/TobiasFaller/vscode-vt100-syntax-highlight",
 	"activationEvents": [
 		"onLanguage:vt100"
 	],
