@@ -21,6 +21,11 @@ Setting background colors is currently not supported.
 
 ```json
 {
+    // Associate the VT100 extension with *.log files if you want to
+    "files.associations": {
+        "*.log": "vt100"
+    },
+
     "editor.semanticTokenColorCustomizations": {
         // Enable semantic highlighting for all themes.
         "enabled": true,
@@ -100,11 +105,17 @@ Setting background colors is currently not supported.
                 "fontStyle": "underline"
             }
 
-            // Use black font for all escape sequences.
-            // Use this if you don't want to see the escape sequences
-            // itself on a dark theme.
+            // Use black font for all escape sequences if you want them to
+            // be editable and only barely visible on dark theme.
+            // Highlighing the escape sequences in the editor makes them better visible.
             // "vt100-escape-sequence": {
             //     "foreground": "#000000"
+            // }
+
+            // Use transparent font for all escape sequences if you want them to
+            // be invisible in all cases (even highlighting does not make them visible).
+            // "vt100-escape-sequence": {
+            //     "foreground": "#00000000"
             // }
         }
     }
