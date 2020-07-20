@@ -1,10 +1,18 @@
 Changelog
 =========
 
+0.0.4
+-----
+
+- Rewrote most of the plugins achitecture. \
+  Plugin now uses decorators instead of semantic types and modifiers.
+- Added background color support.
+- Added support for inverted colors and hidden attribute.
+
 0.0.3
 -----
 
-- Added changelog
+- Introduced changelog.
 
 0.0.2
 -----
