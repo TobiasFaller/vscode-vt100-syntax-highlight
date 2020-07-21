@@ -326,6 +326,12 @@
 						},
 						"description": "The VT100 blinking style"
 					},
+					"vt100.attribute-inverted": {
+						"type": "object",
+						"default": {
+						},
+						"description": "The VT100 inverted style"
+					},
 					"vt100.attribute-hidden": {
 						"type": "object",
 						"default": {
@@ -337,6 +343,11 @@
 						"type": "object",
 						"default": {},
 						"description": "The VT100 escape sequence style"
+					},
+					"vt100.text": {
+						"type": "object",
+						"default": {},
+						"description": "The VT100 text style"
 					}
 				}
 			}
@@ -411,7 +422,8 @@
 		"watch": "tsc -watch -p ./"
 	},
 	"devDependencies": {
-		"@types/lodash": "^4.14.157",
+		"@types/lodash.debounce": "^4.0.6",
+		"@types/lodash.escape": "^4.0.6",
 		"@types/node": "^12.12.50",
 		"@types/vscode": "^1.42.0",
 		"@typescript-eslint/eslint-plugin": "^3.6.1",
@@ -419,5 +431,8 @@
 		"eslint": "^7.5.0",
 		"typescript": "^3.9.7"
 	},
-	"dependencies": {}
+	"dependencies": {
+		"lodash.debounce": "^4.0.8",
+		"lodash.escape": "^4.0.1"
+	}
 }

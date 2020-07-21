@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
 
-const COLORS: string[] = [
+export const COLORS: string[] = [
 	'default', 'inverted', 'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'light-gray', 'dark-gray',
 	'light-red', 'light-green', 'light-yellow', 'light-blue', 'light-magenta', 'light-cyan', 'white'
 ];
-const ATTRIBUTES: string[] = [
-	'bold', 'dim', 'underlined', 'blink', 'hidden'
+export const ATTRIBUTES: string[] = [
+	'bold', 'dim', 'underlined', 'blink', 'inverted', 'hidden'
 ];
 
 export class ConfigurationManager implements vscode.Disposable {
@@ -52,6 +52,7 @@ export class ConfigurationManager implements vscode.Disposable {
 		}
 
 		this._styles.set('escape-sequence', configuration['escape-sequence'] || this._getDefaultStyle('escape-sequence'));
+		this._styles.set('text', configuration['text'] || this._getDefaultStyle('text'));
 	}
 
 	public getSettings(): IterableIterator<[string, vscode.TextEditorDecorationType]> {
@@ -149,9 +150,13 @@ export class ConfigurationManager implements vscode.Disposable {
 				return { textDecoration: "underline solid" };
 			case 'attribute-blink':
 				return { border: '1px dotted #FFFFFF77' };
+			case 'attribute-inverted':
+				return { };
 			case 'attribute-hidden':
 				return { opacity: '0.3' };
 
+			case 'text':
+				return { };
 			case 'escape-sequence':
 				return { };
 
