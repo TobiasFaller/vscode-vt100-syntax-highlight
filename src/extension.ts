@@ -2,10 +2,12 @@ import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
 	const decorator = new Decorator();
+	context.subscriptions.push({
+		dispose(): void { decorator.disposeDecorations(); }
+	});
 
 	vscode.window.onDidChangeActiveTextEditor(editor => {
-		if (editor != null && editor.document.languageId === 'vt100')
-		{
+		if (editor != null && editor.document.languageId === 'vt100') {
 			decorator.decorateEditor(editor);
 		}
 	}, null, context.subscriptions);
@@ -85,6 +87,12 @@ class Decorator {
 
 		this.decorations.clear();
 		this._registerDecorations();
+	}
+
+	public disposeDecorations() {
+		for (let [key, value] of this.decorations) {
+			value.dispose();
+		}
 	}
 
 	private _getDefaultColor(name: string): string {
