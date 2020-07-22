@@ -21,7 +21,7 @@ The configuration values shown below are the defaults set by the plugin.
 
 ```json
 {
-    // Associate the VT100 extension with *.log files if you want to
+    // Associate the VT100 extension with *.log files if you want to.
     // "files.associations": {
     //     "*.log": "vt100"
     // },
@@ -53,43 +53,86 @@ The configuration values shown below are the defaults set by the plugin.
     "vt100.background-color-inverted": {},
 
     // Standard background colors
-    "vt100.background-color-black": { "backgroundColor":  "#000000" },
-    "vt100.background-color-red": { "backgroundColor":  "#770000" },
-    "vt100.background-color-green": { "backgroundColor":  "#007700" },
-    "vt100.background-color-yellow": { "backgroundColor":  "#777700" },
-    "vt100.background-color-blue": { "backgroundColor":  "#000077" },
-    "vt100.background-color-magenta": { "backgroundColor":  "#770077" },
-    "vt100.background-color-cyan": { "backgroundColor":  "#007777" },
-    "vt100.background-color-light-gray": { "backgroundColor":  "#666666" },
-    "vt100.background-color-dark-gray": { "backgroundColor":  "#222222" },
-    "vt100.background-color-light-red": { "backgroundColor":  "#773333" },
-    "vt100.background-color-light-green": { "backgroundColor":  "#337733" },
-    "vt100.background-color-light-yellow": { "backgroundColor":  "#777733" },
-    "vt100.background-color-light-blue": { "backgroundColor":  "#333377" },
-    "vt100.background-color-light-magenta": { "backgroundColor":  "#773377" },
-    "vt100.background-color-light-cyan": { "backgroundColor":  "#337777" },
-    "vt100.background-color-white": { "backgroundColor":  "#AAAAAA" },
+    "vt100.background-color-black": { "background-color":  "#000000" },
+    "vt100.background-color-red": { "background-color":  "#770000" },
+    "vt100.background-color-green": { "background-color":  "#007700" },
+    "vt100.background-color-yellow": { "background-color":  "#777700" },
+    "vt100.background-color-blue": { "background-color":  "#000077" },
+    "vt100.background-color-magenta": { "background-color":  "#770077" },
+    "vt100.background-color-cyan": { "background-color":  "#007777" },
+    "vt100.background-color-light-gray": { "background-color":  "#666666" },
+    "vt100.background-color-dark-gray": { "background-color":  "#222222" },
+    "vt100.background-color-light-red": { "background-color":  "#773333" },
+    "vt100.background-color-light-green": { "background-color":  "#337733" },
+    "vt100.background-color-light-yellow": { "background-color":  "#777733" },
+    "vt100.background-color-light-blue": { "background-color":  "#333377" },
+    "vt100.background-color-light-magenta": { "background-color":  "#773377" },
+    "vt100.background-color-light-cyan": { "background-color":  "#337777" },
+    "vt100.background-color-white": { "background-color":  "#AAAAAA" },
 
     // VT100 attributes
-    "vt100.attribute-bold": { "fontWeight": "bold" },
-    "vt100.attribute-dim": { "opacity": "0.7" },
-    "vt100.attribute-underlined": { "textDecoration": "underline solid" },
-    "vt100.attribute-blink": { "border": "1px dotted #FFFFFF77" },
+    "vt100.attribute-bold": { "font-weight": "bold" },
+    "vt100.attribute-dim": { "opacity": "0.7", "font-weight": "lighter" },
+    "vt100.attribute-underlined": { "text-decoration": "underline solid" },
+    "vt100.attribute-blink": {
+        // The configuration for the editor and the preview is different,
+        // because the editor does not support all CSS options.
+        "editor": {
+            "border": "1px dotted #FFFFFF77"
+        },
+        "preview": {
+            // The animation is defined in the default custom CSS setting
+            // for the preview.
+            "animation": "blink-animation 1s step-start 0s infinite"
+        }
+    },
+    "vt100.attribute-inverted": { },
     "vt100.attribute-hidden": { "opacity": "0.3" },
 
     // VT100 escape sequences
-    // Do not apply additional styling to escape sequences (default)
-    "vt100.escape-sequence": { }
+    // Do not apply additional styling to escape sequences (default).
+    "vt100.escape-sequence": { },
 
-    // Make escape sequences white and fully visible
-    // "vt100.escape-sequence": { "color": "#FFFFFF !important", "opacity": "1.0 !important"  }
+    // Style for all text which is not an escape sequence.
+    "vt100.text": { },
 
-    // Make escape sequences invisible
-    // "vt100.escape-sequence": { "opacity": "0.0 !important" }
+    // Make escape sequences white and fully visible in the editor.
+    // Escape sequences are never rendered in the preview.
+    // "vt100.escape-sequence": { "color": "#FFFFFF !important", "opacity": "1.0 !important"  },
+
+    // Make escape sequences invisible in the editor.
+    // "vt100.escape-sequence": { "opacity": "0.0 !important" },
+
+    // Use the default editor font settings.
+    "vt100.font-family": null,
+    "vt100.font-size": null,
+    "vt100.font-weight": null,
+
+    // Use a different font for the preview.
+    // Be sure to surround names with spaces in quotes.
+    // "vt100.font-family": "'Lucida Console', monospace",
+
+    // Additional custom CSS which is required for the preview.
+    // The keyframes are required when animating the blinking style.
+    "vt100.custom-css": {
+        "*": {
+            "padding": "0px",
+            "margin": "0px"
+        },
+        ".background": {
+            "display": "inline-block",
+            "padding": "0.1em"
+        },
+        "@keyframes blink-animation": {
+            "50%": {
+                "opacity": "0.0"
+            }
+        }
+    }
 }
 ```
 
-## Test with Example
+## Test the Extension with an Example
 
 Use the python program below to generate a sample file which contains VT100 escape sequences.
 

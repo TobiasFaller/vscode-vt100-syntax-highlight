@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.0.5
+-----
+
+- Added preview panel with rendered VT100 codes
+- Updated configuration settings
+- Added font configuration support with fallback to editor font
+- Added custom CSS support for preview panel
+
 0.0.4
 -----
 
