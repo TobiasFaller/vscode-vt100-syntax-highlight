@@ -269,10 +269,6 @@ export class ConfigurationManager implements vscode.Disposable {
 				'50%': {
 					'opacity': '0.0'
 				}
-			},
-			'.attribute-blink': {
-				'animation': 'blink-animation 1s step-start 0s infinite',
-				'border': 'none'
 			}
 		};
 	}
