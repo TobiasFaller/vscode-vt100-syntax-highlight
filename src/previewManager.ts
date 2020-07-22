@@ -7,7 +7,7 @@ import { ConfigurationManager } from './configurationManager';
 import { VT100Parser } from './vt100Parser';
 
 
-export class PreviewManager implements vscode.Disposable {
+export class PreviewManager implements vscode.Disposable, vscode.WebviewPanelSerializer {
 
 	private _configuration: ConfigurationManager;
 	private _contentProvider: VT100ContentProvider;
@@ -25,6 +25,8 @@ export class PreviewManager implements vscode.Disposable {
 				preview.refresh();
 			}
 		}, null, this._disposables);
+
+		this._disposables.push(vscode.window.registerWebviewPanelSerializer('vt100.preview', this));
 	}
 
 	public dispose(): void {
@@ -40,14 +42,14 @@ export class PreviewManager implements vscode.Disposable {
 	}
 
 	public showPreview(): void {
-		return this._showPreviewImpl(false);
+		this._showPreviewImpl(false);
 	}
 	
 	public showPreviewToSide(): void {
-		return this._showPreviewImpl(true);
+		this._showPreviewImpl(true);
 	}
 
-	private _showPreviewImpl(sideBySide: boolean): void {
+	private async _showPreviewImpl(sideBySide: boolean): Promise<void> {
 		const uri = vscode.window.activeTextEditor?.document?.uri;
 		if (!(uri instanceof vscode.Uri)) {
 			return;
@@ -60,14 +62,14 @@ export class PreviewManager implements vscode.Disposable {
 		if (preview != null) {
 			preview.reveal(previewColumn);
 		} else {
-			preview = this._createPreview(uri, previewColumn);
+			preview = await this._createPreview(uri, previewColumn);
 		}
 
 		preview.update(uri);
 	}
 
-	private _createPreview(uri: vscode.Uri, previewColumn: vscode.ViewColumn): VT100Preview {
-		const newPreview: VT100Preview = new VT100Preview(uri, previewColumn, this._contentProvider);
+	private async _createPreview(uri: vscode.Uri, previewColumn: vscode.ViewColumn): Promise<VT100Preview> {
+		const newPreview: VT100Preview = await VT100Preview.create(uri, previewColumn, this._contentProvider);
 
 		newPreview.onDispose(() => {
 			const existing = this._previews.indexOf(newPreview);
@@ -82,8 +84,28 @@ export class PreviewManager implements vscode.Disposable {
 		return newPreview;
 	}
 
+	private async _revivePreview(panel: vscode.WebviewPanel, state: any): Promise<VT100Preview> {
+		const revivedPreview: VT100Preview = await VT100Preview.revive(panel, state, this._contentProvider);
+
+		revivedPreview.onDispose(() => {
+			const existing = this._previews.indexOf(revivedPreview);
+			if (existing === -1) {
+				return;
+			}
+
+			this._previews.splice(existing, 1);
+		});
+
+		this._previews.push(revivedPreview);
+		return revivedPreview;
+	}
+
 	private _findPreview(uri: vscode.Uri, previewColumn: vscode.ViewColumn): VT100Preview | undefined {
 		return this._previews.find(preview => preview.matchesResource(uri, previewColumn));
+	}
+
+	public async deserializeWebviewPanel(panel: vscode.WebviewPanel, state: any): Promise<void> {
+		await this._revivePreview(panel, state);
 	}
 
 }
@@ -103,12 +125,24 @@ class VT100Preview {
 	private _onDidChangeViewStateEmitter = new vscode.EventEmitter<vscode.WebviewPanelOnDidChangeViewStateEvent>();
 	public onDidChangeViewState = this._onDidChangeViewStateEmitter.event;
 
-	constructor(uri: vscode.Uri, previewColumn: vscode.ViewColumn, contentProvider: VT100ContentProvider) {
+	static async create(uri: vscode.Uri, previewColumn: vscode.ViewColumn, contentProvider: VT100ContentProvider): Promise<VT100Preview> {
+		const panel = vscode.window.createWebviewPanel('vt100.preview', 'VT100 Preview', previewColumn);
+		return new VT100Preview(uri, panel, contentProvider);
+	}
+
+	static async revive(panel: vscode.WebviewPanel, state: any, contentProvider: VT100ContentProvider): Promise<VT100Preview> {
+		const uri = vscode.Uri.parse(state.uri);
+		const preview = new VT100Preview(uri, panel, contentProvider);
+		await preview.refresh();
+		return preview;
+	}
+
+	constructor(uri: vscode.Uri, panel: vscode.WebviewPanel, contentProvider: VT100ContentProvider) {
 		this._contentProvider = contentProvider;
 		this._uri = uri;
-		this._editor = vscode.window.createWebviewPanel('vt100.preview', 'VT100 Preview', previewColumn);
+		this._editor = panel;
 		this._editor.webview.options = {
-			enableScripts: false,
+			enableScripts: true,
 			enableCommandUris: false,
 			localResourceRoots: [],
 			portMapping: []
@@ -131,7 +165,7 @@ class VT100Preview {
 	
 		vscode.window.onDidChangeActiveTextEditor(editor => {
 			if (editor && editor.document.languageId === 'vt100') {
-				this._update(editor.document.uri, true);
+				this._update(editor.document.uri, false);
 			}
 		}, null, this._disposables);
 	}
@@ -163,12 +197,12 @@ class VT100Preview {
 		this._editor.reveal(previewColumn);
 	}
 
-	public refresh(): void {
-		this._update(this._uri, true);
+	public async refresh(): Promise<void> {
+		await this._update(this._uri, true);
 	}
 
-	public update(uri: vscode.Uri): void {
-		this._update(uri, true);
+	public async update(uri: vscode.Uri): Promise<void> {
+		await this._update(uri, true);
 	}
 
 	private async _update(uri: vscode.Uri, force: boolean): Promise<void> {
@@ -181,7 +215,8 @@ class VT100Preview {
 		this._uri = uri;
 		this._version = version;
 
-		const content: string = this._contentProvider.provideTextDocumentContent(document);
+		const state = { uri: this._uri.toString() };
+		const content: string = this._contentProvider.provideTextDocumentContent(document, state);
 
 		// Check for concurrency
 		if (this._uri === uri) {
@@ -218,9 +253,10 @@ class VT100ContentProvider {
 			.map(([key, value]) => ['.' + key, value.previewStyle]));
 	}
 
-	public provideTextDocumentContent(document: vscode.TextDocument): string {
+	public provideTextDocumentContent(document: vscode.TextDocument, state: any): string {
 		const parser = new VT100Parser();
-		const nonce = this._generateNonce();
+		const cssNonce = this._generateNonce();
+		const jsNonce = this._generateNonce();
 
 		let html = '<html>';
 
@@ -228,10 +264,12 @@ class VT100ContentProvider {
 		// the rendered file can not include arbitrary CSS code
 		// JavaScript is disabled by CSP and the WebView settings
 		html += '<head>';
-		html += `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'nonce-${nonce}'"></meta>`;
-		html += `<style type="text/css" nonce="${nonce}">${this._generateCss(this._styles)}</style>`;
-		html += `<style type="text/css" nonce="${nonce}">${this._generateCss(this._fontSettings)}</style>`;
-		html += `<style type="text/css" nonce="${nonce}">${this._generateCss(this._customCss)}</style>`;
+		html += `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${jsNonce}'; style-src 'nonce-${cssNonce}'"></meta>`;
+		html += '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
+		html += `<script type="text/javascript" nonce="${jsNonce}">acquireVsCodeApi().setState(${JSON.stringify(state)});</script>`;
+		html += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._styles)}</style>`;
+		html += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._fontSettings)}</style>`;
+		html += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._customCss)}</style>`;
 		html += '</head>';
 
 		html += '<body>';
