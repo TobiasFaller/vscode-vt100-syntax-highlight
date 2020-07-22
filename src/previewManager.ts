@@ -256,7 +256,7 @@ class VT100ContentProvider {
 
 			html += `<span class="background background-color-${backgroundColor}">`;
 			html += `<span class="${classList.join(' ')}">`;
-			html += escape(document.getText(range));
+			html += escape(document.getText(range)).replace(/ /g, '&nbsp;');
 			html += '</span></span>';
 
 			if (lineEnd) {
