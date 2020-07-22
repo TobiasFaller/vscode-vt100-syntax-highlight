@@ -16,8 +16,11 @@ This extension does not need any other dependencies.
 
 ## Extension Settings
 
-Edit the global or project local VS Code configuration and apply your custom colors.
-The configuration values shown below are the defaults set by the plugin.
+Edit the global or workspace configuration and apply your custom colors.
+The configuration values shown below are the default values set by the plugin.
+All `foreground-color`, `background-color` and `attribute` settings support defining two styling variants.
+The variant defined in the `editor` sub-configuration is used for the editor view, while the `preview` sub-configuration is used for the HTML preview.
+If no sub-configurations are defined the style is used for both views.
 
 ```json
 {
@@ -131,6 +134,32 @@ The configuration values shown below are the defaults set by the plugin.
     }
 }
 ```
+
+The HTML preview allows all [CSS properties](https://www.w3schools.com/cssref/default.asp) which can set for a `span` element.
+The [common properties](https://code.visualstudio.com/api/references/vscode-api#DecorationRenderOptions) listed below are supported by the editor view.
+The HTML property names are automatically converted to the VS Code internal format which allows one value to be used for both configurations variants.
+Even though the color configuration settings are called `foreground-color-*` and `background-color-*` all properties below can be specified if desired.
+
+- text-decoration
+- outline-width
+- outline-style
+- outline-color
+- outline
+- opacity
+- letter-spacing
+- font-weight
+- font-style
+- cursor
+- color
+- border-width
+- border-style
+- border-spacing
+- border-radius
+- border-color
+- border
+- before
+- background-color
+- after
 
 ## Test the Extension with an Example
 
