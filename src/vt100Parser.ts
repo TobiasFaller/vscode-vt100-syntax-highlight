@@ -6,6 +6,8 @@ export class VT100Parser {
 
 	public parse(document: vscode.TextDocument, callback: (range: vscode.Range, modifiers: Map<string, string>, lineEnd: boolean) => void) {
 		const tokenModifiers = new Map<string, string>();
+
+		// Initialize defaults
 		tokenModifiers.set('foreground-color', 'default');
 		tokenModifiers.set('background-color', 'default');
 		tokenModifiers.set('bold', 'no');
@@ -14,7 +16,6 @@ export class VT100Parser {
 		tokenModifiers.set('blink', 'no');
 		tokenModifiers.set('inverted', 'no');
 		tokenModifiers.set('hidden', 'no');
-		tokenModifiers.set('type', 'text');
 
 		const lines = document.getText().split(/\r\n|\r|\n/);
 		for (let i = 0; i < lines.length; i++) {

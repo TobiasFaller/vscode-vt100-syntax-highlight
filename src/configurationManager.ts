@@ -8,9 +8,19 @@ export const ATTRIBUTES: string[] = [
 	'bold', 'dim', 'underlined', 'blink', 'inverted', 'hidden'
 ];
 
+export class StyleConfiguration {
+
+	constructor(
+		public readonly editorStyle: vscode.DecorationRenderOptions,
+		public readonly previewStyle: any
+	) { }
+
+}
+
 export class ConfigurationManager implements vscode.Disposable {
 
-	private _styles: Map<string, vscode.TextEditorDecorationType>;
+	private _styles: Map<string, StyleConfiguration>;
+	private _customCss: string;
 	private _disposables: vscode.Disposable[] = [];
 	
 	private _onReloadEmitter = new vscode.EventEmitter<void>();
@@ -18,6 +28,7 @@ export class ConfigurationManager implements vscode.Disposable {
 
 	constructor() {
 		this._styles = new Map();
+		this._customCss = "";
 		
 		vscode.workspace.onDidChangeConfiguration(event => { this._reload(); }, null, this._disposables);
 
@@ -33,115 +44,156 @@ export class ConfigurationManager implements vscode.Disposable {
 		this._disposables = [];
 	}
 
+	public getSettings(): IterableIterator<[string, StyleConfiguration]> {
+		return this._styles.entries();
+	}
+
+	public getCustomPreviewCss(): string {
+		return this._customCss;
+	}
+
 	private _reload(): void {
 		const configuration = vscode.workspace.getConfiguration('vt100');
 
 		for (let color of COLORS) {
-			const name = 'foreground-color-' + color;
-			this._styles.set(name, configuration[name] || { color: this._getDefaultColor(name) });
-		}
-
-		for (let color of COLORS) {
-			const name = 'background-color-' + color;
-			this._styles.set(name, configuration[name] || { backgroundColor: this._getDefaultColor(name) });
+			this._loadStyle('foreground-color-' + color, configuration);
+			this._loadStyle('background-color-' + color, configuration);
 		}
 
 		for (let attribute of ATTRIBUTES) {
-			const name = 'attribute-' + attribute;
-			this._styles.set(name, configuration[name] || this._getDefaultStyle(name));
+			this._loadStyle('attribute-' + attribute, configuration);
 		}
 
-		this._styles.set('escape-sequence', configuration['escape-sequence'] || this._getDefaultStyle('escape-sequence'));
-		this._styles.set('text', configuration['text'] || this._getDefaultStyle('text'));
+		this._loadStyle('escape-sequence', configuration);
+		this._loadStyle('text', configuration);
+
+		this._customCss = configuration['custom-css'] || this._getDefaultCss();
 	}
 
-	public getSettings(): IterableIterator<[string, vscode.TextEditorDecorationType]> {
-		return this._styles.entries();
-	}
+	private _loadStyle(name: string, configuration: vscode.WorkspaceConfiguration) {
+		const settings = configuration[name];
 
-	private _getDefaultColor(name: string): string {
-		switch(name) {
-			case 'foreground-color-default':
-				return '#FFFFFF';
-			case 'foreground-color-inverted':
-				return '#000000';
-			case 'foreground-color-black':
-				return '#555555';
-			case 'foreground-color-red':
-				return '#FF0000';
-			case 'foreground-color-green':
-				return '#00FF00';
-			case 'foreground-color-yellow':
-				return '#FFFF00';
-			case 'foreground-color-blue':
-				return '#0000FF';
-			case 'foreground-color-magenta':
-				return '#FF00FF';
-			case 'foreground-color-cyan':
-				return '#00FFFF';
-			case 'foreground-color-light-gray':
-				return '#BBBBBB';
-			case 'foreground-color-dark-gray':
-				return '#777777';
-			case 'foreground-color-light-red':
-				return '#FF7777';
-			case 'foreground-color-light-green':
-				return '#77FF77';
-			case 'foreground-color-light-yellow':
-				return '#FFFF77';
-			case 'foreground-color-light-blue':
-				return '#7777FF';
-			case 'foreground-color-light-magenta':
-				return '#FF77FF';
-			case 'foreground-color-light-cyan':
-				return '#77FFFF';
-			case 'foreground-color-white':
-				return '#FFFFFF';
+		let editorSettings: vscode.DecorationRenderOptions;
+		let previewSettings: any;
 
-			case 'background-color-default':
-				return '#000000';
-			case 'background-color-inverted':
-				return '#FFFFFF';
-			case 'background-color-black':
-				return '#000000';
-			case 'background-color-red':
-				return '#770000';
-			case 'background-color-green':
-				return '#007700';
-			case 'background-color-yellow':
-				return '#777700';
-			case 'background-color-blue':
-				return '#000077';
-			case 'background-color-magenta':
-				return '#770077';
-			case 'background-color-cyan':
-				return '#007777';
-			case 'background-color-light-gray':
-				return '#666666';
-			case 'background-color-dark-gray':
-				return '#222222';
-			case 'background-color-light-red':
-				return '#773333';
-			case 'background-color-light-green':
-				return '#337733';
-			case 'background-color-light-yellow':
-				return '#777733';
-			case 'background-color-light-blue':
-				return '#333377';
-			case 'background-color-light-magenta':
-				return '#773377';
-			case 'background-color-light-cyan':
-				return '#337777';
-			case 'background-color-white':
-				return '#AAAAAA';
+		if (settings == null || typeof settings !== 'object') {
+			editorSettings = this._getDefaultStyle(name);
+			previewSettings = this._convertEditorToCssStyle(editorSettings);
+		} else {
+			const editorSettingsExist = settings['editor'] && typeof settings['editor'] === 'object';
+			const previewSettingsExist = settings['preview'] && typeof settings['preview'] === 'object';
 
-			default:
-				return '#FFFFFF';
+			if (!editorSettingsExist && !previewSettingsExist) {
+				editorSettings = <vscode.DecorationRenderOptions> settings;
+				previewSettings = this._convertEditorToCssStyle(editorSettings);
+			} else {
+				if (editorSettingsExist) {
+					editorSettings = <vscode.DecorationRenderOptions> settings['editor'];
+				} else {
+					editorSettings = this._getDefaultStyle(name);
+				}
+
+				if (previewSettingsExist) {
+					previewSettings = settings['preview'];
+				} else {
+					previewSettings = this._convertEditorToCssStyle(editorSettings);
+				}
+			}
 		}
+
+		this._styles.set(name, new StyleConfiguration(editorSettings, previewSettings));
+	}
+
+	private _convertEditorToCssStyle(style: vscode.DecorationRenderOptions): any {
+		const properties: [string, string][] = [];
+
+		for (let [key, value] of Object.entries(style)) {
+			properties.push([this._convertEditorToCssKey(key), value]);
+		}
+
+		return Object.fromEntries(properties);
+	}
+
+	private _convertEditorToCssKey(key: string): string {
+		return key.replace(/[A-Z]/g, (letter) => '-' + letter.toLowerCase());
 	}
 
 	private _getDefaultStyle(style: string): any {
 		switch(style) {
+			case 'foreground-color-default':
+				return { color: '#FFFFFF' };
+			case 'foreground-color-inverted':
+				return { color: '#000000' };
+			case 'foreground-color-black':
+				return { color: '#555555' };
+			case 'foreground-color-red':
+				return { color: '#FF0000' };
+			case 'foreground-color-green':
+				return { color: '#00FF00' };
+			case 'foreground-color-yellow':
+				return { color: '#FFFF00' };
+			case 'foreground-color-blue':
+				return { color: '#0000FF' };
+			case 'foreground-color-magenta':
+				return { color: '#FF00FF' };
+			case 'foreground-color-cyan':
+				return { color: '#00FFFF' };
+			case 'foreground-color-light-gray':
+				return { color: '#BBBBBB' };
+			case 'foreground-color-dark-gray':
+				return { color: '#777777' };
+			case 'foreground-color-light-red':
+				return { color: '#FF7777' };
+			case 'foreground-color-light-green':
+				return { color: '#77FF77' };
+			case 'foreground-color-light-yellow':
+				return { color: '#FFFF77' };
+			case 'foreground-color-light-blue':
+				return { color: '#7777FF' };
+			case 'foreground-color-light-magenta':
+				return { color: '#FF77FF' };
+			case 'foreground-color-light-cyan':
+				return { color: '#77FFFF' };
+			case 'foreground-color-white':
+				return { color: '#FFFFFF' };
+
+			case 'background-color-default':
+				return { backgroundColor: '#00000000' };
+			case 'background-color-inverted':
+				return { backgroundColor: '#FFFFFF00' };
+			case 'background-color-black':
+				return { backgroundColor: '#000000' };
+			case 'background-color-red':
+				return { backgroundColor: '#770000' };
+			case 'background-color-green':
+				return { backgroundColor: '#007700' };
+			case 'background-color-yellow':
+				return { backgroundColor: '#777700' };
+			case 'background-color-blue':
+				return { backgroundColor: '#000077' };
+			case 'background-color-magenta':
+				return { backgroundColor: '#770077' };
+			case 'background-color-cyan':
+				return { backgroundColor: '#007777' };
+			case 'background-color-light-gray':
+				return { backgroundColor: '#666666' };
+			case 'background-color-dark-gray':
+				return { backgroundColor: '#222222' };
+			case 'background-color-light-red':
+				return { backgroundColor: '#773333' };
+			case 'background-color-light-green':
+				return { backgroundColor: '#337733' };
+			case 'background-color-light-yellow':
+				return { backgroundColor: '#777733' };
+			case 'background-color-light-blue':
+				return { backgroundColor: '#333377' };
+			case 'background-color-light-magenta':
+				return { backgroundColor: '#773377' };
+			case 'background-color-light-cyan':
+				return { backgroundColor: '#337777' };
+			case 'background-color-white':
+				return { backgroundColor: '#AAAAAA' };
+
 			case 'attribute-bold':
 				return { fontWeight: 'bold' };
 			case 'attribute-dim':
@@ -163,6 +215,31 @@ export class ConfigurationManager implements vscode.Disposable {
 			default:
 				return { };
 		}
+	}
+
+	private _getDefaultCss(): string {
+		return `
+			* {
+				padding: 0px;
+				margin: 0px;
+			}
+
+			body {
+				font-family: 'Lucida Console', monospace;
+				font-size: 1.15em;
+			}
+
+			background {
+				padding: 0.1em;
+			}
+
+			@keyframes blink-animation {
+				50% { opacity: 0.0; }
+			}
+			.attribute-blink {
+				animation: blink-animation 1s step-start 0s infinite;
+			}
+		`;
 	}
 
 }

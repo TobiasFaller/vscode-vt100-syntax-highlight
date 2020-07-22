@@ -328,8 +328,7 @@
 					},
 					"vt100.attribute-inverted": {
 						"type": "object",
-						"default": {
-						},
+						"default": {},
 						"description": "The VT100 inverted style"
 					},
 					"vt100.attribute-hidden": {
@@ -422,8 +421,7 @@
 		"watch": "tsc -watch -p ./"
 	},
 	"devDependencies": {
-		"@types/lodash.debounce": "^4.0.6",
-		"@types/lodash.escape": "^4.0.6",
+		"@types/lodash-es": "^4.17.3",
 		"@types/node": "^12.12.50",
 		"@types/vscode": "^1.42.0",
 		"@typescript-eslint/eslint-plugin": "^3.6.1",
@@ -432,7 +430,6 @@
 		"typescript": "^3.9.7"
 	},
 	"dependencies": {
-		"lodash.debounce": "^4.0.8",
-		"lodash.escape": "^4.0.1"
+		"lodash-es": "^4.17.15"
 	}
 }

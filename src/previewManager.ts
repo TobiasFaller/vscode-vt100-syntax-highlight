@@ -1,7 +1,11 @@
 import * as vscode from 'vscode';
 
+import { randomBytes } from 'crypto';
+import { escape } from 'lodash';
+
 import { ConfigurationManager } from './configurationManager';
 import { VT100Parser } from './vt100Parser';
+
 
 export class PreviewManager implements vscode.Disposable {
 
@@ -189,7 +193,7 @@ class VT100Preview {
 class VT100ContentProvider {
 
 	private _configuration: ConfigurationManager;
-	private _styles: Map<string, vscode.DecorationRenderOptions>;
+	private _styles: Map<string, any>;
 
 	constructor(configuration: ConfigurationManager) {
 		this._configuration = configuration;
@@ -201,80 +205,96 @@ class VT100ContentProvider {
 	public reloadConfiguration(): void {
 		this._styles.clear();
 		for (let [key, value] of this._configuration.getSettings()) {
-			this._styles.set(key, <vscode.DecorationRenderOptions> value);
+			this._styles.set(key, value.previewStyle);
 		}
 	}
 
 	public provideTextDocumentContent(document: vscode.TextDocument): string {
 		const parser = new VT100Parser();
+		const nonce = this._generateNonce();
 
-		let html = "<html>";
+		let html = '<html><head>';
 
-		html += "<head><style type=\"text/css\">";
+		// Try to add at least a little bit of security
+		html += `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'nonce-${nonce}'"></meta>"`;
+
+		html += `<style type="text/css" nonce="${nonce}">`;
 		for (let [key, value] of this._styles) {
-			html += "." + key + " " + JSON.stringify(value)
-				.replace(/backgroundColor/g, 'background-color')
-				.replace(/fontWeight/g, 'font-weight')
-				.replace(/textDecoration/g, 'text-decoration')
-				.replace(/"/g, ' ')
-				.replace(/,/g, ';');
-			html += "body { font-family: 'Lucida Console', monospace; font-size: 1.15em; }";
-			html += "span { padding: 0.1em; margin: 0px; }";
-			html += "@keyframes blink-animation { 50% { opacity: 0.0; } }";
-			html += ".attribute-blink { animation: blink-animation 1s step-start 0s infinite; border: none; }";
-			html += "";
+			html += `.${key} {\n`;
+			for (let [propertyKey, propertyValue] of Object.entries(value)) {
+				html += `\t${propertyKey}: ${propertyValue};\n`;
+			}
+			html += '}';
 		}
-		html += "</style></head>";
+		html += '</style>';
 
-		html += "<body>"
+		html += `<style type="text/css" nonce="${nonce}">`;
+		html += this._configuration.getCustomPreviewCss();
+		html += '</style>';
+
+		html += '</head>';
+
+		html += '<body>';
 		parser.parse(document, (range, modifiers, lineEnd) => {
+			// Just ignore escape sequences and don't render them
 			if (modifiers.get('type') === 'escape-sequence') {
 				return;
 			}
 
-			let foregroundColor;
-			let backgroundColor;
-	
-			if (modifiers.get('inverted') === 'yes') {
-				foregroundColor = modifiers.get('background-color');
-				backgroundColor = modifiers.get('foreground-color');
-	
-				if (foregroundColor === 'default') {
-					foregroundColor = 'inverted';
-				}
-				if (backgroundColor === 'default') {
-					backgroundColor = 'inverted';
-				}
-			} else {
-				foregroundColor = modifiers.get('foreground-color');
-				backgroundColor = modifiers.get('background-color');
-			}
+			const [foregroundColor, backgroundColor] = this._getColors(modifiers);
+			const classList: string[] = [];
 
-			const text = document.getText(range);
-			html += "<span class=\""
-			html += "background-color-" + backgroundColor + "\"><span class=\"";
-			html += "foreground-color-" + foregroundColor + " ";
+			classList.push(modifiers.get('type')!);
+			classList.push('foreground');
+			classList.push(`foreground-color-${foregroundColor}`);
 
 			for (let attribute of ['bold', 'dim', 'underlined', 'blink', 'inverted', 'hidden']) {
 				if (modifiers.get(attribute) === 'yes') {
-					html += 'attribute-' + attribute + " ";
+					classList.push('attribute-' + attribute);
 				}
 			}
 
-			html += modifiers.get('type') + " ";
-
-			html += "\">";
-			html += text;
-			html += "</span></span>"
+			html += `<span class="background background-color-${backgroundColor}">`;
+			html += `<span class="">`;
+			html += `<span class="${classList.join(' ')}">`;
+			html += escape(document.getText(range));
+			html += '</span>';
+			html += '</span></span>';
 
 			if (lineEnd) {
 				html += '<br>';
 			}
 		});
-		html += "</body>"
-
-		html += "</html>";
+		html += '</body>';
+		html += '</html>';
 		return html;
+	}
+
+	private _generateNonce(): string {
+		const buffer: Buffer = randomBytes(64);
+		return buffer.toString('base64');
+	}
+
+	private _getColors(modifiers: Map<string, string>): [string, string] {
+		let foregroundColor: string;
+		let backgroundColor: string;
+
+		if (modifiers.get('inverted') === 'yes') {
+			foregroundColor = modifiers.get('background-color')!;
+			backgroundColor = modifiers.get('foreground-color')!;
+
+			if (foregroundColor === 'default') {
+				foregroundColor = 'inverted';
+			}
+			if (backgroundColor === 'default') {
+				backgroundColor = 'inverted';
+			}
+		} else {
+			foregroundColor = modifiers.get('foreground-color')!;
+			backgroundColor = modifiers.get('background-color')!;
+		}
+
+		return [foregroundColor, backgroundColor];
 	}
 
 }

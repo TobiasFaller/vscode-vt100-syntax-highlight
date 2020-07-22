@@ -51,7 +51,7 @@ export class DecorationManager implements vscode.Disposable {
 
 	private _registerDecorations() {
 		for (let [key, value] of this._configuration.getSettings()) {
-			const decoration = vscode.window.createTextEditorDecorationType(value as vscode.DecorationRenderOptions);
+			const decoration = vscode.window.createTextEditorDecorationType(value.editorStyle);
 			this._decorations.set(key, decoration);
 		}
 	}
