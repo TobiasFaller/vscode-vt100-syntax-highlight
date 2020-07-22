@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { config } from 'process';
 
 export const COLORS: string[] = [
 	'default', 'inverted', 'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'light-gray', 'dark-gray',
@@ -20,7 +21,8 @@ export class StyleConfiguration {
 export class ConfigurationManager implements vscode.Disposable {
 
 	private _styles: Map<string, StyleConfiguration>;
-	private _customCss: string;
+	private _customCss: any;
+	private _fontSettings: any;
 	private _disposables: vscode.Disposable[] = [];
 	
 	private _onReloadEmitter = new vscode.EventEmitter<void>();
@@ -28,7 +30,7 @@ export class ConfigurationManager implements vscode.Disposable {
 
 	constructor() {
 		this._styles = new Map();
-		this._customCss = "";
+		this._customCss = {};
 		
 		vscode.workspace.onDidChangeConfiguration(event => { this._reload(); }, null, this._disposables);
 
@@ -48,8 +50,12 @@ export class ConfigurationManager implements vscode.Disposable {
 		return this._styles.entries();
 	}
 
-	public getCustomPreviewCss(): string {
+	public getCustomCss(): any {
 		return this._customCss;
+	}
+
+	public getFontSettings(): any {
+		return this._fontSettings;
 	}
 
 	private _reload(): void {
@@ -67,145 +73,177 @@ export class ConfigurationManager implements vscode.Disposable {
 		this._loadStyle('escape-sequence', configuration);
 		this._loadStyle('text', configuration);
 
-		this._customCss = configuration['custom-css'] || this._getDefaultCss();
+		this._loadFontSettings(configuration);
+		this._loadCustomCss(configuration);
+
+		this._onReloadEmitter.fire();
+	}
+
+	private _loadFontSettings(configuration: vscode.WorkspaceConfiguration) {
+		const editorConfiguration = vscode.workspace.getConfiguration('editor');
+
+		const fontFamily = configuration.get('font-family')
+				|| editorConfiguration.get('fontFamily')
+				|| this._getFallbackFont('font-family');
+
+		const fontSize = configuration.get('font-size')
+				|| editorConfiguration.get('fontSize')
+				|| this._getFallbackFont('font-size');
+
+		const fontWeight = configuration.get('font-weight')
+				|| editorConfiguration.get('fontWeight')
+				|| this._getFallbackFont('font-weight');
+
+		this._fontSettings = {
+			'font-family': fontFamily,
+			'font-size': fontSize + 'px',
+			'font-weight': fontWeight
+		};
+	}
+
+	private _loadCustomCss(configuration: vscode.WorkspaceConfiguration) {
+		this._customCss = configuration['custom-css'] || this._getFallbackCss();
 	}
 
 	private _loadStyle(name: string, configuration: vscode.WorkspaceConfiguration) {
 		const settings = configuration[name];
 
-		let editorSettings: vscode.DecorationRenderOptions;
+		let editorSettings: any;
 		let previewSettings: any;
 
 		if (settings == null || typeof settings !== 'object') {
-			editorSettings = this._getDefaultStyle(name);
-			previewSettings = this._convertEditorToCssStyle(editorSettings);
+			editorSettings = this._getFallbackStyle(name);
+			previewSettings = editorSettings;
 		} else {
 			const editorSettingsExist = settings['editor'] && typeof settings['editor'] === 'object';
 			const previewSettingsExist = settings['preview'] && typeof settings['preview'] === 'object';
 
 			if (!editorSettingsExist && !previewSettingsExist) {
-				editorSettings = <vscode.DecorationRenderOptions> settings;
-				previewSettings = this._convertEditorToCssStyle(editorSettings);
+				editorSettings = settings;
+				previewSettings = editorSettings;
 			} else {
 				if (editorSettingsExist) {
-					editorSettings = <vscode.DecorationRenderOptions> settings['editor'];
+					editorSettings = settings['editor'];
 				} else {
-					editorSettings = this._getDefaultStyle(name);
+					editorSettings = this._getFallbackStyle(name);
 				}
 
 				if (previewSettingsExist) {
 					previewSettings = settings['preview'];
 				} else {
-					previewSettings = this._convertEditorToCssStyle(editorSettings);
+					previewSettings = editorSettings;
 				}
 			}
 		}
 
-		this._styles.set(name, new StyleConfiguration(editorSettings, previewSettings));
+		this._styles.set(name, new StyleConfiguration(
+			this._convertCssToEditorRenderOptions(editorSettings), previewSettings));
 	}
 
-	private _convertEditorToCssStyle(style: vscode.DecorationRenderOptions): any {
+	private _convertCssToEditorRenderOptions(style: any): vscode.DecorationRenderOptions {
 		const properties: [string, string][] = [];
 
 		for (let [key, value] of Object.entries(style)) {
-			properties.push([this._convertEditorToCssKey(key), value]);
+			if (value != null && typeof value === 'string') {
+				properties.push([this._convertCssToRenderOptionKey(key), <string> value]);
+			}
 		}
 
 		return Object.fromEntries(properties);
 	}
 
-	private _convertEditorToCssKey(key: string): string {
-		return key.replace(/[A-Z]/g, (letter) => '-' + letter.toLowerCase());
+	private _convertCssToRenderOptionKey(key: string): string {
+		return key.replace(/-[A-Za-z]/g, (letter) => letter.substr(1).toUpperCase());
 	}
 
-	private _getDefaultStyle(style: string): any {
+	private _getFallbackStyle(style: string): any {
 		switch(style) {
 			case 'foreground-color-default':
-				return { color: '#FFFFFF' };
+				return { 'color': '#FFFFFF' };
 			case 'foreground-color-inverted':
-				return { color: '#000000' };
+				return { 'color': '#000000' };
 			case 'foreground-color-black':
-				return { color: '#555555' };
+				return { 'color': '#555555' };
 			case 'foreground-color-red':
-				return { color: '#FF0000' };
+				return { 'color': '#FF0000' };
 			case 'foreground-color-green':
-				return { color: '#00FF00' };
+				return { 'color': '#00FF00' };
 			case 'foreground-color-yellow':
-				return { color: '#FFFF00' };
+				return { 'color': '#FFFF00' };
 			case 'foreground-color-blue':
-				return { color: '#0000FF' };
+				return { 'color': '#0000FF' };
 			case 'foreground-color-magenta':
-				return { color: '#FF00FF' };
+				return { 'color': '#FF00FF' };
 			case 'foreground-color-cyan':
-				return { color: '#00FFFF' };
+				return { 'color': '#00FFFF' };
 			case 'foreground-color-light-gray':
-				return { color: '#BBBBBB' };
+				return { 'color': '#BBBBBB' };
 			case 'foreground-color-dark-gray':
-				return { color: '#777777' };
+				return { 'color': '#777777' };
 			case 'foreground-color-light-red':
-				return { color: '#FF7777' };
+				return { 'color': '#FF7777' };
 			case 'foreground-color-light-green':
-				return { color: '#77FF77' };
+				return { 'color': '#77FF77' };
 			case 'foreground-color-light-yellow':
-				return { color: '#FFFF77' };
+				return { 'color': '#FFFF77' };
 			case 'foreground-color-light-blue':
-				return { color: '#7777FF' };
+				return { 'color': '#7777FF' };
 			case 'foreground-color-light-magenta':
-				return { color: '#FF77FF' };
+				return { 'color': '#FF77FF' };
 			case 'foreground-color-light-cyan':
-				return { color: '#77FFFF' };
+				return { 'color': '#77FFFF' };
 			case 'foreground-color-white':
-				return { color: '#FFFFFF' };
+				return { 'color': '#FFFFFF' };
 
 			case 'background-color-default':
-				return { backgroundColor: '#00000000' };
+				return { 'background-color': '#00000000' };
 			case 'background-color-inverted':
-				return { backgroundColor: '#FFFFFF00' };
+				return { 'background-color': '#FFFFFF00' };
 			case 'background-color-black':
-				return { backgroundColor: '#000000' };
+				return { 'background-color': '#000000' };
 			case 'background-color-red':
-				return { backgroundColor: '#770000' };
+				return { 'background-color': '#770000' };
 			case 'background-color-green':
-				return { backgroundColor: '#007700' };
+				return { 'background-color': '#007700' };
 			case 'background-color-yellow':
-				return { backgroundColor: '#777700' };
+				return { 'background-color': '#777700' };
 			case 'background-color-blue':
-				return { backgroundColor: '#000077' };
+				return { 'background-color': '#000077' };
 			case 'background-color-magenta':
-				return { backgroundColor: '#770077' };
+				return { 'background-color': '#770077' };
 			case 'background-color-cyan':
-				return { backgroundColor: '#007777' };
+				return { 'background-color': '#007777' };
 			case 'background-color-light-gray':
-				return { backgroundColor: '#666666' };
+				return { 'background-color': '#666666' };
 			case 'background-color-dark-gray':
-				return { backgroundColor: '#222222' };
+				return { 'background-color': '#222222' };
 			case 'background-color-light-red':
-				return { backgroundColor: '#773333' };
+				return { 'background-color': '#773333' };
 			case 'background-color-light-green':
-				return { backgroundColor: '#337733' };
+				return { 'background-color': '#337733' };
 			case 'background-color-light-yellow':
-				return { backgroundColor: '#777733' };
+				return { 'background-color': '#777733' };
 			case 'background-color-light-blue':
-				return { backgroundColor: '#333377' };
+				return { 'background-color': '#333377' };
 			case 'background-color-light-magenta':
-				return { backgroundColor: '#773377' };
+				return { 'background-color': '#773377' };
 			case 'background-color-light-cyan':
-				return { backgroundColor: '#337777' };
+				return { 'background-color': '#337777' };
 			case 'background-color-white':
-				return { backgroundColor: '#AAAAAA' };
+				return { 'background-color': '#AAAAAA' };
 
 			case 'attribute-bold':
-				return { fontWeight: 'bold' };
+				return { 'font-weight': 'bold' };
 			case 'attribute-dim':
-				return { opacity: '0.7' };
+				return { 'opacity': '0.7', 'font-weight': 'lighter' };
 			case 'attribute-underlined':
-				return { textDecoration: "underline solid" };
+				return { 'text-decoration': 'underline solid' };
 			case 'attribute-blink':
-				return { border: '1px dotted #FFFFFF77' };
+				return { 'border': '1px dotted #FFFFFF77' };
 			case 'attribute-inverted':
 				return { };
 			case 'attribute-hidden':
-				return { opacity: '0.3' };
+				return { 'opacity': '0.3' };
 
 			case 'text':
 				return { };
@@ -217,29 +255,40 @@ export class ConfigurationManager implements vscode.Disposable {
 		}
 	}
 
-	private _getDefaultCss(): string {
-		return `
-			* {
-				padding: 0px;
-				margin: 0px;
+	private _getFallbackCss(): any {
+		return {
+			'*': {
+				'padding': '0px',
+				'margin': '0px'
+			},
+			'.background': {
+				'display': 'inline-block',
+				'padding': '0.1em'
+			},
+			'@keyframes blink-animation': {
+				'50%': {
+					'opacity': '0.0'
+				}
+			},
+			'.attribute-blink': {
+				'animation': 'blink-animation 1s step-start 0s infinite',
+				'border': 'none'
 			}
+		};
+	}
 
-			body {
-				font-family: 'Lucida Console', monospace;
-				font-size: 1.15em;
-			}
+	private _getFallbackFont(property: string): any {
+		switch(property) {
+			case'font-family':
+				return '\'Lucida Console\', monospace';
+			case 'font-size':
+				return 15;
+			case 'font-weight':
+				return 'normal';
 
-			background {
-				padding: 0.1em;
-			}
-
-			@keyframes blink-animation {
-				50% { opacity: 0.0; }
-			}
-			.attribute-blink {
-				animation: blink-animation 1s step-start 0s infinite;
-			}
-		`;
+			default:
+				return '';
+		}
 	}
 
 }

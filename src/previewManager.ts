@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { randomBytes } from 'crypto';
+import { randomBytes, KeyObject } from 'crypto';
 import { escape } from 'lodash';
 
 import { ConfigurationManager } from './configurationManager';
@@ -193,45 +193,45 @@ class VT100Preview {
 class VT100ContentProvider {
 
 	private _configuration: ConfigurationManager;
-	private _styles: Map<string, any>;
+
+	private _styles: any;
+	private _customCss: any;
+	private _fontSettings: any;
 
 	constructor(configuration: ConfigurationManager) {
 		this._configuration = configuration;
 
+		this._customCss = { };
 		this._styles = new Map();
+
 		this.reloadConfiguration();
 	}
 
 	public reloadConfiguration(): void {
-		this._styles.clear();
-		for (let [key, value] of this._configuration.getSettings()) {
-			this._styles.set(key, value.previewStyle);
-		}
+		this._customCss = this._configuration.getCustomCss();
+
+		// Convert font settings to CSS class properties
+		this._fontSettings = { 'body': this._configuration.getFontSettings() };
+
+		// Convert styles to CSS class properties
+		this._styles = Object.fromEntries([... this._configuration.getSettings()]
+			.map(([key, value]) => ['.' + key, value.previewStyle]));
 	}
 
 	public provideTextDocumentContent(document: vscode.TextDocument): string {
 		const parser = new VT100Parser();
 		const nonce = this._generateNonce();
 
-		let html = '<html><head>';
+		let html = '<html>';
 
-		// Try to add at least a little bit of security
-		html += `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'nonce-${nonce}'"></meta>"`;
-
-		html += `<style type="text/css" nonce="${nonce}">`;
-		for (let [key, value] of this._styles) {
-			html += `.${key} {\n`;
-			for (let [propertyKey, propertyValue] of Object.entries(value)) {
-				html += `\t${propertyKey}: ${propertyValue};\n`;
-			}
-			html += '}';
-		}
-		html += '</style>';
-
-		html += `<style type="text/css" nonce="${nonce}">`;
-		html += this._configuration.getCustomPreviewCss();
-		html += '</style>';
-
+		// Try to add at least a little bit of security with Content-Security-Policy so that
+		// the rendered file can not include arbitrary CSS code
+		// JavaScript is disabled by CSP and the WebView settings
+		html += '<head>';
+		html += `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'nonce-${nonce}'"></meta>`;
+		html += `<style type="text/css" nonce="${nonce}">${this._generateCss(this._styles)}</style>`;
+		html += `<style type="text/css" nonce="${nonce}">${this._generateCss(this._fontSettings)}</style>`;
+		html += `<style type="text/css" nonce="${nonce}">${this._generateCss(this._customCss)}</style>`;
 		html += '</head>';
 
 		html += '<body>';
@@ -255,10 +255,8 @@ class VT100ContentProvider {
 			}
 
 			html += `<span class="background background-color-${backgroundColor}">`;
-			html += `<span class="">`;
 			html += `<span class="${classList.join(' ')}">`;
 			html += escape(document.getText(range));
-			html += '</span>';
 			html += '</span></span>';
 
 			if (lineEnd) {
@@ -295,6 +293,26 @@ class VT100ContentProvider {
 		}
 
 		return [foregroundColor, backgroundColor];
+	}
+
+	private _generateCss(properties: any): string {
+		let css = '';
+
+		for (let [key, value] of Object.entries(properties)) {
+			if (value == null) {
+				continue;
+			}
+
+			if (typeof value === 'object') {
+				css += `${key} {\n`;
+				css += this._generateCss(value);
+				css += `}\n`;
+			} else if (typeof value === 'string') {
+				css += `${key}: ${value};\n`;
+			}
+		}
+
+		return css;
 	}
 
 }
