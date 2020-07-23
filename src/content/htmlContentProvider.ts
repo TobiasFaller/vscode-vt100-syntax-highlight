@@ -45,10 +45,9 @@ export class HTMLContentProvider implements vscode.Disposable {
 			.map(([key, value]) => ['.' + key, value.previewStyle]));
 	}
 
-	public provideTextDocumentContent(document: vscode.TextDocument): string {
+	public provideTextDocumentContent(document: vscode.TextDocument, state?: any): string {
 		const cssNonce = this._generateNonce();
 		const jsNonce = this._generateNonce();
-		const state = { uri: document.uri.toString() };
 
 		let html = '<html>';
 
@@ -59,7 +58,9 @@ export class HTMLContentProvider implements vscode.Disposable {
 		html += `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${jsNonce}'; style-src 'nonce-${cssNonce}'"></meta>`;
 		html += '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
 		html += `<title>${this._getFilename(document.uri)}</title>`;
-		html += `<script type="text/javascript" nonce="${jsNonce}">acquireVsCodeApi().setState(${JSON.stringify(state)});</script>`;
+		if (state != null) {
+			html += `<script type="text/javascript" nonce="${jsNonce}">acquireVsCodeApi().setState(${JSON.stringify(state)});</script>`;
+		}
 		html += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._styles)}</style>`;
 		html += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._fontSettings)}</style>`;
 		html += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._customCss)}</style>`;
@@ -91,7 +92,7 @@ export class HTMLContentProvider implements vscode.Disposable {
 			html += '</span></span>';
 
 			if (lineEnd) {
-				html += '<br>';
+				html += '<br>\n';
 			}
 		});
 		html += '</body>';
