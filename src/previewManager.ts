@@ -149,16 +149,22 @@ class VT100Preview {
 			this.dispose();
 		}, null, this._disposables);
 
-		// Todo: Debounce
-		vscode.workspace.onDidChangeTextDocument(event => {
-			if (event.document.uri.fsPath == this._uri.fsPath) {
-				this._update(this._uri, false);
-			}
-		}, null, this._disposables);
-
 		vscode.window.onDidChangeActiveTextEditor(editor => {
 			if (editor && editor.document.languageId === 'vt100') {
 				this._update(editor.document.uri, true);
+			}
+		}, null, this._disposables);
+
+		vscode.workspace.onDidOpenTextDocument(document => {
+			if (document.languageId === 'vt100') {
+				this._update(document.uri, true);
+			}
+		}, null, this._disposables);
+
+		// Todo: Debounce since there might be a lot of small changes during writing
+		vscode.workspace.onDidChangeTextDocument(event => {
+			if (event.document.uri.fsPath == this._uri.fsPath) {
+				this._update(this._uri, false);
 			}
 		}, null, this._disposables);
 	}
@@ -179,8 +185,6 @@ class VT100Preview {
 			return false;
 		}
 
-		// Currently there is no support for locked views
-		// this._uri.fsPath === uri.fsPath
 		return true;
 	}
 
