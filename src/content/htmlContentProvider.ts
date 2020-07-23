@@ -41,10 +41,49 @@ export class HTMLContentProvider implements vscode.Disposable {
 		this._fontSettings = { 'body': this._configuration.getFontSettings() };
 
 		// Convert styles to CSS class properties
-		this._styles = Object.fromEntries([... this._configuration.getSettings()]
-			.map(([key, value]) => ['.' + key, value.previewStyle]));
+		this._styles = this._loadStyles();
 	}
 
+	private _loadStyles(): any {
+		const styles: [string, any][] = [];
+
+		for (const [key, value] of this._configuration.getSettings()) {
+			const previewSettings = value.previewStyle;
+
+			const darkSettingsExist = 'dark' in previewSettings;
+			const lightSettingsExist = 'light' in previewSettings;
+
+			if (!darkSettingsExist && !lightSettingsExist) {
+				// Neither the dark nor the light settings exists
+				// Use the same style for both modes
+				styles.push([`.${key}`, previewSettings]);
+			} else {
+				if (darkSettingsExist && typeof previewSettings['dark'] === 'object') {
+					styles.push([`.vscode-dark .${key}`, previewSettings['dark']]);
+				} else {
+					styles.push([`.vscode-dark .${key}`, {}]);
+				}
+
+				if (lightSettingsExist && typeof previewSettings['light'] === 'object') {
+					styles.push([`.vscode-light .${key}`, previewSettings['light']]);
+				} else {
+					styles.push([`.vscode-light .${key}`, {}]);
+				}
+			}
+		}
+
+		return Object.fromEntries(styles);
+	}
+
+	/**
+	 * Converts the source text to rendered HTML code.
+	 * The state parameter contains the editor state when genrating a preview
+	 * for the Webview in VS Code.
+	 * The state parameter is undefined, when exporting HTML to a file.
+	 *
+	 * @param document The document to render
+	 * @param state The state information, when in preview mode
+	 */
 	public provideTextDocumentContent(document: vscode.TextDocument, state?: any): string {
 		const cssNonce = this._generateNonce();
 		const jsNonce = this._generateNonce();
@@ -66,7 +105,11 @@ export class HTMLContentProvider implements vscode.Disposable {
 		html += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._customCss)}</style>`;
 		html += '</head>';
 
-		html += '<body>';
+		if (state != null) {
+			html += '<body>';
+		} else {
+			html += '<body class="vscode-light">';
+		}
 		VT100Parser.parse(document, (range, modifiers, lineEnd) => {
 			// Just ignore escape sequences and don't render them
 			if (modifiers.get('type') === 'escape-sequence') {

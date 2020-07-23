@@ -26,18 +26,12 @@ If no sub-configurations are defined the style is used for both views.
 
     // Default foreground color and inverted default foreground color
     "vt100.foreground-color-default": {
-        "editor": {
-            "dark": { "color": "#FFFFFF" },
-            "light": { "color": "#000000" }
-        },
-        "preview": { "color": "#FFFFFF" }
+        "dark": { "color": "#FFFFFF" },
+        "light": { "color": "#000000" }
     },
     "vt100.foreground-color-inverted": {
-        "editor": {
-            "dark": { "color": "#000000" },
-            "light": { "color": "#FFFFFF" }
-        },
-        "preview": { "color": "#000000" }
+        "dark": { "color": "#000000" },
+        "light": { "color": "#FFFFFF" }
     },
 
     // Standard foreground colors
@@ -124,6 +118,8 @@ If no sub-configurations are defined the style is used for both views.
 
     // Additional custom CSS which is required for the preview.
     // The keyframes are required when animating the blinking style.
+    // Use the classes .vscode-light, .vscode-dark and .vscode-high-contrast
+    // to create theme dependent styles.
     "vt100.custom-css": {
         "*": {
             "padding": "0px",
@@ -138,6 +134,10 @@ If no sub-configurations are defined the style is used for both views.
                 "opacity": "0.0"
             }
         }
+        // Example for dark theme only definition
+        //".vscode-dark .background": {
+        //  "color": "white"
+        //}
     }
 }
 ```

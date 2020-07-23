@@ -59,11 +59,8 @@
 						],
 						"title": "VT100 Text Style (Default color)",
 						"default": {
-							"editor": {
-								"dark": { "color": "#FFFFFF" },
-								"light": { "color": "#000000" }
-							},
-							"preview": { "color": "#FFFFFF" }
+							"dark": { "color": "#FFFFFF" },
+							"light": { "color": "#000000" }
 						},
 						"description": "The VT100 default foreground color style"
 					},
@@ -74,11 +71,8 @@
 						],
 						"title": "VT100 Text Style (Inverted default color)",
 						"default": {
-							"editor": {
-								"dark": { "color": "#000000" },
-								"light": { "color": "#FFFFFF" }
-							},
-							"preview": { "color": "#000000" }
+							"dark": { "color": "#000000" },
+							"light": { "color": "#FFFFFF" }
 						},
 						"description": "The VT100 default (inverted) foreground color style"
 					},
