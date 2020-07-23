@@ -25,8 +25,20 @@ If no sub-configurations are defined the style is used for both views.
     // },
 
     // Default foreground color and inverted default foreground color
-    "vt100.foreground-color-default": { "color":  "#FFFFFF" },
-    "vt100.foreground-color-inverted": { "color":  "#000000" },
+    "vt100.foreground-color-default": {
+        "editor": {
+            "dark": { "color": "#FFFFFF" },
+            "light": { "color": "#000000" }
+        },
+        "preview": { "color": "#FFFFFF" }
+    },
+    "vt100.foreground-color-inverted": {
+        "editor": {
+            "dark": { "color": "#000000" },
+            "light": { "color": "#FFFFFF" }
+        },
+        "preview": { "color": "#000000" }
+    },
 
     // Standard foreground colors
     "vt100.foreground-color-black": { "color":  "#555555" },

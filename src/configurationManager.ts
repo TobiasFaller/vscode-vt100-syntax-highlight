@@ -30,10 +30,12 @@ export class ConfigurationManager implements vscode.Disposable {
 	constructor() {
 		this._styles = new Map();
 		this._customCss = {};
-		
-		vscode.workspace.onDidChangeConfiguration(event => { this._reload(); }, null, this._disposables);
 
 		this._reload();
+
+		vscode.workspace.onDidChangeConfiguration((event) => {
+			this._reload();
+		}, null, this._disposables);
 	}
 
 	dispose(): void {
@@ -111,26 +113,29 @@ export class ConfigurationManager implements vscode.Disposable {
 		let previewSettings: any;
 
 		if (settings == null || typeof settings !== 'object') {
+			// Settings are invalid
 			editorSettings = this._getFallbackStyle(name);
 			previewSettings = editorSettings;
 		} else {
-			const editorSettingsExist = settings['editor'] && typeof settings['editor'] === 'object';
-			const previewSettingsExist = settings['preview'] && typeof settings['preview'] === 'object';
+			const editorSettingsExist = 'editor' in settings;
+			const previewSettingsExist = 'preview' in settings;
 
 			if (!editorSettingsExist && !previewSettingsExist) {
+				// Neither the editor nor the preview settings exists
+				// Use the same style for both views
 				editorSettings = settings;
 				previewSettings = editorSettings;
 			} else {
-				if (editorSettingsExist) {
+				if (editorSettingsExist && typeof settings['editor'] === 'object') {
 					editorSettings = settings['editor'];
 				} else {
 					editorSettings = this._getFallbackStyle(name);
 				}
 
-				if (previewSettingsExist) {
+				if (previewSettingsExist && typeof settings['preview'] === 'object') {
 					previewSettings = settings['preview'];
 				} else {
-					previewSettings = editorSettings;
+					previewSettings = this._getFallbackStyle(name);
 				}
 			}
 		}
@@ -143,7 +148,7 @@ export class ConfigurationManager implements vscode.Disposable {
 		const properties: [string, string][] = [];
 
 		for (const [key, value] of Object.entries(style)) {
-			if (value != null && typeof value === 'string') {
+			if (value != null) {
 				properties.push([this._convertCssToRenderOptionKey(key), <string> value]);
 			}
 		}
