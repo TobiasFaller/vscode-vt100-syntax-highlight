@@ -255,7 +255,6 @@ class VT100ContentProvider {
 		// the rendered file can not include arbitrary CSS code
 		// JavaScript is disabled by CSP and the WebView settings
 		html += '<head>';
-
 		html += `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${jsNonce}'; style-src 'nonce-${cssNonce}'"></meta>`;
 		html += '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
 		html += `<script type="text/javascript" nonce="${jsNonce}">acquireVsCodeApi().setState(${JSON.stringify(state)});</script>`;
