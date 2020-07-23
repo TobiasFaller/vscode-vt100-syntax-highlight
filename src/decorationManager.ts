@@ -8,30 +8,41 @@ export class DecorationManager implements vscode.Disposable {
 	private _configuration: ConfigurationManager;
 	private _disposables: vscode.Disposable[] = [];
 	private _decorations: Map<string, vscode.TextEditorDecorationType>;
+	private _decorator: EditorDecorator;
 
 	constructor(configuration: ConfigurationManager) {
 		this._configuration = configuration;
 		this._decorations = new Map();
+		this._decorator = new EditorDecorator(this._decorations);
+
+		this._registerDecorations();
 
 		this._configuration.onReload(() => {
 			this._reloadDecorations();
-			this._updateTextEditors(vscode.window.visibleTextEditors);
+			this._updateDecorations(vscode.window.visibleTextEditors);
 		}, null, this._disposables);
 
-		vscode.window.onDidChangeActiveTextEditor(editor => {
-			if (editor != null) {
-				this._updateTextEditors([ editor ]);
-			}
+		vscode.window.onDidChangeVisibleTextEditors(editors => {
+			this._updateDecorations(editors);
 		}, null, this._disposables);
 
 		// Todo: Debounce since there might be a lot of small changes during writing
 		vscode.workspace.onDidChangeTextDocument(event => {
 			const editors = vscode.window.visibleTextEditors.filter(editor => editor.document == event.document);
-			this._updateTextEditors(editors);
+			this._updateDecorations(editors);
 		}, null, this._disposables);
 
-		this._registerDecorations();
-		this._updateTextEditors(vscode.window.visibleTextEditors);
+		vscode.workspace.onDidOpenTextDocument(document => {
+			const editors = vscode.window.visibleTextEditors.filter(editor => editor.document == document);
+			this._applyDecorations(editors);
+		}, null, this._disposables);
+
+		vscode.workspace.onDidCloseTextDocument(document => {
+			const editors = vscode.window.visibleTextEditors.filter(editor => editor.document == document);
+			this._removeDecorations(editors);
+		}, null, this._disposables);
+
+		this._applyDecorations(vscode.window.visibleTextEditors);
 	}
 
 	public dispose(): void {
@@ -39,12 +50,41 @@ export class DecorationManager implements vscode.Disposable {
 			disposable.dispose();
 		}
 		this._disposables = [];
+
+		for (let [key, value] of this._decorations) {
+			value.dispose();
+		}
+		this._decorations.clear();
 	}
 
-	private _updateTextEditors(editors: vscode.TextEditor[]): void {
+	private _applyDecorations(editors: vscode.TextEditor[]): void {
 		for (let editor of editors) {
 			if (editor != null && editor.document.languageId === 'vt100') {
-				this._decorateEditor(editor);
+				this._decorator.apply(editor);
+			}
+		}
+	}
+
+	private _removeDecorations(editors: vscode.TextEditor[]): void {
+		for (let editor of editors) {
+			if (editor == null) {
+				continue;
+			}
+
+			this._decorator.remove(editor);
+		}
+	}
+
+	private _updateDecorations(editors: vscode.TextEditor[]): void {
+		for (let editor of editors) {
+			if (editor == null) {
+				continue;
+			}
+
+			if (editor.document.languageId === 'vt100') {
+				this._decorator.apply(editor);
+			} else {
+				this._decorator.remove(editor);
 			}
 		}
 	}
@@ -65,14 +105,9 @@ export class DecorationManager implements vscode.Disposable {
 		this._registerDecorations();
 	}
 
-	private _decorateEditor(editor: vscode.TextEditor) {
-		const decorator = new Decorator(this._decorations);
-		decorator.apply(editor);
-	}
-
 }
 
-class Decorator {
+class EditorDecorator {
 
 	private _parser: VT100Parser;
 	private _decorations: Map<string, vscode.TextEditorDecorationType>;
@@ -94,6 +129,13 @@ class Decorator {
 
 		for (let [key, value] of appliedDecorations) {
 			editor.setDecorations(this._decorations.get(key)!, value);
+		}
+	}
+
+	public remove(editor: vscode.TextEditor): void {
+		// Undecorate editor if decorated
+		for (let decoration of this._decorations.values()) {
+			editor.setDecorations(decoration, []);
 		}
 	}
 
