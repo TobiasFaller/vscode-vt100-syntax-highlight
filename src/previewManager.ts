@@ -1,25 +1,22 @@
 import * as vscode from 'vscode';
 
-import { randomBytes } from 'crypto';
-
 import { ConfigurationManager } from './configurationManager';
-import { VT100Parser } from './vt100Parser';
+import { HTMLContentProvider } from './content/htmlContentProvider';
 
 export class PreviewManager implements vscode.Disposable, vscode.WebviewPanelSerializer {
 
 	private _configuration: ConfigurationManager;
-	private _contentProvider: VT100ContentProvider;
+	private _contentProvider: HTMLContentProvider;
 
 	private _previews: VT100Preview[] = [];
 	private _disposables: vscode.Disposable[] = [];
 
 	constructor(configuration: ConfigurationManager) {
 		this._configuration = configuration;
-		this._contentProvider = new VT100ContentProvider(configuration);
+		this._contentProvider = new HTMLContentProvider(configuration);
 
 		this._configuration.onReload(() => {
-			this._contentProvider.reloadConfiguration();
-			for (let preview of this._previews) {
+			for (const preview of this._previews) {
 				preview.refresh();
 			}
 		}, null, this._disposables);
@@ -28,31 +25,52 @@ export class PreviewManager implements vscode.Disposable, vscode.WebviewPanelSer
 	}
 
 	public dispose(): void {
-		for (let disposable of this._disposables) {
+		for (const disposable of this._disposables) {
 			disposable.dispose();
 		}
 		this._disposables = [];
 
-		for (let preview of this._previews) {
+		for (const preview of this._previews) {
 			preview.dispose();
 		}
 		this._previews = [];
 	}
 
-	public showPreview(): void {
-		this._showPreviewImpl(false);
+	public async showPreview(param: vscode.Uri, params: vscode.Uri[]): Promise<void> {
+		if (Array.isArray(params)) {
+			await this._previewAllDocuments(params, false);
+		} else if (param && (param instanceof vscode.Uri)) {
+			await this._previewAllDocuments([ param ], false);
+		} else {
+			const editor = vscode.window.activeTextEditor;
+			if (editor == null || editor.document.languageId !== 'vt100') {
+				return;
+			}
+
+			await this._previewDocument(editor.document.uri, false);
+		}
 	}
 	
-	public showPreviewToSide(): void {
-		this._showPreviewImpl(true);
+	public async showPreviewToSide(param: vscode.Uri, params: vscode.Uri[]): Promise<void> {
+		if (Array.isArray(params)) {
+			await this._previewAllDocuments(params, true);
+		} else if (param && (param instanceof vscode.Uri)) {
+			await this._previewAllDocuments([ param ], true);
+		} else {
+			const editor = vscode.window.activeTextEditor;
+			if (editor == null || editor.document.languageId !== 'vt100') {
+				return;
+			}
+
+			await this._previewDocument(editor.document.uri, true);
+		}
 	}
 
-	private async _showPreviewImpl(sideBySide: boolean): Promise<void> {
-		const uri = vscode.window.activeTextEditor?.document?.uri;
-		if (!(uri instanceof vscode.Uri)) {
-			return;
-		}
+	private async _previewAllDocuments(uris: vscode.Uri[], sideBySide: boolean): Promise<void[]> {
+			return Promise.all(uris.map((uri) => this._previewDocument(uri, sideBySide)));
+	}
 
+	private async _previewDocument(uri: vscode.Uri, sideBySide: boolean): Promise<void> {
 		const resourceColumn = (vscode.window.activeTextEditor && vscode.window.activeTextEditor.viewColumn) || vscode.ViewColumn.One;
 		const previewColumn = sideBySide ? resourceColumn + 1 : resourceColumn;
 
@@ -110,7 +128,7 @@ export class PreviewManager implements vscode.Disposable, vscode.WebviewPanelSer
 
 class VT100Preview {
 
-	private _contentProvider: VT100ContentProvider;
+	private _contentProvider: HTMLContentProvider;
 	private _editor: vscode.WebviewPanel;
 	private _uri: vscode.Uri;
 	private _version?: { uri: vscode.Uri, version: number };
@@ -120,21 +138,22 @@ class VT100Preview {
 	private _onDisposeEmitter = new vscode.EventEmitter<void>();
 	public onDispose = this._onDisposeEmitter.event;
 
-	static async create(uri: vscode.Uri, previewColumn: vscode.ViewColumn, contentProvider: VT100ContentProvider): Promise<VT100Preview> {
-		const panel = vscode.window.createWebviewPanel('vt100.preview', 'VT100 Preview', previewColumn);
+	static async create(uri: vscode.Uri, previewColumn: vscode.ViewColumn, contentProvider: HTMLContentProvider): Promise<VT100Preview> {
+		const filename = VT100Preview._getFilename(uri);
+		const panel = vscode.window.createWebviewPanel('vt100.preview', `${filename} (Preview)`, previewColumn);
 		const preview = new VT100Preview(uri, panel, contentProvider);
 		await preview.refresh();
 		return preview;
 	}
 
-	static async revive(panel: vscode.WebviewPanel, state: any, contentProvider: VT100ContentProvider): Promise<VT100Preview> {
+	static async revive(panel: vscode.WebviewPanel, state: any, contentProvider: HTMLContentProvider): Promise<VT100Preview> {
 		const uri = vscode.Uri.parse(state.uri);
 		const preview = new VT100Preview(uri, panel, contentProvider);
 		await preview.refresh();
 		return preview;
 	}
 
-	constructor(uri: vscode.Uri, panel: vscode.WebviewPanel, contentProvider: VT100ContentProvider) {
+	constructor(uri: vscode.Uri, panel: vscode.WebviewPanel, contentProvider: HTMLContentProvider) {
 		this._contentProvider = contentProvider;
 		this._uri = uri;
 		this._editor = panel;
@@ -169,12 +188,12 @@ class VT100Preview {
 		}, null, this._disposables);
 	}
 
-	dispose() {
+	public dispose(): void {
 		this._onDisposeEmitter.fire();
 		this._onDisposeEmitter.dispose();
 		this._editor.dispose();
 
-		for (let disposable of this._disposables) {
+		for (const disposable of this._disposables) {
 			disposable.dispose();
 		}
 		this._disposables = [];
@@ -188,7 +207,7 @@ class VT100Preview {
 		return true;
 	}
 
-	public reveal(previewColumn: vscode.ViewColumn) {
+	public reveal(previewColumn: vscode.ViewColumn): void {
 		this._editor.reveal(previewColumn);
 	}
 
@@ -209,153 +228,25 @@ class VT100Preview {
 
 		this._uri = uri;
 		this._version = version;
+		this._editor.title = `${VT100Preview._getFilename(uri)} (Preview)`;
 
-		const state = { uri: this._uri.toString() };
-		const content: string = this._contentProvider.provideTextDocumentContent(document, state);
+		const content: string = this._contentProvider.provideTextDocumentContent(document);
 
 		// Check for concurrency
 		if (this._uri === uri) {
 			this._editor.webview.html = content;
 		}
 	}
-}
 
-class VT100ContentProvider {
+	private static _getFilename(uri: vscode.Uri): string {
+		const path = uri.path;
+		const separatorIndex = path.lastIndexOf('/');
 
-	private _configuration: ConfigurationManager;
-
-	private _styles: any;
-	private _customCss: any;
-	private _fontSettings: any;
-
-	constructor(configuration: ConfigurationManager) {
-		this._configuration = configuration;
-
-		this._customCss = { };
-		this._styles = new Map();
-
-		this.reloadConfiguration();
-	}
-
-	public reloadConfiguration(): void {
-		this._customCss = this._configuration.getCustomCss();
-
-		// Convert font settings to CSS class properties
-		this._fontSettings = { 'body': this._configuration.getFontSettings() };
-
-		// Convert styles to CSS class properties
-		this._styles = Object.fromEntries([... this._configuration.getSettings()]
-			.map(([key, value]) => ['.' + key, value.previewStyle]));
-	}
-
-	public provideTextDocumentContent(document: vscode.TextDocument, state: any): string {
-		const parser = new VT100Parser();
-		const cssNonce = this._generateNonce();
-		const jsNonce = this._generateNonce();
-
-		let html = '<html>';
-
-		// Try to add at least a little bit of security with Content-Security-Policy so that
-		// the rendered file can not include arbitrary CSS code
-		// JavaScript is disabled by CSP and the WebView settings
-		html += '<head>';
-		html += `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${jsNonce}'; style-src 'nonce-${cssNonce}'"></meta>`;
-		html += '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
-		html += `<script type="text/javascript" nonce="${jsNonce}">acquireVsCodeApi().setState(${JSON.stringify(state)});</script>`;
-		html += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._styles)}</style>`;
-		html += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._fontSettings)}</style>`;
-		html += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._customCss)}</style>`;
-		html += '</head>';
-
-		html += '<body>';
-		parser.parse(document, (range, modifiers, lineEnd) => {
-			// Just ignore escape sequences and don't render them
-			if (modifiers.get('type') === 'escape-sequence') {
-				return;
-			}
-
-			const [foregroundColor, backgroundColor] = this._getColors(modifiers);
-			const classList: string[] = [];
-
-			classList.push(modifiers.get('type')!);
-			classList.push('foreground');
-			classList.push(`foreground-color-${foregroundColor}`);
-
-			for (let attribute of ['bold', 'dim', 'underlined', 'blink', 'inverted', 'hidden']) {
-				if (modifiers.get(attribute) === 'yes') {
-					classList.push('attribute-' + attribute);
-				}
-			}
-
-			html += `<span class="background background-color-${backgroundColor}">`;
-			html += `<span class="${classList.join(' ')}">`;
-			html += this._escapeHtml(document.getText(range));
-			html += '</span></span>';
-
-			if (lineEnd) {
-				html += '<br>';
-			}
-		});
-		html += '</body>';
-		html += '</html>';
-		return html;
-	}
-
-	private _generateNonce(): string {
-		const buffer: Buffer = randomBytes(64);
-		return buffer.toString('base64');
-	}
-
-	private _getColors(modifiers: Map<string, string>): [string, string] {
-		let foregroundColor: string;
-		let backgroundColor: string;
-
-		if (modifiers.get('inverted') === 'yes') {
-			foregroundColor = modifiers.get('background-color')!;
-			backgroundColor = modifiers.get('foreground-color')!;
-
-			if (foregroundColor === 'default') {
-				foregroundColor = 'inverted';
-			}
-			if (backgroundColor === 'default') {
-				backgroundColor = 'inverted';
-			}
-		} else {
-			foregroundColor = modifiers.get('foreground-color')!;
-			backgroundColor = modifiers.get('background-color')!;
+		if (separatorIndex !== -1) {
+			return path.substr(separatorIndex + 1);
 		}
 
-		return [foregroundColor, backgroundColor];
-	}
-
-	private _generateCss(properties: any): string {
-		let css = '';
-
-		for (let [key, value] of Object.entries(properties)) {
-			if (value == null) {
-				continue;
-			}
-
-			if (typeof value === 'object') {
-				css += `${key} {\n`;
-				css += this._generateCss(value);
-				css += `}\n`;
-			} else if (typeof value === 'string') {
-				css += `${key}: ${value};\n`;
-			}
-		}
-
-		return css;
-	}
-
-	private _escapeHtml(value: string): string {
-		return value
-			.replace(/&/g, "&amp;")
-			.replace(/</g, "&lt;")
-			.replace(/>/g, "&gt;")
-			.replace(/"/g, "&quot;")
-			.replace(/'/g, "&#039;")
-			.replace(/ /g, '&nbsp;');
+		return path;
 	}
 
 }

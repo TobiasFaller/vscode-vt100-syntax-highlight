@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import { config } from 'process';
 
 export const COLORS: string[] = [
 	'default', 'inverted', 'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'light-gray', 'dark-gray',
@@ -40,7 +39,7 @@ export class ConfigurationManager implements vscode.Disposable {
 	dispose(): void {
 		this._onReloadEmitter.dispose();
 
-		for (let disposable of this._disposables) {
+		for (const disposable of this._disposables) {
 			disposable.dispose();
 		}
 		this._disposables = [];
@@ -61,12 +60,12 @@ export class ConfigurationManager implements vscode.Disposable {
 	private _reload(): void {
 		const configuration = vscode.workspace.getConfiguration('vt100');
 
-		for (let color of COLORS) {
+		for (const color of COLORS) {
 			this._loadStyle('foreground-color-' + color, configuration);
 			this._loadStyle('background-color-' + color, configuration);
 		}
 
-		for (let attribute of ATTRIBUTES) {
+		for (const attribute of ATTRIBUTES) {
 			this._loadStyle('attribute-' + attribute, configuration);
 		}
 
@@ -143,7 +142,7 @@ export class ConfigurationManager implements vscode.Disposable {
 	private _convertCssToEditorRenderOptions(style: any): vscode.DecorationRenderOptions {
 		const properties: [string, string][] = [];
 
-		for (let [key, value] of Object.entries(style)) {
+		for (const [key, value] of Object.entries(style)) {
 			if (value != null && typeof value === 'string') {
 				properties.push([this._convertCssToRenderOptionKey(key), <string> value]);
 			}

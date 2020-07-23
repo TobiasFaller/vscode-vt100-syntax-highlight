@@ -2,9 +2,7 @@ import * as vscode from 'vscode';
 
 export class VT100Parser {
 
-	constructor() { }
-
-	public parse(document: vscode.TextDocument, callback: (range: vscode.Range, modifiers: Map<string, string>, lineEnd: boolean) => void) {
+	public static parse(document: vscode.TextDocument, callback: (range: vscode.Range, modifiers: Map<string, string>, lineEnd: boolean) => void) {
 		const tokenModifiers = new Map<string, string>();
 
 		// Initialize defaults
@@ -19,7 +17,8 @@ export class VT100Parser {
 
 		const lines = document.getText().split(/\r\n|\r|\n/);
 		for (let i = 0; i < lines.length; i++) {
-			const escapeRegex: RegExp = /\x1B\[((?:[0-9]+;)*?[0-9]+)m/g;
+			// eslint-disable-next-line no-control-regex
+			const escapeRegex = /\x1B\[((?:[0-9]+;)*?[0-9]+)m/g;
 			const line = lines[i];
 
 			let lastIndex = 0;
@@ -43,11 +42,11 @@ export class VT100Parser {
 		}
 	}
 
-	private _applyParams(params: string, tokenModifiers: Map<string, string>): void {
+	private static _applyParams(params: string, tokenModifiers: Map<string, string>): void {
 		// See https://misc.flogisoft.com/bash/tip_colors_and_formatting
 		const splittedParams = params.split(';');
 
-		for (var param of splittedParams) {
+		for (const param of splittedParams) {
 			if (param === "0") {
 				tokenModifiers.set('foreground-color', 'default');
 				tokenModifiers.set('background-color', 'default');

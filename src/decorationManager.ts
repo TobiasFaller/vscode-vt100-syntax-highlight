@@ -46,19 +46,19 @@ export class DecorationManager implements vscode.Disposable {
 	}
 
 	public dispose(): void {
-		for (let disposable of this._disposables) {
+		for (const disposable of this._disposables) {
 			disposable.dispose();
 		}
 		this._disposables = [];
 
-		for (let [key, value] of this._decorations) {
+		for (const [_key, value] of this._decorations) {
 			value.dispose();
 		}
 		this._decorations.clear();
 	}
 
 	private _applyDecorations(editors: vscode.TextEditor[]): void {
-		for (let editor of editors) {
+		for (const editor of editors) {
 			if (editor != null && editor.document.languageId === 'vt100') {
 				this._decorator.apply(editor);
 			}
@@ -66,7 +66,7 @@ export class DecorationManager implements vscode.Disposable {
 	}
 
 	private _removeDecorations(editors: vscode.TextEditor[]): void {
-		for (let editor of editors) {
+		for (const editor of editors) {
 			if (editor == null) {
 				continue;
 			}
@@ -76,7 +76,7 @@ export class DecorationManager implements vscode.Disposable {
 	}
 
 	private _updateDecorations(editors: vscode.TextEditor[]): void {
-		for (let editor of editors) {
+		for (const editor of editors) {
 			if (editor == null) {
 				continue;
 			}
@@ -90,14 +90,14 @@ export class DecorationManager implements vscode.Disposable {
 	}
 
 	private _registerDecorations() {
-		for (let [key, value] of this._configuration.getSettings()) {
+		for (const [key, value] of this._configuration.getSettings()) {
 			const decoration = vscode.window.createTextEditorDecorationType(value.editorStyle);
 			this._decorations.set(key, decoration);
 		}
 	}
 
 	private _reloadDecorations() {
-		for (let [key, value] of this._decorations) {
+		for (const [_key, value] of this._decorations) {
 			value.dispose();
 		}
 		this._decorations.clear();
@@ -109,32 +109,30 @@ export class DecorationManager implements vscode.Disposable {
 
 class EditorDecorator {
 
-	private _parser: VT100Parser;
 	private _decorations: Map<string, vscode.TextEditorDecorationType>;
 
 	constructor(decorations: Map<string, vscode.TextEditorDecorationType>) {
 		this._decorations = decorations;
-		this._parser = new VT100Parser();
 	}
 
 	public apply(editor: vscode.TextEditor): void {
 		const appliedDecorations: Map<string, vscode.Range[]> = new Map();
-		for (let decorationName of this._decorations.keys()) {
+		for (const decorationName of this._decorations.keys()) {
 			appliedDecorations.set(decorationName, []);
 		}
 
-		this._parser.parse(editor.document, (range, modifiers, _lineEnd) => {
+		VT100Parser.parse(editor.document, (range, modifiers, _lineEnd) => {
 			this._applyDecoration(range, modifiers, appliedDecorations);
 		});
 
-		for (let [key, value] of appliedDecorations) {
+		for (const [key, value] of appliedDecorations) {
 			editor.setDecorations(this._decorations.get(key)!, value);
 		}
 	}
 
 	public remove(editor: vscode.TextEditor): void {
 		// Undecorate editor if decorated
-		for (let decoration of this._decorations.values()) {
+		for (const decoration of this._decorations.values()) {
 			editor.setDecorations(decoration, []);
 		}
 	}
@@ -161,7 +159,7 @@ class EditorDecorator {
 		appliedDecorations.get('background-color-' + backgroundColor)!.push(range);
 		appliedDecorations.get('foreground-color-' + foregroundColor)!.push(range);
 
-		for (let attribute of ['bold', 'dim', 'underlined', 'blink', 'inverted', 'hidden']) {
+		for (const attribute of ['bold', 'dim', 'underlined', 'blink', 'inverted', 'hidden']) {
 			if (tokenModifiers.get(attribute) === 'yes') {
 				appliedDecorations.get('attribute-' + attribute)!.push(range);
 			}
@@ -173,6 +171,7 @@ class EditorDecorator {
 				break;
 			case 'text':
 				appliedDecorations.get('text')!.push(range);
+				break;
 			default:
 				break;
 		}

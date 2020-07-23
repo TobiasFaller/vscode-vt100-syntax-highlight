@@ -2,7 +2,7 @@
 	"name": "vt100-syntax-highlighting",
 	"displayName": "VT100 Syntax Highlighting",
 	"description": "VT100 Color and Style Highlighting in the Text Editor",
-	"version": "0.0.6",
+	"version": "0.0.7",
 	"author": {
 		"name": "Tobias Faller"
 	},
@@ -29,6 +29,8 @@
 		"onLanguage:vt100",
 		"onCommand:vt100.showPreview",
 		"onCommand:vt100.showPreviewToSide",
+		"onCommand:vt100.exportText",
+		"onCommand:vt100.exportHtml",
 		"onWebviewPanel:vt100.preview"
 	],
 	"main": "./out/extension.js",
@@ -595,6 +597,18 @@
 				"title": "Show Preview on Side",
 				"category": "VT100",
 				"icon": "$(open-preview)"
+			},
+			{
+				"command": "vt100.exportText",
+				"title": "Export to Text",
+				"category": "VT100",
+				"icon": "$(file)"
+			},
+			{
+				"command": "vt100.exportHtml",
+				"title": "Export to Html",
+				"category": "VT100",
+				"icon": "$(file-code)"
 			}
 		],
 		"menus": {
@@ -604,6 +618,16 @@
 					"when": "editorLangId == vt100",
 					"alt": "vt100.showPreview",
 					"group": "navigation"
+				},
+				{
+					"command": "vt100.exportText",
+					"when": "resourceLangId == vt100",
+					"group": "vt100"
+				},
+				{
+					"command": "vt100.exportHtml",
+					"when": "resourceLangId == vt100",
+					"group": "vt100"
 				}
 			],
 			"explorer/context": [
@@ -611,6 +635,16 @@
 					"command": "vt100.showPreview",
 					"when": "resourceLangId == vt100",
 					"group": "navigation"
+				},
+				{
+					"command": "vt100.exportText",
+					"when": "resourceLangId == vt100",
+					"group": "vt100"
+				},
+				{
+					"command": "vt100.exportHtml",
+					"when": "resourceLangId == vt100",
+					"group": "vt100"
 				}
 			],
 			"editor/title/context": [
@@ -618,6 +652,16 @@
 					"command": "vt100.showPreview",
 					"when": "resourceLangId == vt100",
 					"group": "navigation"
+				},
+				{
+					"command": "vt100.exportText",
+					"when": "resourceLangId == vt100",
+					"group": "vt100"
+				},
+				{
+					"command": "vt100.exportHtml",
+					"when": "resourceLangId == vt100",
+					"group": "vt100"
 				}
 			],
 			"commandPalette": [
@@ -630,6 +674,16 @@
 					"command": "vt100.showPreviewToSide",
 					"when": "editorLangId == vt100",
 					"group": "navigation"
+				},
+				{
+					"command": "vt100.exportText",
+					"when": "editorLangId == vt100",
+					"group": "vt100"
+				},
+				{
+					"command": "vt100.exportHtml",
+					"when": "editorLangId == vt100",
+					"group": "vt100"
 				}
 			]
 		},
