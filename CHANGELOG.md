@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.0.10
+------
+
+- Implemented dark and light support for editor
+- Implemented dark, light and high-contrast support for preview
+
 0.0.9
 -----
 
