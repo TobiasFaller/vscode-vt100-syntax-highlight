@@ -1,11 +1,9 @@
 import * as vscode from 'vscode';
 
-import { randomBytes, KeyObject } from 'crypto';
-import { escape } from 'lodash';
+import { randomBytes } from 'crypto';
 
 import { ConfigurationManager } from './configurationManager';
 import { VT100Parser } from './vt100Parser';
-
 
 export class PreviewManager implements vscode.Disposable, vscode.WebviewPanelSerializer {
 
@@ -127,7 +125,9 @@ class VT100Preview {
 
 	static async create(uri: vscode.Uri, previewColumn: vscode.ViewColumn, contentProvider: VT100ContentProvider): Promise<VT100Preview> {
 		const panel = vscode.window.createWebviewPanel('vt100.preview', 'VT100 Preview', previewColumn);
-		return new VT100Preview(uri, panel, contentProvider);
+		const preview = new VT100Preview(uri, panel, contentProvider);
+		await preview.refresh();
+		return preview;
 	}
 
 	static async revive(panel: vscode.WebviewPanel, state: any, contentProvider: VT100ContentProvider): Promise<VT100Preview> {
@@ -264,6 +264,7 @@ class VT100ContentProvider {
 		// the rendered file can not include arbitrary CSS code
 		// JavaScript is disabled by CSP and the WebView settings
 		html += '<head>';
+
 		html += `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${jsNonce}'; style-src 'nonce-${cssNonce}'"></meta>`;
 		html += '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
 		html += `<script type="text/javascript" nonce="${jsNonce}">acquireVsCodeApi().setState(${JSON.stringify(state)});</script>`;
@@ -294,7 +295,7 @@ class VT100ContentProvider {
 
 			html += `<span class="background background-color-${backgroundColor}">`;
 			html += `<span class="${classList.join(' ')}">`;
-			html += escape(document.getText(range)).replace(/ /g, '&nbsp;');
+			html += this._escapeHtml(document.getText(range));
 			html += '</span></span>';
 
 			if (lineEnd) {
@@ -351,6 +352,16 @@ class VT100ContentProvider {
 		}
 
 		return css;
+	}
+
+	private _escapeHtml(value: string): string {
+		return value
+			.replace(/&/g, "&amp;")
+			.replace(/</g, "&lt;")
+			.replace(/>/g, "&gt;")
+			.replace(/"/g, "&quot;")
+			.replace(/'/g, "&#039;")
+			.replace(/ /g, '&nbsp;');
 	}
 
 }
