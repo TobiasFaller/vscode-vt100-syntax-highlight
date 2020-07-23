@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.0.6
+-----
+
+- Fixed extension activation
+
 0.0.5
 -----
 
