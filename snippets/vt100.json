@@ -1,0 +1,498 @@
+{
+	"escape code": {
+		"scope": "vt100",
+		"prefix": "escape",
+		"body": "\u001B[${1:0}m",
+		"description": "Custom VT100 Color escape code"
+	},
+
+	"normal all": {
+		"scope": "vt100",
+		"prefix": "normal all",
+		"body": "\u001B[0m",
+		"description": "Reset all VT100 escape code"
+	},
+	"default all": {
+		"scope": "vt100",
+		"prefix": "default all",
+		"body": "\u001B[0m",
+		"description": "Reset all VT100 escape code"
+	},
+	"reset all": {
+		"scope": "vt100",
+		"prefix": "reset all",
+		"body": "\u001B[0m",
+		"description": "Reset all VT100 escape code"
+	},
+
+	"normal color": {
+		"scope": "vt100",
+		"prefix": "normal color",
+		"body": "\u001B[39;49m",
+		"description": "Reset all colors VT100 escape sequence"
+	},
+	"default color": {
+		"scope": "vt100",
+		"prefix": "default color",
+		"body": "\u001B[39;49m",
+		"description": "Reset all colors VT100 escape sequence"
+	},
+	"reset color": {
+		"scope": "vt100",
+		"prefix": "reset color",
+		"body": "\u001B[39;49m",
+		"description": "Reset all colors VT100 escape sequence"
+	},
+
+	"normal text style": {
+		"scope": "vt100",
+		"prefix": "normal text",
+		"body": "\u001B[21;22;24;25;27;28m",
+		"description": "Reset to unstyled text VT100 escape sequence"
+	},
+	"default text style": {
+		"scope": "vt100",
+		"prefix": "default text",
+		"body": "\u001B[21;22;24;25;27;28m",
+		"description": "Reset to unstyled text VT100 escape sequence"
+	},
+	"reset text style": {
+		"scope": "vt100",
+		"prefix": "reset text",
+		"body": "\u001B[21;22;24;25;27;28m",
+		"description": "Reset unstyled text VT100 escape sequence"
+	},
+
+	"normal foreground color": {
+		"scope": "vt100",
+		"prefix": "normal foreground color",
+		"body": "\u001B[39m",
+		"description": "Default Text (Foreground) Color VT100 escape code"
+	},
+	"default foreground color": {
+		"scope": "vt100",
+		"prefix": "default foreground color",
+		"body": "\u001B[39m",
+		"description": "Default Text (Foreground) Color VT100 escape code"
+	},
+	"reset foreground color": {
+		"scope": "vt100",
+		"prefix": "reset foreground color",
+		"body": "\u001B[39m",
+		"description": "Default Text (Foreground) Color VT100 escape code"
+	},
+
+	"normal text color": {
+		"scope": "vt100",
+		"prefix": "normal text color",
+		"body": "\u001B[39m",
+		"description": "Default Text (Foreground) Color VT100 escape code"
+	},
+	"default text color": {
+		"scope": "vt100",
+		"prefix": "default text color",
+		"body": "\u001B[39m",
+		"description": "Default Text (Foreground) Color VT100 escape code"
+	},
+	"reset text color": {
+		"scope": "vt100",
+		"prefix": "reset text color",
+		"body": "\u001B[39m",
+		"description": "Default Text (Foreground) Color VT100 escape code"
+	},
+
+	"normal background color": {
+		"scope": "vt100",
+		"prefix": "normal background color",
+		"body": "\u001B[49m",
+		"description": "Default Background Color VT100 escape code"
+	},
+	"default background color": {
+		"scope": "vt100",
+		"prefix": "default background color",
+		"body": "\u001B[49m",
+		"description": "Default Background Color VT100 escape code"
+	},
+	"reset background color": {
+		"scope": "vt100",
+		"prefix": "reset background color",
+		"body": "\u001B[49m",
+		"description": "Default Background Color VT100 escape code"
+	},
+
+	"black foreground": {
+		"scope": "vt100",
+		"prefix": "black foreground",
+		"body": "\u001B[30m",
+		"description": "Black Text (Foreground) Color VT100 escape code"
+	},
+	"red foreground": {
+		"scope": "vt100",
+		"prefix": "red foreground",
+		"body": "\u001B[31m",
+		"description": "Red Text (Foreground) Color VT100 escape code"
+	},
+	"green foreground": {
+		"scope": "vt100",
+		"prefix": "green foreground",
+		"body": "\u001B[32m",
+		"description": "Green Text (Foreground) Color VT100 escape code"
+	},
+	"yellow foreground": {
+		"scope": "vt100",
+		"prefix": "yellow foreground",
+		"body": "\u001B[33m",
+		"description": "Yellow Text (Foreground) Color VT100 escape code"
+	},
+	"blue foreground": {
+		"scope": "vt100",
+		"prefix": "blue foreground",
+		"body": "\u001B[34m",
+		"description": "Blue Text (Foreground) Color VT100 escape code"
+	},
+	"magenta foreground": {
+		"scope": "vt100",
+		"prefix": "magenta foreground",
+		"body": "\u001B[35m",
+		"description": "Magenta Text (Foreground) Color VT100 escape code"
+	},
+	"cyan foreground": {
+		"scope": "vt100",
+		"prefix": "cyan foreground",
+		"body": "\u001B[36m",
+		"description": "Cyan Text (Foreground) Color VT100 escape code"
+	},
+	"light gray foreground": {
+		"scope": "vt100",
+		"prefix": "light gray foreground",
+		"body": "\u001B[37m",
+		"description": "Light-Gray Text (Foreground) Color VT100 escape code"
+	},
+	"dark gray foreground": {
+		"scope": "vt100",
+		"prefix": "dark gray foreground",
+		"body": "\u001B[90m",
+		"description": "Dark-Gray Text (Foreground) Color VT100 escape code"
+	},
+	"light red foreground": {
+		"scope": "vt100",
+		"prefix": "light red foreground",
+		"body": "\u001B[91m",
+		"description": "Light-Red Text (Foreground) Color VT100 escape code"
+	},
+	"light green foreground": {
+		"scope": "vt100",
+		"prefix": "light green foreground",
+		"body": "\u001B[92m",
+		"description": "Light-Green Text (Foreground) Color VT100 escape code"
+	},
+	"light yellow foreground": {
+		"scope": "vt100",
+		"prefix": "light yellow foreground",
+		"body": "\u001B[93m",
+		"description": "Light-Yellow Text (Foreground) Color VT100 escape code"
+	},
+	"light blue foreground": {
+		"scope": "vt100",
+		"prefix": "light blue foreground",
+		"body": "\u001B[94m",
+		"description": "Light-Blue Text (Foreground) Color VT100 escape code"
+	},
+	"light magenta foreground": {
+		"scope": "vt100",
+		"prefix": "light magenta foreground",
+		"body": "\u001B[95m",
+		"description": "Light-Magenta Text (Foreground) Color VT100 escape code"
+	},
+	"light cyan foreground": {
+		"scope": "vt100",
+		"prefix": "light cyan foreground",
+		"body": "\u001B[96m",
+		"description": "Light-Cyan Text (Foreground) Color VT100 escape code"
+	},
+	"white foreground": {
+		"scope": "vt100",
+		"prefix": "white foreground",
+		"body": "\u001B[97m",
+		"description": "White Text (Foreground) Color VT100 escape code"
+	},
+
+	"black text": {
+		"scope": "vt100",
+		"prefix": "black text",
+		"body": "\u001B[30m",
+		"description": "Black Text (Foreground) Color VT100 escape code"
+	},
+	"red text": {
+		"scope": "vt100",
+		"prefix": "red text",
+		"body": "\u001B[31m",
+		"description": "Red Text (Foreground) Color VT100 escape code"
+	},
+	"green text": {
+		"scope": "vt100",
+		"prefix": "green text",
+		"body": "\u001B[32m",
+		"description": "Green Text (Foreground) Color VT100 escape code"
+	},
+	"yellow text": {
+		"scope": "vt100",
+		"prefix": "yellow text",
+		"body": "\u001B[33m",
+		"description": "Yellow Text (Foreground) Color VT100 escape code"
+	},
+	"blue text": {
+		"scope": "vt100",
+		"prefix": "blue text",
+		"body": "\u001B[34m",
+		"description": "Blue Text (Foreground) Color VT100 escape code"
+	},
+	"magenta text": {
+		"scope": "vt100",
+		"prefix": "magenta text",
+		"body": "\u001B[35m",
+		"description": "Magenta Text (Foreground) Color VT100 escape code"
+	},
+	"cyan text": {
+		"scope": "vt100",
+		"prefix": "cyan text",
+		"body": "\u001B[36m",
+		"description": "Cyan Text (Foreground) Color VT100 escape code"
+	},
+	"light gray text": {
+		"scope": "vt100",
+		"prefix": "light gray text",
+		"body": "\u001B[37m",
+		"description": "Light-Gray Text (Foreground) Color VT100 escape code"
+	},
+	"dark gray text": {
+		"scope": "vt100",
+		"prefix": "dark gray text",
+		"body": "\u001B[90m",
+		"description": "Dark-Gray Text (Foreground) Color VT100 escape code"
+	},
+	"light red text": {
+		"scope": "vt100",
+		"prefix": "light red text",
+		"body": "\u001B[91m",
+		"description": "Light-Red Text (Foreground) Color VT100 escape code"
+	},
+	"light green text": {
+		"scope": "vt100",
+		"prefix": "light green text",
+		"body": "\u001B[92m",
+		"description": "Light-Green Text (Foreground) Color VT100 escape code"
+	},
+	"light yellow text": {
+		"scope": "vt100",
+		"prefix": "light yellow text",
+		"body": "\u001B[93m",
+		"description": "Light-Yellow Text (Foreground) Color VT100 escape code"
+	},
+	"light blue text": {
+		"scope": "vt100",
+		"prefix": "light blue text",
+		"body": "\u001B[94m",
+		"description": "Light-Blue Text (Foreground) Color VT100 escape code"
+	},
+	"light magenta text": {
+		"scope": "vt100",
+		"prefix": "light magenta text",
+		"body": "\u001B[95m",
+		"description": "Light-Magenta Text (Foreground) Color VT100 escape code"
+	},
+	"light cyan text": {
+		"scope": "vt100",
+		"prefix": "light cyan text",
+		"body": "\u001B[96m",
+		"description": "Light-Cyan Text (Foreground) Color VT100 escape code"
+	},
+	"white text": {
+		"scope": "vt100",
+		"prefix": "white text",
+		"body": "\u001B[97m",
+		"description": "White Text (Foreground) Color VT100 escape code"
+	},
+
+	"black background": {
+		"scope": "vt100",
+		"prefix": "black background",
+		"body": "\u001B[40m",
+		"description": "Black Background VT100 escape code"
+	},
+	"red background": {
+		"scope": "vt100",
+		"prefix": "red background",
+		"body": "\u001B[41m",
+		"description": "Red Background VT100 escape code"
+	},
+	"green background": {
+		"scope": "vt100",
+		"prefix": "green background",
+		"body": "\u001B[42m",
+		"description": "Green Background VT100 escape code"
+	},
+	"yellow background": {
+		"scope": "vt100",
+		"prefix": "yellow background",
+		"body": "\u001B[43m",
+		"description": "Yellow Background VT100 escape code"
+	},
+	"blue background": {
+		"scope": "vt100",
+		"prefix": "blue background",
+		"body": "\u001B[44m",
+		"description": "Blue Background VT100 escape code"
+	},
+	"magenta background": {
+		"scope": "vt100",
+		"prefix": "magenta background",
+		"body": "\u001B[45m",
+		"description": "Magenta Background VT100 escape code"
+	},
+	"cyan background": {
+		"scope": "vt100",
+		"prefix": "cyan background",
+		"body": "\u001B[46m",
+		"description": "Cyan Background VT100 escape code"
+	},
+	"light gray background": {
+		"scope": "vt100",
+		"prefix": "light gray background",
+		"body": "\u001B[47m",
+		"description": "Light-Gray Background VT100 escape code"
+	},
+	"dark gray background": {
+		"scope": "vt100",
+		"prefix": "dark gray background",
+		"body": "\u001B[100m",
+		"description": "Dark-Gray Background VT100 escape code"
+	},
+	"light red background": {
+		"scope": "vt100",
+		"prefix": "light red background",
+		"body": "\u001B[101m",
+		"description": "Light-Red Background VT100 escape code"
+	},
+	"light green background": {
+		"scope": "vt100",
+		"prefix": "light green background",
+		"body": "\u001B[102m",
+		"description": "Light-Green Background VT100 escape code"
+	},
+	"light yellow background": {
+		"scope": "vt100",
+		"prefix": "light yellow background",
+		"body": "\u001B[103m",
+		"description": "Light-Yellow Background VT100 escape code"
+	},
+	"light blue background": {
+		"scope": "vt100",
+		"prefix": "light blue background",
+		"body": "\u001B[104m",
+		"description": "Light-Blue Background VT100 escape code"
+	},
+	"light magenta background": {
+		"scope": "vt100",
+		"prefix": "light magenta background",
+		"body": "\u001B[105m",
+		"description": "Light-Magenta Background VT100 escape code"
+	},
+	"light cyan background": {
+		"scope": "vt100",
+		"prefix": "light cyan background",
+		"body": "\u001B[106m",
+		"description": "Light-Cyan Background VT100 escape code"
+	},
+	"white background": {
+		"scope": "vt100",
+		"prefix": "white background",
+		"body": "\u001B[107m",
+		"description": "White Background VT100 escape code"
+	},
+
+	"bold text": {
+		"scope": "vt100",
+		"prefix": "bold text",
+		"body": "\u001B[1m",
+		"description": "Bold Text VT100 escape code"
+	},
+	"reset bold text": {
+		"scope": "vt100",
+		"prefix": "reset bold text",
+		"body": "\u001B[21m",
+		"description": "Reset Bold Text VT100 escape code"
+	},
+	"dim text": {
+		"scope": "vt100",
+		"prefix": "dim text",
+		"body": "\u001B[2m",
+		"description": "Dimmed Text VT100 escape code"
+	},
+	"reset dim text": {
+		"scope": "vt100",
+		"prefix": "reset dim text",
+		"body": "\u001B[22m",
+		"description": "Reset Dimmed Text VT100 escape code"
+	},
+	"underliend text": {
+		"scope": "vt100",
+		"prefix": "underlined text",
+		"body": "\u001B[4m",
+		"description": "Underlined Text VT100 escape code"
+	},
+	"reset underliend text": {
+		"scope": "vt100",
+		"prefix": "reset underlined text",
+		"body": "\u001B[24m",
+		"description": "Reset Underlined Text VT100 escape code"
+	},
+	"blinking text": {
+		"scope": "vt100",
+		"prefix": "blinking text",
+		"body": "\u001B[5m",
+		"description": "Blinking Text VT100 escape code"
+	},
+	"reset blinking text": {
+		"scope": "vt100",
+		"prefix": "reset blinking text",
+		"body": "\u001B[25m",
+		"description": "Reset Blinking Text VT100 escape code"
+	},
+	"inverted text": {
+		"scope": "vt100",
+		"prefix": "inverted text",
+		"body": "\u001B[5m",
+		"description": "Inverted Text VT100 escape code"
+	},
+	"reset inverted text": {
+		"scope": "vt100",
+		"prefix": "reset inverted text",
+		"body": "\u001B[25m",
+		"description": "Reset Inverted Text VT100 escape code"
+	},
+	"reverse text": {
+		"scope": "vt100",
+		"prefix": "reverse text",
+		"body": "\u001B[7m",
+		"description": "Inverted Text VT100 escape code"
+	},
+	"reset reverse text": {
+		"scope": "vt100",
+		"prefix": "reset reverse text",
+		"body": "\u001B[27m",
+		"description": "Reset Inverted Text VT100 escape code"
+	},
+	"hidden text": {
+		"scope": "vt100",
+		"prefix": "hidden text",
+		"body": "\u001B[8m",
+		"description": "Hidden Text VT100 escape code"
+	},
+	"reset hidden text": {
+		"scope": "vt100",
+		"prefix": "reset hidden text",
+		"body": "\u001B[28m",
+		"description": "Reset Hidden Text VT100 escape code"
+	}
+}

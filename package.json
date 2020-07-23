@@ -700,6 +700,12 @@
 				"mac": "cmd+k v",
 				"when": "editorLangId == vt100"
 			}
+		],
+		"snippets": [
+			{
+				"language": "vt100",
+				"path": "./snippets/vt100.json"
+			}
 		]
 	},
 	"scripts": {
