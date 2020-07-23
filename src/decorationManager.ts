@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
 
+import { debounce } from './util';
+
 import { ConfigurationManager } from './configurationManager';
 import { VT100Parser } from './vt100Parser';
 
@@ -22,24 +24,25 @@ export class DecorationManager implements vscode.Disposable {
 			this._updateDecorations(vscode.window.visibleTextEditors);
 		}, null, this._disposables);
 
-		vscode.window.onDidChangeVisibleTextEditors(editors => {
+		vscode.window.onDidChangeVisibleTextEditors(async (editors) => {
 			this._updateDecorations(editors);
 		}, null, this._disposables);
 
-		// Todo: Debounce since there might be a lot of small changes during writing
-		vscode.workspace.onDidChangeTextDocument(event => {
+		// Debounce since there might be a lot of small changes during writing
+		const lazyUpdate = debounce(async (editors) => this._applyDecorations(editors), 500);
+		vscode.workspace.onDidChangeTextDocument(async (event) => {
 			const editors = vscode.window.visibleTextEditors.filter(editor => editor.document == event.document);
-			this._updateDecorations(editors);
+			await lazyUpdate(editors);
 		}, null, this._disposables);
 
-		vscode.workspace.onDidOpenTextDocument(document => {
+		vscode.workspace.onDidOpenTextDocument(async (document) => {
 			const editors = vscode.window.visibleTextEditors.filter(editor => editor.document == document);
-			this._applyDecorations(editors);
+			await this._applyDecorations(editors);
 		}, null, this._disposables);
 
-		vscode.workspace.onDidCloseTextDocument(document => {
+		vscode.workspace.onDidCloseTextDocument(async (document) => {
 			const editors = vscode.window.visibleTextEditors.filter(editor => editor.document == document);
-			this._removeDecorations(editors);
+			await this._removeDecorations(editors);
 		}, null, this._disposables);
 
 		this._applyDecorations(vscode.window.visibleTextEditors);
@@ -57,36 +60,48 @@ export class DecorationManager implements vscode.Disposable {
 		this._decorations.clear();
 	}
 
-	private _applyDecorations(editors: vscode.TextEditor[]): void {
+	private async _applyDecorations(editors: vscode.TextEditor[]): Promise<void[]> {
+		const promises: Promise<void>[] = [];
+
 		for (const editor of editors) {
 			if (editor != null && editor.document.languageId === 'vt100') {
-				this._decorator.apply(editor);
+				promises.push(this._decorator.apply(editor));
 			}
 		}
+
+		return Promise.all(promises);
 	}
 
-	private _removeDecorations(editors: vscode.TextEditor[]): void {
+	private async _removeDecorations(editors: vscode.TextEditor[]): Promise<void[]> {
+		const promises: Promise<void>[] = [];
+
 		for (const editor of editors) {
 			if (editor == null) {
 				continue;
 			}
 
-			this._decorator.remove(editor);
+			promises.push(this._decorator.remove(editor));
 		}
+
+		return Promise.all(promises);
 	}
 
-	private _updateDecorations(editors: vscode.TextEditor[]): void {
+	private async _updateDecorations(editors: vscode.TextEditor[]): Promise<void[]> {
+		const promises: Promise<void>[] = [];
+
 		for (const editor of editors) {
 			if (editor == null) {
 				continue;
 			}
 
 			if (editor.document.languageId === 'vt100') {
-				this._decorator.apply(editor);
+				promises.push(this._decorator.apply(editor));
 			} else {
-				this._decorator.remove(editor);
+				promises.push(this._decorator.remove(editor));
 			}
 		}
+
+		return Promise.all(promises);
 	}
 
 	private _registerDecorations() {
@@ -115,7 +130,7 @@ class EditorDecorator {
 		this._decorations = decorations;
 	}
 
-	public apply(editor: vscode.TextEditor): void {
+	public async apply(editor: vscode.TextEditor): Promise<void> {
 		const appliedDecorations: Map<string, vscode.Range[]> = new Map();
 		for (const decorationName of this._decorations.keys()) {
 			appliedDecorations.set(decorationName, []);
@@ -130,7 +145,7 @@ class EditorDecorator {
 		}
 	}
 
-	public remove(editor: vscode.TextEditor): void {
+	public async remove(editor: vscode.TextEditor): Promise<void> {
 		// Undecorate editor if decorated
 		for (const decoration of this._decorations.values()) {
 			editor.setDecorations(decoration, []);

@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
 
+import { debounce } from './util';
+
 import { ConfigurationManager } from './configurationManager';
 import { HTMLContentProvider } from './content/htmlContentProvider';
 
@@ -168,22 +170,23 @@ class VT100Preview {
 			this.dispose();
 		}, null, this._disposables);
 
-		vscode.window.onDidChangeActiveTextEditor(editor => {
+		vscode.window.onDidChangeActiveTextEditor(async (editor) => {
 			if (editor && editor.document.languageId === 'vt100') {
-				this._update(editor.document.uri, true);
+				await this._update(editor.document.uri, true);
 			}
 		}, null, this._disposables);
 
-		vscode.workspace.onDidOpenTextDocument(document => {
+		vscode.workspace.onDidOpenTextDocument(async (document) => {
 			if (document.languageId === 'vt100') {
-				this._update(document.uri, true);
+				await this._update(document.uri, true);
 			}
 		}, null, this._disposables);
 
-		// Todo: Debounce since there might be a lot of small changes during writing
-		vscode.workspace.onDidChangeTextDocument(event => {
+		// Debounce since there might be a lot of small changes during writing
+		const lazyUpdate = debounce(async (uri) => await this._update(uri, false), 500);
+		vscode.workspace.onDidChangeTextDocument(async (event) => {
 			if (event.document.uri.fsPath == this._uri.fsPath) {
-				this._update(this._uri, false);
+				await lazyUpdate(this._uri);
 			}
 		}, null, this._disposables);
 	}
