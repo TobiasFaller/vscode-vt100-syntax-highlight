@@ -2,7 +2,7 @@
 	"name": "vt100-syntax-highlighting",
 	"displayName": "VT100 Syntax Highlighting",
 	"description": "VT100 Color and Style Highlighting in the Text Editor",
-	"version": "0.0.9",
+	"version": "0.0.10",
 	"author": {
 		"name": "Tobias Faller"
 	},
