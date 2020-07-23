@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.0.7
+-----
+
+- Added Text and HTML export
+- Fixed bug where context menu options for a file would do nothing
+
 0.0.6
 -----
 
