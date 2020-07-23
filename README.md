@@ -1,11 +1,13 @@
-# Terminal Color and Style Highlighting for VS Code
+Terminal Color and Style Highlighting for VS Code
+=================================================
 
 This extension provides highlighting for **terminal color** escape sequences in the editor.
 The colors and styles can be customized via the configuration and light / dark theming is supported.
 The included preview feature can be used to view the source file like it would be shown in a terminal.
 With the export features the source file can be converted to text or to HTML.
 
-## Features
+Features
+--------
 
 - **Editor**: Color and styling support
 - **Editor**: Snippets for escape sequences
@@ -18,7 +20,8 @@ Select the file type "VT100 Terminal" on the lower right corner to enable highli
 
 ![Example Result](sample/ExampleResult.gif)
 
-## Extension Settings
+Extension Settings
+------------------
 
 Edit the global or workspace configuration and apply your custom colors.
 The configuration values shown below are the default values set by the plugin.
@@ -177,7 +180,8 @@ Even though the color configuration settings are called `foreground-color-*` and
 - background-color
 - after
 
-## Test the Extension with an Example
+Test the Extension with an Example
+----------------------------------
 
 Use the python program below to generate a sample file which contains VT100 escape sequences.
 
@@ -212,7 +216,8 @@ The output looks similar to the image shown below on a terminal.
 
 ![Example Result on a Terminal](sample/ExampleSource.png)
 
-## Requirements for Build
+Requirements for Build
+----------------------
 
 Typescript for plugin development.
 This extension does not need any other dependencies.
