@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.0.8
+-----
+
+- Added escape sequence snippets
+
 0.0.7
 -----
 

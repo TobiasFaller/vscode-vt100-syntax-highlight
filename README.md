@@ -9,11 +9,6 @@ Select the file type "VT100 Terminal" on the lower right corner to enable highli
 
 ![Example Result](sample/ExampleResult.png)
 
-## Requirements
-
-Typescript for plugin development.
-This extension does not need any other dependencies.
-
 ## Extension Settings
 
 Edit the global or workspace configuration and apply your custom colors.
@@ -195,3 +190,18 @@ Run the program with `python3 generate_sample.py > sample.vt100`.
 The output looks similar to the image shown below on a terminal.
 
 ![Example Result on a Terminal](sample/ExampleSource.png)
+
+## Requirements for Build
+
+Typescript for plugin development.
+This extension does not need any other dependencies.
+
+```bash
+#!/bin/bash
+
+# Install dependencies
+npm install
+
+# Build plugin
+vsce package
+```
