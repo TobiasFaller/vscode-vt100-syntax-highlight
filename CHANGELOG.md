@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.0.9
+-----
+
+- Debounced editor input to increase performance during typing and editing
+
 0.0.8
 -----
 
