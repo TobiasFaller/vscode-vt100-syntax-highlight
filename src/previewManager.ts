@@ -120,9 +120,6 @@ class VT100Preview {
 	private _onDisposeEmitter = new vscode.EventEmitter<void>();
 	public onDispose = this._onDisposeEmitter.event;
 
-	private _onDidChangeViewStateEmitter = new vscode.EventEmitter<vscode.WebviewPanelOnDidChangeViewStateEvent>();
-	public onDidChangeViewState = this._onDidChangeViewStateEmitter.event;
-
 	static async create(uri: vscode.Uri, previewColumn: vscode.ViewColumn, contentProvider: VT100ContentProvider): Promise<VT100Preview> {
 		const panel = vscode.window.createWebviewPanel('vt100.preview', 'VT100 Preview', previewColumn);
 		const preview = new VT100Preview(uri, panel, contentProvider);
@@ -152,10 +149,6 @@ class VT100Preview {
 			this.dispose();
 		}, null, this._disposables);
 
-		this._editor.onDidChangeViewState(e => {
-			this._onDidChangeViewStateEmitter.fire(e);
-		}, null, this._disposables);
-
 		// Todo: Debounce
 		vscode.workspace.onDidChangeTextDocument(event => {
 			if (event.document.uri.fsPath == this._uri.fsPath) {
@@ -172,9 +165,7 @@ class VT100Preview {
 
 	dispose() {
 		this._onDisposeEmitter.fire();
-
 		this._onDisposeEmitter.dispose();
-		this._onDidChangeViewStateEmitter.dispose();
 		this._editor.dispose();
 
 		for (let disposable of this._disposables) {
