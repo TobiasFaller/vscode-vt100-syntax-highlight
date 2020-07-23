@@ -587,7 +587,8 @@
 			{
 				"command": "vt100.showPreview",
 				"title": "Show Preview",
-				"category": "VT100"
+				"category": "VT100",
+				"icon": "$(open-preview)"
 			},
 			{
 				"command": "vt100.showPreviewToSide",

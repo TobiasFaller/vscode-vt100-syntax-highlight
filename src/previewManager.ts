@@ -155,10 +155,10 @@ class VT100Preview {
 				this._update(this._uri, false);
 			}
 		}, null, this._disposables);
-	
+
 		vscode.window.onDidChangeActiveTextEditor(editor => {
 			if (editor && editor.document.languageId === 'vt100') {
-				this._update(editor.document.uri, false);
+				this._update(editor.document.uri, true);
 			}
 		}, null, this._disposables);
 	}
