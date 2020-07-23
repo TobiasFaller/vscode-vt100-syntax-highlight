@@ -52,10 +52,11 @@ export class HTMLContentProvider implements vscode.Disposable {
 
 			const darkSettingsExist = 'dark' in previewSettings;
 			const lightSettingsExist = 'light' in previewSettings;
+			const highContrastSettingsExist = 'high-contrast' in previewSettings;
 
-			if (!darkSettingsExist && !lightSettingsExist) {
-				// Neither the dark nor the light settings exists
-				// Use the same style for both modes
+			if (!darkSettingsExist && !lightSettingsExist && !highContrastSettingsExist) {
+				// Neither the dark, the light nor the high-contrast settings exists
+				// Use the same style for all modes
 				styles.push([`.${key}`, previewSettings]);
 			} else {
 				if (darkSettingsExist && typeof previewSettings['dark'] === 'object') {
@@ -68,6 +69,12 @@ export class HTMLContentProvider implements vscode.Disposable {
 					styles.push([`.vscode-light .${key}`, previewSettings['light']]);
 				} else {
 					styles.push([`.vscode-light .${key}`, {}]);
+				}
+
+				if (highContrastSettingsExist && typeof previewSettings['high-contrast'] === 'object') {
+					styles.push([`.vscode-high-contrast .${key}`, previewSettings['high-contrast']]);
+				} else {
+					styles.push([`.vscode-high-contrast .${key}`, {}]);
 				}
 			}
 		}
@@ -110,21 +117,21 @@ export class HTMLContentProvider implements vscode.Disposable {
 		} else {
 			html += '<body class="vscode-light">';
 		}
-		VT100Parser.parse(document, (range, modifiers, lineEnd) => {
+		VT100Parser.parse(document, (range, context) => {
 			// Just ignore escape sequences and don't render them
-			if (modifiers.get('type') === 'escape-sequence') {
+			if (context.get('type') === 'escape-sequence') {
 				return;
 			}
 
-			const [foregroundColor, backgroundColor] = this._getColors(modifiers);
+			const [foregroundColor, backgroundColor] = this._getColors(context);
 			const classList: string[] = [];
 
-			classList.push(modifiers.get('type')!);
+			classList.push(context.get('type')!);
 			classList.push('foreground');
 			classList.push(`foreground-color-${foregroundColor}`);
 
 			for (const attribute of ['bold', 'dim', 'underlined', 'blink', 'inverted', 'hidden']) {
-				if (modifiers.get(attribute) === 'yes') {
+				if (context.get(attribute) === 'yes') {
 					classList.push('attribute-' + attribute);
 				}
 			}
@@ -134,7 +141,7 @@ export class HTMLContentProvider implements vscode.Disposable {
 			html += this._escapeHtml(document.getText(range));
 			html += '</span></span>';
 
-			if (lineEnd) {
+			if (context.get('line-end') == 'yes') {
 				html += '<br>\n';
 			}
 		});
@@ -148,13 +155,13 @@ export class HTMLContentProvider implements vscode.Disposable {
 		return buffer.toString('base64');
 	}
 
-	private _getColors(modifiers: Map<string, string>): [string, string] {
+	private _getColors(context: Map<string, string>): [string, string] {
 		let foregroundColor: string;
 		let backgroundColor: string;
 
-		if (modifiers.get('inverted') === 'yes') {
-			foregroundColor = modifiers.get('background-color')!;
-			backgroundColor = modifiers.get('foreground-color')!;
+		if (context.get('inverted') === 'yes') {
+			foregroundColor = context.get('background-color')!;
+			backgroundColor = context.get('foreground-color')!;
 
 			if (foregroundColor === 'default') {
 				foregroundColor = 'inverted';
@@ -163,8 +170,8 @@ export class HTMLContentProvider implements vscode.Disposable {
 				backgroundColor = 'inverted';
 			}
 		} else {
-			foregroundColor = modifiers.get('foreground-color')!;
-			backgroundColor = modifiers.get('background-color')!;
+			foregroundColor = context.get('foreground-color')!;
+			backgroundColor = context.get('background-color')!;
 		}
 
 		return [foregroundColor, backgroundColor];

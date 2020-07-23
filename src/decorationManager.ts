@@ -136,7 +136,7 @@ class EditorDecorator {
 			appliedDecorations.set(decorationName, []);
 		}
 
-		VT100Parser.parse(editor.document, (range, modifiers, _lineEnd) => {
+		VT100Parser.parse(editor.document, (range, modifiers) => {
 			this._applyDecoration(range, modifiers, appliedDecorations);
 		});
 
@@ -152,13 +152,13 @@ class EditorDecorator {
 		}
 	}
 
-	private _applyDecoration(range: vscode.Range, tokenModifiers: Map<string, string>, appliedDecorations: Map<string, vscode.Range[]>) {
+	private _applyDecoration(range: vscode.Range, context: Map<string, string>, appliedDecorations: Map<string, vscode.Range[]>) {
 		let foregroundColor;
 		let backgroundColor;
 
-		if (tokenModifiers.get('inverted') === 'yes') {
-			foregroundColor = tokenModifiers.get('background-color');
-			backgroundColor = tokenModifiers.get('foreground-color');
+		if (context.get('inverted') === 'yes') {
+			foregroundColor = context.get('background-color');
+			backgroundColor = context.get('foreground-color');
 
 			if (foregroundColor === 'default') {
 				foregroundColor = 'inverted';
@@ -167,20 +167,20 @@ class EditorDecorator {
 				backgroundColor = 'inverted';
 			}
 		} else {
-			foregroundColor = tokenModifiers.get('foreground-color');
-			backgroundColor = tokenModifiers.get('background-color');
+			foregroundColor = context.get('foreground-color');
+			backgroundColor = context.get('background-color');
 		}
 
 		appliedDecorations.get('background-color-' + backgroundColor)!.push(range);
 		appliedDecorations.get('foreground-color-' + foregroundColor)!.push(range);
 
 		for (const attribute of ['bold', 'dim', 'underlined', 'blink', 'inverted', 'hidden']) {
-			if (tokenModifiers.get(attribute) === 'yes') {
+			if (context.get(attribute) === 'yes') {
 				appliedDecorations.get('attribute-' + attribute)!.push(range);
 			}
 		}
 
-		switch (tokenModifiers.get('type')) {
+		switch (context.get('type')) {
 			case 'escape-sequence':
 				appliedDecorations.get('escape-sequence')!.push(range);
 				break;
