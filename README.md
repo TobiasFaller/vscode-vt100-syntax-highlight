@@ -1,13 +1,22 @@
-# VT100 Color and Style Highlighting for VS Code
+# Terminal Color and Style Highlighting for the Editor in VS Code
+
+This extension provides highlighting for **terminal color** escape sequences for the editor.
+The colors and styles can be customized via the configuration and light / dark theming is supported.
+The included preview feature can be used to view the source file like it would be shown in a terminal.
+With the export features the source file can be converted to text or to HTML.
 
 ## Features
 
-This extension provides highlighting for VT100 color escape sequences.
+- **Editor**: Color and Styling support
+- **Editor**: Snippets for escape-sequences
+- **Preview**: Terminal-like preview of the file
+- **Export**: Text export with removed escape-sequences
+- **Export**: HTML export with rendered escape-sequences
+
 Below is a screenshot how the highlighted sample file might look by applying this plugin.
-The highligh colors and styles can be customized via the global or project configuration.
 Select the file type "VT100 Terminal" on the lower right corner to enable highlighting of a file.
 
-![Example Result](sample/ExampleResult.png)
+![Example Result](sample/ExampleResult.gif)
 
 ## Extension Settings
 
