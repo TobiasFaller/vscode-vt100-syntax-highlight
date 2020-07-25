@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.0.11
+------
+
+- Added progress to export commands
+- Introduced abbreviated class names for HTML export to reduce memory consumption
+
 0.0.10
 ------
 
