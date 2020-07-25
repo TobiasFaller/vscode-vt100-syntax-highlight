@@ -266,7 +266,8 @@ export class ConfigurationManager implements vscode.Disposable {
 				'margin': '0px'
 			},
 			'.bg': {
-				'display': 'inline-block'
+				'display': 'inline-block',
+				'padding': '0.1em'
 			},
 			'@keyframes blink-animation': {
 				'50%': {
