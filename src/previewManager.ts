@@ -234,7 +234,11 @@ class VT100Preview {
 		this._editor.title = `${VT100Preview._getFilename(uri)} (Preview)`;
 
 		const state = { uri: document.uri.toString() };
-		const content: string = this._contentProvider.provideTextDocumentContent(document, state);
+
+		let content = '';
+		await this._contentProvider.provideTextDocumentContent(document, async (data) => {
+			content += data;
+		}, state);
 
 		// Check for concurrency
 		if (this._uri === uri) {

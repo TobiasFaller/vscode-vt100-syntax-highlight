@@ -1,7 +1,14 @@
 {
 	"name": "vt100-syntax-highlighting",
-	"displayName": "VT100 Syntax Highlighting",
+	"displayName": "Terminal Color and Style Highlighting for the Editor",
 	"description": "VT100 Color and Style Highlighting in the Text Editor",
+	"keywords": [
+		"colors",
+		"escape code",
+		"terminal",
+		"vt100",
+		"vt100 terminal"
+	],
 	"version": "0.0.10",
 	"author": {
 		"name": "Tobias Faller"
@@ -17,6 +24,7 @@
 	},
 	"categories": [
 		"Programming Languages",
+		"Snippets",
 		"Other"
 	],
 	"icon": "images/icon.png",
@@ -545,7 +553,7 @@
 								"padding": "0px",
 								"margin": "0px"
 							},
-							".background": {
+							".bg": {
 								"display": "inline-block",
 								"padding": "0.1em"
 							},

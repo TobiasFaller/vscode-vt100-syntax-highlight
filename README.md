@@ -29,7 +29,7 @@ All `foreground-color`, `background-color` and `attribute` settings support defi
 The variant defined in the `editor` sub-configuration is used for the editor view, while the `preview` sub-configuration is used for the HTML preview.
 If no sub-configurations are defined the style is used for both views.
 
-```json
+```jsonc
 {
     // Associate the VT100 extension with *.log files if you want to.
     // "files.associations": {
@@ -137,7 +137,7 @@ If no sub-configurations are defined the style is used for both views.
             "padding": "0px",
             "margin": "0px"
         },
-        ".background": {
+        ".bg": {
             "display": "inline-block",
             "padding": "0.1em"
         },
@@ -146,39 +146,92 @@ If no sub-configurations are defined the style is used for both views.
                 "opacity": "0.0"
             }
         }
-        // Example for dark theme only definition
-        //".vscode-dark .background": {
+        // Example for dark theme only definition, which uses white text
+        // when viewing in dark mode.
+        // The same effect can be created by using the "dark" and "light"
+        // settings of the other configuration options.
+        //".vscode-dark .bg": {
         //  "color": "white"
         //}
     }
 }
 ```
 
-The HTML preview allows all [CSS properties](https://www.w3schools.com/cssref/default.asp) which can set for a `span` element.
+The HTML preview allows all [CSS properties](https://www.w3schools.com/cssref/default.asp) which can be set for a `span` element.
 The [common properties](https://code.visualstudio.com/api/references/vscode-api#DecorationRenderOptions) listed below are supported by the editor view.
 The HTML property names are automatically converted to the VS Code internal format which allows one value to be used for both configurations variants.
-Even though the color configuration settings are called `foreground-color-*` and `background-color-*` all properties below can be specified if desired.
+Even though the color configuration settings are called `foreground-color-*` and `background-color-*`, all properties below can be specified in the editor, if desired.
 
-- text-decoration
-- outline-width
-- outline-style
-- outline-color
-- outline
-- opacity
-- letter-spacing
-- font-weight
-- font-style
-- cursor
-- color
-- border-width
-- border-style
-- border-spacing
-- border-radius
-- border-color
-- border
-- before
-- background-color
-- after
+- **text-decoration**
+- **outline-width**
+- **outline-style**
+- **outline-color**
+- **outline**
+- **opacity**
+- **letter-spacing**
+- **font-weight**
+- **font-style**
+- **cursor**
+- **color**
+- **border-width**
+- **border-style**
+- **border-spacing**
+- **border-radius**
+- **border-color**
+- **border**
+- **before**
+- **background-color**
+- **after**
+
+The HTML preview uses the HTML class names in abbreviated form to reduce the memory consumption of the generated HTML code.
+Below is the list with all class names and the abbreviations which are used in the HTML code.
+
+- **foreground**: fg
+- **foreground-color-default**: fg-de
+- **foreground-color-inverted**: fg-in
+- **foreground-color-black**: fg-bl
+- **foreground-color-red**: fg-re
+- **foreground-color-green**: fg-gr
+- **foreground-color-yellow**: fg-yl
+- **foreground-color-blue**: fg-blu
+- **foreground-color-magenta**: fg-mg
+- **foreground-color-cyan**: fg-cy
+- **foreground-color-light-gray**: fg-lg
+- **foreground-color-dark-gray**: fg-dg
+- **foreground-color-light-red**: fg-lr
+- **foreground-color-light-green**: fg-lgr
+- **foreground-color-light-yellow**: fg-ly
+- **foreground-color-light-blue**: fg-lb
+- **foreground-color-light-magenta**: fg-lm
+- **foreground-color-light-cyan**: fg-lc
+- **foreground-color-white**: fg-wh
+- **background**: bg
+- **background-color-default**: bg-de
+- **background-color-inverted**: bg-in
+- **background-color-black**: bg-bl
+- **background-color-red**: bg-re
+- **background-color-green**: bg-gr
+- **background-color-yellow**: bg-yl
+- **background-color-blue**: bg-blu
+- **background-color-magenta**: bg-mg
+- **background-color-cyan**: bg-cy
+- **background-color-light-gray**: bg-lg
+- **background-color-dark-gray**: bg-dg
+- **background-color-light-red**: bg-lr
+- **background-color-light-green**: bg-lgr
+- **background-color-light-yellow**: bg-ly
+- **background-color-light-blue**: bg-lb
+- **background-color-light-magenta**: bg-lm
+- **background-color-light-cyan**: bg-lc
+- **background-color-white**: bg-wh
+- **attribute-bold**: at-bo
+- **attribute-dim**: at-di
+- **attribute-underlined**: at-ul
+- **attribute-blink**: at-bl
+- **attribute-inverted**: at-in
+- **attribute-hidden**: at-hi
+- **text**: te
+- **escape-sequence**: es
 
 Test the Extension with an Example
 ----------------------------------

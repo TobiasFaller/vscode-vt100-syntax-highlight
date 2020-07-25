@@ -7,10 +7,57 @@ import { VT100Parser } from '../vt100Parser';
 
 export class HTMLContentProvider implements vscode.Disposable {
 
+	static generateKeyMappings(): Map<string, string> {
+		const map: Map<string, string> = new Map();
+
+		map.set('foreground', 'fg');
+		map.set('background', 'bg');
+		map.set('text', 'te');
+		map.set('escape-sequence', 'es');
+
+		for (const [color, abbreviation] of [
+			[ 'default', 'de' ],
+			[ 'inverted', 'in' ],
+			[ 'black', 'bl' ],
+			[ 'red', 're' ],
+			[ 'green', 'gr' ],
+			[ 'yellow', 'yl' ],
+			[ 'blue', 'blu' ],
+			[ 'magenta', 'mg' ],
+			[ 'cyan', 'cy' ],
+			[ 'light-gray', 'lg' ],
+			[ 'dark-gray', 'dg' ],
+			[ 'light-red', 'lr' ],
+			[ 'light-green', 'lgr' ],
+			[ 'light-yellow', 'ly' ],
+			[ 'light-blue', 'lb' ],
+			[ 'light-magenta', 'lm' ],
+			[ 'light-cyan', 'lc' ],
+			[ 'white', 'wh' ]
+		]) {
+			map.set('foreground-color-' + color, 'fg-' + abbreviation);
+			map.set('background-color-' + color, 'bg-' + abbreviation);
+		}
+
+		for (const [attribute, abbreviation] of [
+			[ 'bold', 'bo' ],
+			[ 'dim', 'di' ],
+			[ 'underlined', 'ul' ],
+			[ 'blink', 'bl' ],
+			[ 'inverted', 'in' ],
+			[ 'hidden', 'hi' ]
+		]) {
+			map.set('attribute-' + attribute, 'at-' + abbreviation);
+		}
+
+		return map;
+	}
+
 	private _disposables: vscode.Disposable[] = [];
 	private _configuration: ConfigurationManager;
 
 	private _styles: any;
+	private _styleKeyMappings: Map<string, string>;
 	private _customCss: any;
 	private _fontSettings: any;
 
@@ -22,6 +69,7 @@ export class HTMLContentProvider implements vscode.Disposable {
 
 		this._customCss = { };
 		this._styles = new Map();
+		this._styleKeyMappings = HTMLContentProvider.generateKeyMappings();
 
 		this.reloadConfiguration();
 	}
@@ -54,32 +102,38 @@ export class HTMLContentProvider implements vscode.Disposable {
 			const lightSettingsExist = 'light' in previewSettings;
 			const highContrastSettingsExist = 'high-contrast' in previewSettings;
 
+			const shortKey = this._getShortKey(key);
+
 			if (!darkSettingsExist && !lightSettingsExist && !highContrastSettingsExist) {
 				// Neither the dark, the light nor the high-contrast settings exists
 				// Use the same style for all modes
-				styles.push([`.${key}`, previewSettings]);
+				styles.push([`.${shortKey}`, previewSettings]);
 			} else {
 				if (darkSettingsExist && typeof previewSettings['dark'] === 'object') {
-					styles.push([`.vscode-dark .${key}`, previewSettings['dark']]);
+					styles.push([`.vscode-dark .${shortKey}`, previewSettings['dark']]);
 				} else {
-					styles.push([`.vscode-dark .${key}`, {}]);
+					styles.push([`.vscode-dark .${shortKey}`, {}]);
 				}
 
 				if (lightSettingsExist && typeof previewSettings['light'] === 'object') {
-					styles.push([`.vscode-light .${key}`, previewSettings['light']]);
+					styles.push([`.vscode-light .${shortKey}`, previewSettings['light']]);
 				} else {
-					styles.push([`.vscode-light .${key}`, {}]);
+					styles.push([`.vscode-light .${shortKey}`, {}]);
 				}
 
 				if (highContrastSettingsExist && typeof previewSettings['high-contrast'] === 'object') {
-					styles.push([`.vscode-high-contrast .${key}`, previewSettings['high-contrast']]);
+					styles.push([`.vscode-high-contrast .${shortKey}`, previewSettings['high-contrast']]);
 				} else {
-					styles.push([`.vscode-high-contrast .${key}`, {}]);
+					styles.push([`.vscode-high-contrast .${shortKey}`, {}]);
 				}
 			}
 		}
 
 		return Object.fromEntries(styles);
+	}
+
+	private _getShortKey(key: string): string {
+		return this._styleKeyMappings.get(key)!;
 	}
 
 	/**
@@ -89,65 +143,73 @@ export class HTMLContentProvider implements vscode.Disposable {
 	 * The state parameter is undefined, when exporting HTML to a file.
 	 *
 	 * @param document The document to render
+	 * @param callback A callback to receive the generated data
 	 * @param state The state information, when in preview mode
 	 */
-	public provideTextDocumentContent(document: vscode.TextDocument, state?: any): string {
+	public async provideTextDocumentContent(document: vscode.TextDocument, callback: (data: string) => Promise<void>, state?: any): Promise<void> {
 		const cssNonce = this._generateNonce();
 		const jsNonce = this._generateNonce();
-
-		let html = '<html>';
 
 		// Try to add at least a little bit of security with Content-Security-Policy so that
 		// the rendered file can not include arbitrary CSS code
 		// JavaScript is disabled by CSP and the WebView settings
-		html += '<head>';
-		html += `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${jsNonce}'; style-src 'nonce-${cssNonce}'"></meta>`;
-		html += '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
-		html += `<title>${this._getFilename(document.uri)}</title>`;
+		let header = '<html>';
+		header += '<head>';
+		header += `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${jsNonce}'; style-src 'nonce-${cssNonce}'"></meta>`;
+		header += '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
+		header += `<title>${this._getFilename(document.uri)}</title>`;
 		if (state != null) {
-			html += `<script type="text/javascript" nonce="${jsNonce}">acquireVsCodeApi().setState(${JSON.stringify(state)});</script>`;
+			header += `<script type="text/javascript" nonce="${jsNonce}">acquireVsCodeApi().setState(${JSON.stringify(state)});</script>`;
 		}
-		html += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._styles)}</style>`;
-		html += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._fontSettings)}</style>`;
-		html += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._customCss)}</style>`;
-		html += '</head>';
+		header += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._styles)}</style>`;
+		header += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._fontSettings)}</style>`;
+		header += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._customCss)}</style>`;
+		header += '</head>';
 
 		if (state != null) {
-			html += '<body>';
+			header += '<body>';
 		} else {
-			html += '<body class="vscode-light">';
+			header += '<body class="vscode-light">';
 		}
-		VT100Parser.parse(document, (range, context) => {
+		await callback(header);
+
+		await VT100Parser.parse(document, async (range, context) => {
 			// Just ignore escape sequences and don't render them
 			if (context.get('type') === 'escape-sequence') {
 				return;
 			}
 
 			const [foregroundColor, backgroundColor] = this._getColors(context);
-			const classList: string[] = [];
 
-			classList.push(context.get('type')!);
-			classList.push('foreground');
-			classList.push(`foreground-color-${foregroundColor}`);
-
+			const foregroundClasses: string[] = [ ];
+			foregroundClasses.push(this._getShortKey('foreground'));
+			foregroundClasses.push(this._getShortKey(context.get('type')!));
+			foregroundClasses.push(this._getShortKey(`foreground-color-${foregroundColor}`));
 			for (const attribute of ['bold', 'dim', 'underlined', 'blink', 'inverted', 'hidden']) {
 				if (context.get(attribute) === 'yes') {
-					classList.push('attribute-' + attribute);
+					foregroundClasses.push(this._getShortKey('attribute-' + attribute));
 				}
 			}
 
-			html += `<span class="background background-color-${backgroundColor}">`;
-			html += `<span class="${classList.join(' ')}">`;
-			html += this._escapeHtml(document.getText(range));
-			html += '</span></span>';
+			const backgroundClasses: string[] = [ ];
+			backgroundClasses.push(this._getShortKey('background'));
+			backgroundClasses.push(this._getShortKey(`background-color-${backgroundColor}`));
+
+			let line = `<span class="${backgroundClasses.join(' ')}">`;
+			line += `<span class="${foregroundClasses.join(' ')}">`;
+			line += this._escapeHtml(document.getText(range));
+			line += '</span></span>';
 
 			if (context.get('line-end') == 'yes') {
-				html += '<br>\n';
+				line += '<br>\n';
 			}
+
+			await callback(line);
 		});
-		html += '</body>';
-		html += '</html>';
-		return html;
+
+		let footer = '</body>';
+		footer += '</html>';
+		await callback(footer);
 	}
 
 	private _generateNonce(): string {

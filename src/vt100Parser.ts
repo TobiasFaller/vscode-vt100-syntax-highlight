@@ -2,8 +2,8 @@ import * as vscode from 'vscode';
 
 export class VT100Parser {
 
-	public static parse(document: vscode.TextDocument, callback: (range: vscode.Range, context: Map<string, string>) => void) {
-		const context = new Map<string, string>();
+	public static async parse(document: vscode.TextDocument, callback: (range: vscode.Range, context: Map<string, any>) => Promise<void>): Promise<void> {
+		const context = new Map<string, any>();
 
 		// Initialize defaults
 		context.set('foreground-color', 'default');
@@ -15,34 +15,36 @@ export class VT100Parser {
 		context.set('inverted', 'no');
 		context.set('hidden', 'no');
 
+		// eslint-disable-next-line no-control-regex
+		const escapeRegex = /\x1B\[((?:[0-9]+;)*[0-9]+)m/g;
+
 		const lines = document.getText().split(/\r\n|\r|\n/);
 		for (let i = 0; i < lines.length; i++) {
-			// eslint-disable-next-line no-control-regex
-			const escapeRegex = /\x1B\[((?:[0-9]+;)*?[0-9]+)m/g;
 			const line = lines[i];
 
-			context.set('line-number', `${i}`);
+			context.set('line-number', i);
 			context.set('line-end', 'no');
 
+			escapeRegex.lastIndex = 0;
 			let lastIndex = 0;
 			let match;
 			while ((match = escapeRegex.exec(line)) !== null) {
 				// Push last result
 				if (match.index - lastIndex > 0) {
 					context.set('type', 'text');
-					callback(new vscode.Range(i, lastIndex, i, match.index), context);
+					await callback(new vscode.Range(i, lastIndex, i, match.index), context);
 				}
 
 				this._applyParams(match[1], context);
 				context.set('type', 'escape-sequence');
-				callback(new vscode.Range(i, match.index, i, escapeRegex.lastIndex), context);
+				await callback(new vscode.Range(i, match.index, i, escapeRegex.lastIndex), context);
 
 				lastIndex = escapeRegex.lastIndex;
 			}
 
 			context.set('type', 'text');
 			context.set('line-end', 'yes');
-			callback(new vscode.Range(i, lastIndex, i, line.length), context);
+			await callback(new vscode.Range(i, lastIndex, i, line.length), context);
 		}
 	}
 

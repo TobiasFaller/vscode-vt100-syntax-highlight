@@ -136,9 +136,16 @@ class EditorDecorator {
 			appliedDecorations.set(decorationName, []);
 		}
 
-		VT100Parser.parse(editor.document, (range, modifiers) => {
-			this._applyDecoration(range, modifiers, appliedDecorations);
+		const progressView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right);
+		progressView.text = "Parsing file";
+		progressView.show();
+
+		await VT100Parser.parse(editor.document, async (range, context) => {
+			this._applyDecoration(range, context, appliedDecorations);
 		});
+
+		progressView.hide();
+		progressView.dispose();
 
 		for (const [key, value] of appliedDecorations) {
 			editor.setDecorations(this._decorations.get(key)!, value);
@@ -152,13 +159,13 @@ class EditorDecorator {
 		}
 	}
 
-	private _applyDecoration(range: vscode.Range, context: Map<string, string>, appliedDecorations: Map<string, vscode.Range[]>) {
-		let foregroundColor;
-		let backgroundColor;
+	private _applyDecoration(range: vscode.Range, context: Map<string, any>, appliedDecorations: Map<string, vscode.Range[]>) {
+		let foregroundColor: string;
+		let backgroundColor: string;
 
 		if (context.get('inverted') === 'yes') {
-			foregroundColor = context.get('background-color');
-			backgroundColor = context.get('foreground-color');
+			foregroundColor = <string> context.get('background-color');
+			backgroundColor = <string> context.get('foreground-color');
 
 			if (foregroundColor === 'default') {
 				foregroundColor = 'inverted';
@@ -167,8 +174,8 @@ class EditorDecorator {
 				backgroundColor = 'inverted';
 			}
 		} else {
-			foregroundColor = context.get('foreground-color');
-			backgroundColor = context.get('background-color');
+			foregroundColor = <string> context.get('foreground-color');
+			backgroundColor = <string> context.get('background-color');
 		}
 
 		appliedDecorations.get('background-color-' + backgroundColor)!.push(range);
