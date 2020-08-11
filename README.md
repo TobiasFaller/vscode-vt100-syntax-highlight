@@ -20,6 +20,19 @@ Select the file type "VT100 Terminal" on the lower right corner to enable highli
 
 ![Example Result](sample/ExampleResult.gif)
 
+How to open the preview
+-----------------------
+
+Make sure that the extension is currently active for the selected file.
+This is done by selecting the file type `VT100 Terminal` on the bottom right of the editor.
+You can also use the `Change Language Mode` command, with has the shortcut `Ctrl + K` and then `M` when using the default configuration.
+v
+On the top right of the editor a preview icon with a magnifying glass should appear.
+Click on this icon to open the preview.
+You can also use the `Open Preview to Side` command, which has the shortcut `Ctrl + K` and then `V` when using the default configuration.
+
+![Set Language Mode and Open the Preview](images/preview.png)
+
 Extension Settings
 ------------------
 
