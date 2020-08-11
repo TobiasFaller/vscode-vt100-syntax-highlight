@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.0.12
+------
+
+- Added additional filter to remove escape codes in preview panel
+- Added section 'How to open the preview' to the readme document
+
 0.0.11
 ------
 
