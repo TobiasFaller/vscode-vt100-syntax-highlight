@@ -197,7 +197,7 @@ export class HTMLContentProvider implements vscode.Disposable {
 
 			let line = `<span class="${backgroundClasses.join(' ')}">`;
 			line += `<span class="${foregroundClasses.join(' ')}">`;
-			line += this._escapeHtml(document.getText(range));
+			line += this._escapeHtml(this._stripEscapeCodes(document.getText(range)));
 			line += '</span></span>';
 
 			if (context.get('line-end') == 'yes') {
@@ -278,6 +278,14 @@ export class HTMLContentProvider implements vscode.Disposable {
 		}
 
 		return path;
+	}
+
+	private _stripEscapeCodes(text: string): string {
+		// See http://ascii-table.com/ansi-escape-sequences-vt-100.php
+		// eslint-disable-next-line no-control-regex
+		return text.replace(/\x1B\[([0-9?]*[hl]|[0-9;]*[mrHfy]|[0-9]*[ABCDgKJnqi]|[0-9;?]*[c])/g, '')
+			// eslint-disable-next-line no-control-regex
+			.replace(/\x1B([NODMEHc<=>FGABCDHIKJ]|[()][AB012]|#[0-9]|[0-9;]R|\/?Z|[0-9]+|O[PQRSABCDpqrstuvwxymlnM])/g, '');
 	}
 
 }
