@@ -16,7 +16,7 @@ export class VT100Parser {
 		context.set('hidden', 'no');
 
 		// eslint-disable-next-line no-control-regex
-		const escapeRegex = /\x1B\[((?:[0-9]+;)*[0-9]+)m/g;
+		const escapeRegex = /\x1B\[((?:[0-9]+;)*[0-9]+)?m/g;
 
 		const lines = document.getText().split(/\r\n|\r|\n/);
 		for (let i = 0; i < lines.length; i++) {
@@ -48,10 +48,20 @@ export class VT100Parser {
 		}
 	}
 
-	private static _applyParams(params: string, context: Map<string, string>): void {
-		// See https://misc.flogisoft.com/bash/tip_colors_and_formatting
-		const splittedParams = params.split(';');
+    private static _getParams(params: string): string[] {
+		// ESC[m is eqivalent to ESC[0m
+		if (typeof(params) == 'undefined') {
+			return ['0'];
+		}
 
+		return params.split(';');
+	}
+
+	private static _applyParams(params: string, context: Map<string, string>): void {
+		const splittedParams = this._getParams(params);
+
+		// See https://misc.flogisoft.com/bash/tip_colors_and_formatting
+		// And https://invisible-island.net/xterm/ctlseqs/ctlseqs.html
 		for (const param of splittedParams) {
 			if (param === "0") {
 				context.set('foreground-color', 'default');

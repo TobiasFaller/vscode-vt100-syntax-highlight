@@ -282,6 +282,7 @@ export class HTMLContentProvider implements vscode.Disposable {
 
 	private _stripEscapeCodes(text: string): string {
 		// See http://ascii-table.com/ansi-escape-sequences-vt-100.php
+		// And https://invisible-island.net/xterm/ctlseqs/ctlseqs.html
 		// eslint-disable-next-line no-control-regex
 		return text.replace(/\x1B\[([0-9?]*[hl]|[0-9;]*[mrHfy]|[0-9]*[ABCDgKJnqi]|[0-9;?]*[c])/g, '')
 			// eslint-disable-next-line no-control-regex
