@@ -80,7 +80,7 @@
 						"title": "VT100 Text Style (Inverted default color)",
 						"default": {
 							"dark": { "color": "#000000" },
-							"light": { "color": "#FFFFFF" }
+							"light": { "color": "#C7C7C7" }
 						},
 						"description": "The VT100 default (inverted) foreground color style"
 					},
@@ -104,7 +104,7 @@
 						"title": "VT100 Text Style (Red color)",
 						"default": {
 							"dark": {"color": "#FF0000"},
-							"light": {"color": "#cd3131"}
+							"light": {"color": "#CD3131"}
 						},
 						"description": "The VT100 red foreground color style"
 					},
@@ -116,7 +116,7 @@
 						"title": "VT100 Text Style (Green color)",
 						"default": {
 							"dark": {"color": "#00FF00"},
-							"light": {"color": "#00bc00"}
+							"light": {"color": "#00BC00"}
 						},
 						"description": "The VT100 green foreground color style"
 					},
@@ -140,7 +140,7 @@
 						"title": "VT100 Text Style (Blue color)",
 						"default": {
 							"dark": {"color": "#0000FF"},
-							"light": {"color": "#0452a5"}
+							"light": {"color": "#0452A5"}
 						},
 						"description": "The VT100 blue foreground color style"
 					},
@@ -152,7 +152,7 @@
 						"title": "VT100 Text Style (Magenta color)",
 						"default": {
 							"dark": {"color": "#FF00FF"},
-							"light": {"color": "#bc05bc"}
+							"light": {"color": "#BC05BC"}
 						},
 						"description": "The VT100 magenta foreground color style"
 					},
@@ -164,7 +164,7 @@
 						"title": "VT100 Text Style (Cyan color)",
 						"default": {
 							"dark": {"color": "#00FFFF"},
-							"light": {"color": "#0597bc"}
+							"light": {"color": "#0597BC"}
 						},
 						"description": "The VT100 cyan foreground color style"
 					},
