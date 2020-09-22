@@ -54,7 +54,17 @@ export class VT100Parser {
 			return ['0'];
 		}
 
-		return params.split(';');
+		return params.split(';').map(this._trimLeadingZeroes);
+	}
+
+	private static _trimLeadingZeroes(value: string): string {
+		let index = 0;
+
+		while (index + 1 < value.length && value[index] == '0') {
+			index++;
+		}
+
+		return value.substring(index);
 	}
 
 	private static _applyParams(params: string, context: Map<string, string>): void {
