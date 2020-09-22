@@ -126,7 +126,7 @@ export class ConfigurationManager implements vscode.Disposable {
 	}
 
 	private _loadCustomCss(configuration: vscode.WorkspaceConfiguration) {
-		this._customCss = configuration['custom-css'] || this._getFallbackCss();
+		this._customCss = configuration['custom-css'] || this._getFallbackStyle('custom-css', 'preview');
 	}
 
 	private _loadStyle(name: string, configuration: vscode.WorkspaceConfiguration) {
@@ -137,8 +137,8 @@ export class ConfigurationManager implements vscode.Disposable {
 
 		if (settings == null || typeof settings !== 'object') {
 			// Settings are invalid
-			editorSettings = this._getFallbackStyle(name);
-			previewSettings = editorSettings;
+			editorSettings = this._getFallbackStyle(name, 'editor');
+			previewSettings = this._getFallbackStyle(name, 'preview');
 		} else {
 			const editorSettingsExist = 'editor' in settings;
 			const previewSettingsExist = 'preview' in settings;
@@ -152,25 +152,57 @@ export class ConfigurationManager implements vscode.Disposable {
 				if (editorSettingsExist && typeof settings['editor'] === 'object') {
 					editorSettings = settings['editor'];
 				} else {
-					editorSettings = this._getFallbackStyle(name);
+					editorSettings = this._getFallbackStyle(name, 'editor');
 				}
 
 				if (previewSettingsExist && typeof settings['preview'] === 'object') {
 					previewSettings = settings['preview'];
 				} else {
-					previewSettings = this._getFallbackStyle(name);
+					previewSettings = this._getFallbackStyle(name, 'preview');
 				}
 			}
 		}
 
-		this._styles.set(name, new StyleConfiguration(
-			this._convertCssToEditorRenderOptions(editorSettings), previewSettings));
+		const editorStyle = this._convertCssToEditorRenderOptions(name, editorSettings);
+		this._styles.set(name, new StyleConfiguration(editorStyle, previewSettings));
 	}
 
-	private _convertCssToEditorRenderOptions(style: any): vscode.DecorationRenderOptions {
+	private _convertCssToEditorRenderOptions(name: string, style: any): vscode.DecorationRenderOptions {
+		const defaultStyle = this._getFallbackStyle(name, 'editor');
+
+		let darkStyle: any = null;
+		let lightStyle: any = null;
+
+		if ('dark' in style && typeof style['dark'] === 'object') {
+			darkStyle = this._convertObjectToRenderOptions(style['dark']);
+		} else if (typeof style === 'object') {
+			darkStyle = this._convertObjectToRenderOptions(style);
+		} else if ('dark' in defaultStyle && typeof style['dark'] === 'object') {
+			darkStyle = this._convertObjectToRenderOptions(defaultStyle['dark']);
+		} else {
+			darkStyle = this._convertObjectToRenderOptions(defaultStyle);
+		}
+
+		if ('light' in style && typeof style['light'] === 'object') {
+			lightStyle = this._convertObjectToRenderOptions(style['light']);
+		} else if (typeof style === 'object') {
+			lightStyle = this._convertObjectToRenderOptions(style);
+		} else if ('light' in defaultStyle && typeof style['light'] === 'object') {
+			lightStyle = this._convertObjectToRenderOptions(defaultStyle['light']);
+		} else {
+			lightStyle = this._convertObjectToRenderOptions(defaultStyle);
+		}
+
+		return {
+			"dark": darkStyle,
+			"light": lightStyle
+		};
+	}
+
+	private _convertObjectToRenderOptions(object: any): any {
 		const properties: [string, string][] = [];
 
-		for (const [key, value] of Object.entries(style)) {
+		for (const [key, value] of Object.entries(object)) {
 			if (value != null) {
 				properties.push([this._convertCssToRenderOptionKey(key), <string> value]);
 			}
@@ -183,26 +215,21 @@ export class ConfigurationManager implements vscode.Disposable {
 		return key.replace(/-[A-Za-z]/g, (letter) => letter.substr(1).toUpperCase());
 	}
 
-	private _getFallbackStyle(style: string): any {
-		return this._defaultConfiguration.get(style) || { };
-	}
+	private _getFallbackStyle(style: string, type: string): any {
+		const configuration = this._defaultConfiguration.get('vt100.' + style) || { };
+		
+		const editorSettingsExist = 'editor' in configuration;
+		const previewSettingsExist = 'preview' in configuration;
 
-	private _getFallbackCss(): any {
-		return {
-			'*': {
-				'padding': '0px',
-				'margin': '0px'
-			},
-			'.bg': {
-				'display': 'inline-block',
-				'padding': '0.1em'
-			},
-			'@keyframes blink-animation': {
-				'50%': {
-					'opacity': '0.0'
-				}
-			}
-		};
+		if (editorSettingsExist && type === 'editor') {
+			return configuration['editor'];
+		}
+
+		if (previewSettingsExist && type === 'preview') {
+			return configuration['preview'];
+		}
+
+		return configuration;
 	}
 
 	private _getFallbackFont(property: string): any {
