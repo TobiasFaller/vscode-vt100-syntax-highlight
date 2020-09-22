@@ -23,6 +23,7 @@ export class ConfigurationManager implements vscode.Disposable {
 	private _customCss: any;
 	private _fontSettings: any;
 	private _disposables: vscode.Disposable[] = [];
+	private _defaultConfiguration: Map<string, any>;
 	
 	private _onReloadEmitter = new vscode.EventEmitter<void>();
 	public onReload = this._onReloadEmitter.event;
@@ -30,6 +31,7 @@ export class ConfigurationManager implements vscode.Disposable {
 	constructor() {
 		this._styles = new Map();
 		this._customCss = {};
+		this._defaultConfiguration = this._loadDefaultConfiguration();
 
 		this._reload();
 
@@ -78,6 +80,27 @@ export class ConfigurationManager implements vscode.Disposable {
 		this._loadCustomCss(configuration);
 
 		this._onReloadEmitter.fire();
+	}
+
+	private _loadDefaultConfiguration(): Map<string, any> {
+		const extension = vscode.extensions.getExtension('Tobias-Faller.vt100-syntax-highlighting');
+		const packageJSON = extension?.packageJSON;
+		const packageConfiguration = packageJSON?.contributes?.configuration;
+
+		if (!Array.isArray(packageConfiguration)) {
+			return new Map();
+		}
+
+		const configuration: Map<string, any> = new Map();
+
+		const defaultConfiguration =  packageConfiguration[0]?.properties;
+		for (const [key, value] of Object.entries(defaultConfiguration)) {
+			if (value !== null && typeof value === 'object') {
+				configuration.set(key, (<any> value)?.default);
+			}
+		}
+
+		return configuration;
 	}
 
 	private _loadFontSettings(configuration: vscode.WorkspaceConfiguration) {
@@ -161,102 +184,7 @@ export class ConfigurationManager implements vscode.Disposable {
 	}
 
 	private _getFallbackStyle(style: string): any {
-		switch(style) {
-			case 'foreground-color-default':
-				return { 'color': '#FFFFFF' };
-			case 'foreground-color-inverted':
-				return { 'color': '#000000' };
-			case 'foreground-color-black':
-				return { 'color': '#555555' };
-			case 'foreground-color-red':
-				return { 'color': '#FF0000' };
-			case 'foreground-color-green':
-				return { 'color': '#00FF00' };
-			case 'foreground-color-yellow':
-				return { 'color': '#FFFF00' };
-			case 'foreground-color-blue':
-				return { 'color': '#0000FF' };
-			case 'foreground-color-magenta':
-				return { 'color': '#FF00FF' };
-			case 'foreground-color-cyan':
-				return { 'color': '#00FFFF' };
-			case 'foreground-color-light-gray':
-				return { 'color': '#BBBBBB' };
-			case 'foreground-color-dark-gray':
-				return { 'color': '#777777' };
-			case 'foreground-color-light-red':
-				return { 'color': '#FF7777' };
-			case 'foreground-color-light-green':
-				return { 'color': '#77FF77' };
-			case 'foreground-color-light-yellow':
-				return { 'color': '#FFFF77' };
-			case 'foreground-color-light-blue':
-				return { 'color': '#7777FF' };
-			case 'foreground-color-light-magenta':
-				return { 'color': '#FF77FF' };
-			case 'foreground-color-light-cyan':
-				return { 'color': '#77FFFF' };
-			case 'foreground-color-white':
-				return { 'color': '#FFFFFF' };
-
-			case 'background-color-default':
-				return { 'background-color': '#00000000' };
-			case 'background-color-inverted':
-				return { 'background-color': '#FFFFFF00' };
-			case 'background-color-black':
-				return { 'background-color': '#000000' };
-			case 'background-color-red':
-				return { 'background-color': '#770000' };
-			case 'background-color-green':
-				return { 'background-color': '#007700' };
-			case 'background-color-yellow':
-				return { 'background-color': '#777700' };
-			case 'background-color-blue':
-				return { 'background-color': '#000077' };
-			case 'background-color-magenta':
-				return { 'background-color': '#770077' };
-			case 'background-color-cyan':
-				return { 'background-color': '#007777' };
-			case 'background-color-light-gray':
-				return { 'background-color': '#666666' };
-			case 'background-color-dark-gray':
-				return { 'background-color': '#222222' };
-			case 'background-color-light-red':
-				return { 'background-color': '#773333' };
-			case 'background-color-light-green':
-				return { 'background-color': '#337733' };
-			case 'background-color-light-yellow':
-				return { 'background-color': '#777733' };
-			case 'background-color-light-blue':
-				return { 'background-color': '#333377' };
-			case 'background-color-light-magenta':
-				return { 'background-color': '#773377' };
-			case 'background-color-light-cyan':
-				return { 'background-color': '#337777' };
-			case 'background-color-white':
-				return { 'background-color': '#AAAAAA' };
-
-			case 'attribute-bold':
-				return { 'font-weight': 'bold' };
-			case 'attribute-dim':
-				return { 'opacity': '0.7', 'font-weight': 'lighter' };
-			case 'attribute-underlined':
-				return { 'text-decoration': 'underline solid' };
-			case 'attribute-blink':
-				return { 'border': '1px dotted #FFFFFF77' };
-			case 'attribute-inverted':
-				return { };
-			case 'attribute-hidden':
-				return { 'opacity': '0.3' };
-
-			case 'text':
-				return { };
-			case 'escape-sequence':
-				return { };
-
-			default:
-				return { };
-		}
+		return this._defaultConfiguration.get(style) || { };
 	}
 
 	private _getFallbackCss(): any {
