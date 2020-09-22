@@ -67,12 +67,8 @@
 						],
 						"title": "VT100 Text Style (Default color)",
 						"default": {
-							"dark": {
-								"color": "#FFFFFF"
-							},
-							"light": {
-								"color": "#000000"
-							}
+							"dark": { "color": "#CCCCCC" },
+							"light": { "color": "#333333"}
 						},
 						"description": "The VT100 default foreground color style"
 					},
@@ -83,12 +79,8 @@
 						],
 						"title": "VT100 Text Style (Inverted default color)",
 						"default": {
-							"dark": {
-								"color": "#000000"
-							},
-							"light": {
-								"color": "#C7C7C7"
-							}
+							"dark": { "color": "#000000" },
+							"light": { "color": "#FFFFFF"}
 						},
 						"description": "The VT100 default (inverted) foreground color style"
 					},
@@ -99,12 +91,8 @@
 						],
 						"title": "VT100 Text Style (Black color)",
 						"default": {
-							"dark": {
-								"color": "#555555"
-							},
-							"light": {
-								"color": "#000000"
-							}
+							"dark": { "color": "#666666" },
+							"light": { "color": "#000000"}
 						},
 						"description": "The VT100 black foreground color style"
 					},
@@ -115,12 +103,8 @@
 						],
 						"title": "VT100 Text Style (Red color)",
 						"default": {
-							"dark": {
-								"color": "#FF0000"
-							},
-							"light": {
-								"color": "#CD3131"
-							}
+							"dark": { "color": "#CD3131" },
+							"light": { "color": "#CD3131"}
 						},
 						"description": "The VT100 red foreground color style"
 					},
@@ -131,12 +115,8 @@
 						],
 						"title": "VT100 Text Style (Green color)",
 						"default": {
-							"dark": {
-								"color": "#00FF00"
-							},
-							"light": {
-								"color": "#00BC00"
-							}
+							"dark": { "color": "#0DBC79" },
+							"light": { "color": "#00BC00"}
 						},
 						"description": "The VT100 green foreground color style"
 					},
@@ -147,12 +127,8 @@
 						],
 						"title": "VT100 Text Style (Yellow color)",
 						"default": {
-							"dark": {
-								"color": "#FFFF00"
-							},
-							"light": {
-								"color": "#939800"
-							}
+							"dark": { "color": "#E5E510" },
+							"light": { "color": "#949800"}
 						},
 						"description": "The VT100 yellow foreground color style"
 					},
@@ -163,12 +139,8 @@
 						],
 						"title": "VT100 Text Style (Blue color)",
 						"default": {
-							"dark": {
-								"color": "#0000FF"
-							},
-							"light": {
-								"color": "#0452A5"
-							}
+							"dark": { "color": "#2472C8" },
+							"light": { "color": "#0451A5"}
 						},
 						"description": "The VT100 blue foreground color style"
 					},
@@ -179,12 +151,8 @@
 						],
 						"title": "VT100 Text Style (Magenta color)",
 						"default": {
-							"dark": {
-								"color": "#FF00FF"
-							},
-							"light": {
-								"color": "#BC05BC"
-							}
+							"dark": { "color": "#BC3FBC" },
+							"light": { "color": "#BC05BC"}
 						},
 						"description": "The VT100 magenta foreground color style"
 					},
@@ -195,12 +163,8 @@
 						],
 						"title": "VT100 Text Style (Cyan color)",
 						"default": {
-							"dark": {
-								"color": "#00FFFF"
-							},
-							"light": {
-								"color": "#0597BC"
-							}
+							"dark": { "color": "#11A8CD" },
+							"light": { "color": "#0598BC"}
 						},
 						"description": "The VT100 cyan foreground color style"
 					},
@@ -211,12 +175,8 @@
 						],
 						"title": "VT100 Text Style (Light Gray color)",
 						"default": {
-							"dark": {
-								"color": "#BBBBBB"
-							},
-							"light": {
-								"color": "#555555"
-							}
+							"dark": { "color": "#A5A5A5" },
+							"light": { "color": "#777777"}
 						},
 						"description": "The VT100 light gray foreground color style"
 					},
@@ -227,12 +187,8 @@
 						],
 						"title": "VT100 Text Style (Dark Gray color)",
 						"default": {
-							"dark": {
-								"color": "#777777"
-							},
-							"light": {
-								"color": "#777777"
-							}
+							"dark": { "color": "#888888" },
+							"light": { "color": "#555555"}
 						},
 						"description": "The VT100 dark gray foreground color style"
 					},
@@ -243,12 +199,8 @@
 						],
 						"title": "VT100 Text Style (Light Red color)",
 						"default": {
-							"dark": {
-								"color": "#FF7777"
-							},
-							"light": {
-								"color": "#E70000"
-							}
+							"dark": { "color": "#F14C4C" },
+							"light": { "color": "#CD3131"}
 						},
 						"description": "The VT100 light red foreground color style"
 					},
@@ -259,12 +211,8 @@
 						],
 						"title": "VT100 Text Style (Light Green color)",
 						"default": {
-							"dark": {
-								"color": "#77FF77"
-							},
-							"light": {
-								"color": "#00D900"
-							}
+							"dark": { "color": "#23D18B" },
+							"light": { "color": "#14CE14"}
 						},
 						"description": "The VT100 light green foreground color style"
 					},
@@ -275,12 +223,8 @@
 						],
 						"title": "VT100 Text Style (Light Yellow color)",
 						"default": {
-							"dark": {
-								"color": "#FFFF77"
-							},
-							"light": {
-								"color": "#DCE300"
-							}
+							"dark": { "color": "#F5F543" },
+							"light": { "color": "#B5BA00"}
 						},
 						"description": "The VT100 light yellow foreground color style"
 					},
@@ -291,12 +235,8 @@
 						],
 						"title": "VT100 Text Style (Light Blue color)",
 						"default": {
-							"dark": {
-								"color": "#7777FF"
-							},
-							"light": {
-								"color": "#7777FF"
-							}
+							"dark": { "color": "#3B8EEA" },
+							"light": { "color": "#0451A5"}
 						},
 						"description": "The VT100 light blue foreground color style"
 					},
@@ -307,12 +247,8 @@
 						],
 						"title": "VT100 Text Style (Light Magenta color)",
 						"default": {
-							"dark": {
-								"color": "#FF77FF"
-							},
-							"light": {
-								"color": "#DC00DC"
-							}
+							"dark": { "color": "#D670D6" },
+							"light": { "color": "#BC05BC"}
 						},
 						"description": "The VT100 light magenta foreground color style"
 					},
@@ -323,12 +259,8 @@
 						],
 						"title": "VT100 Text Style (Light Cyan color)",
 						"default": {
-							"dark": {
-								"color": "#77FFFF"
-							},
-							"light": {
-								"color": "#00BEEC"
-							}
+							"dark": { "color": "#29B8DB" },
+							"light": { "color": "#0598BC"}
 						},
 						"description": "The VT100 light cyan foreground color style"
 					},
@@ -339,12 +271,8 @@
 						],
 						"title": "VT100 Text Style (White color)",
 						"default": {
-							"dark": {
-								"color": "#FFFFFF"
-							},
-							"light": {
-								"color": "#C7C7C7"
-							}
+							"dark": { "color": "#E5E5E5" },
+							"light": { "color": "#A5A5A5"}
 						},
 						"description": "The VT100 white foreground color style"
 					},
@@ -363,7 +291,10 @@
 							"null"
 						],
 						"title": "VT100 Background Style (Default inverted color)",
-						"default": {},
+						"default": {
+							"dark": { "background-color": "#CCCCCC" },
+							"light": { "background-color": "#333333"}
+						},
 						"description": "The VT100 default (inverted) background color style"
 					},
 					"vt100.background-color-black": {
@@ -373,7 +304,8 @@
 						],
 						"title": "VT100 Background Style (Black color)",
 						"default": {
-							"background-color": "#000000"
+							"dark": { "background-color": "#000000" },
+							"light": { "background-color": "#000000"}
 						},
 						"description": "The VT100 black background color style"
 					},
@@ -384,7 +316,8 @@
 						],
 						"title": "VT100 Background Style (Red color)",
 						"default": {
-							"background-color": "#770000"
+							"dark": { "background-color": "#CD3131" },
+							"light": { "background-color": "#CD3131"}
 						},
 						"description": "The VT100 red background color style"
 					},
@@ -395,7 +328,8 @@
 						],
 						"title": "VT100 Background Style (Green color)",
 						"default": {
-							"background-color": "#007700"
+							"dark": { "background-color": "#0DBC79" },
+							"light": { "background-color": "#00BC00"}
 						},
 						"description": "The VT100 green background color style"
 					},
@@ -406,7 +340,8 @@
 						],
 						"title": "VT100 Background Style (Yellow color)",
 						"default": {
-							"background-color": "#777700"
+							"dark": { "background-color": "#E5E510" },
+							"light": { "background-color": "#949800"}
 						},
 						"description": "The VT100 yellow background color style"
 					},
@@ -417,7 +352,8 @@
 						],
 						"title": "VT100 Background Style (Blue color)",
 						"default": {
-							"background-color": "#000077"
+							"dark": { "background-color": "#2472C8" },
+							"light": { "background-color": "#0451A5"}
 						},
 						"description": "The VT100 blue background color style"
 					},
@@ -428,7 +364,8 @@
 						],
 						"title": "VT100 Background Style (Magenta color)",
 						"default": {
-							"background-color": "#770077"
+							"dark": { "background-color": "#BC3FBC" },
+							"light": { "background-color": "#BC05BC"}
 						},
 						"description": "The VT100 magenta background color style"
 					},
@@ -439,7 +376,8 @@
 						],
 						"title": "VT100 Background Style (Cyan color)",
 						"default": {
-							"background-color": "#007777"
+							"dark": { "background-color": "#11A8CD" },
+							"light": { "background-color": "#0598BC"}
 						},
 						"description": "The VT100 cyan background color style"
 					},
@@ -450,7 +388,8 @@
 						],
 						"title": "VT100 Background Style (Light Gray color)",
 						"default": {
-							"background-color": "#666666"
+							"dark": { "background-color": "#A5A5A5" },
+							"light": { "background-color": "#777777"}
 						},
 						"description": "The VT100 light gray background color style"
 					},
@@ -461,7 +400,8 @@
 						],
 						"title": "VT100 Background Style (Dark Gray color)",
 						"default": {
-							"background-color": "#222222"
+							"dark": { "background-color": "#666666" },
+							"light": { "background-color": "#555555"}
 						},
 						"description": "The VT100 dark gray background color style"
 					},
@@ -472,7 +412,8 @@
 						],
 						"title": "VT100 Background Style (Light Red color)",
 						"default": {
-							"background-color": "#773333"
+							"dark": { "background-color": "#F14C4C" },
+							"light": { "background-color": "#CD3131"}
 						},
 						"description": "The VT100 light red background color style"
 					},
@@ -483,7 +424,8 @@
 						],
 						"title": "VT100 Background Style (Light Green color)",
 						"default": {
-							"background-color": "#337733"
+							"dark": { "background-color": "#23D18B" },
+							"light": { "background-color": "#14CE14"}
 						},
 						"description": "The VT100 light green background color style"
 					},
@@ -494,7 +436,8 @@
 						],
 						"title": "VT100 Background Style (Light Yellow color)",
 						"default": {
-							"background-color": "#777733"
+							"dark": { "background-color": "#F5F543" },
+							"light": { "background-color": "#B5BA00"}
 						},
 						"description": "The VT100 light yellow background color style"
 					},
@@ -505,7 +448,8 @@
 						],
 						"title": "VT100 Background Style (Light Blue color)",
 						"default": {
-							"background-color": "#333377"
+							"dark": { "background-color": "#3B8EEA" },
+							"light": { "background-color": "#0451A5"}
 						},
 						"description": "The VT100 light blue background color style"
 					},
@@ -516,7 +460,8 @@
 						],
 						"title": "VT100 Background Style (Light Magenta color)",
 						"default": {
-							"background-color": "#773377"
+							"dark": { "background-color": "#D670D6" },
+							"light": { "background-color": "#BC05BC"}
 						},
 						"description": "The VT100 light magenta background color style"
 					},
@@ -527,7 +472,8 @@
 						],
 						"title": "VT100 Background Style (Light Cyan color)",
 						"default": {
-							"background-color": "#337777"
+							"dark": { "background-color": "#29B8DB" },
+							"light": { "background-color": "#0598BC"}
 						},
 						"description": "The VT100 light cyan background color style"
 					},
@@ -538,7 +484,8 @@
 						],
 						"title": "VT100 Background Style (White color)",
 						"default": {
-							"background-color": "#AAAAAA"
+							"dark": { "background-color": "#E5E5E5" },
+							"light": { "background-color": "#A5A5A5" }
 						},
 						"description": "The VT100 white background color style"
 					},

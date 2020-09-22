@@ -51,53 +51,163 @@ If no sub-configurations are defined the style is used for both views.
 
     // Default foreground color and inverted default foreground color
     "vt100.foreground-color-default": {
-        "dark": { "color": "#FFFFFF" },
-        "light": { "color": "#000000" }
+        "dark": { "color": "#CCCCCC" },
+        "light": { "color": "#333333"}
     },
     "vt100.foreground-color-inverted": {
         "dark": { "color": "#000000" },
-        "light": { "color": "#FFFFFF" }
+        "light": { "color": "#FFFFFF"}
     },
 
     // Standard foreground colors
-    "vt100.foreground-color-black": { "color":  "#555555" },
-    "vt100.foreground-color-red": { "color":  "#FF0000" },
-    "vt100.foreground-color-green": { "color":  "#00FF00" },
-    "vt100.foreground-color-yellow": { "color":  "#FFFF00" },
-    "vt100.foreground-color-blue": { "color":  "#0000FF" },
-    "vt100.foreground-color-magenta": { "color":  "#FF00FF" },
-    "vt100.foreground-color-cyan": { "color":  "#00FFFF" },
-    "vt100.foreground-color-light-gray": { "color":  "#BBBBBB" },
-    "vt100.foreground-color-dark-gray": { "color":  "#777777" },
-    "vt100.foreground-color-light-red": { "color":  "#FF7777" },
-    "vt100.foreground-color-light-green": { "color":  "#77FF77" },
-    "vt100.foreground-color-light-yellow": { "color":  "#FFFF77" },
-    "vt100.foreground-color-light-blue": { "color":  "#7777FF" },
-    "vt100.foreground-color-light-magenta": { "color":  "#FF77FF" },
-    "vt100.foreground-color-light-cyan": { "color":  "#77FFFF" },
-    "vt100.foreground-color-white": { "color":  "#FFFFFF" },
+    "vt100.foreground-color-black": {
+        "dark": { "color": "#666666" },
+        "light": { "color": "#000000"}
+    },
+    "vt100.foreground-color-red": {
+        "dark": { "color": "#CD3131" },
+        "light": { "color": "#CD3131"}
+    },
+    "vt100.foreground-color-green": {
+        "dark": { "color": "#0DBC79" },
+        "light": { "color": "#00BC00"}
+    },
+    "vt100.foreground-color-yellow": {
+        "dark": { "color": "#E5E510" },
+        "light": { "color": "#949800"}
+    },
+    "vt100.foreground-color-blue": {
+        "dark": { "color": "#2472C8" },
+        "light": { "color": "#0451A5"}
+    },
+    "vt100.foreground-color-magenta": {
+        "dark": { "color": "#BC3FBC" },
+        "light": { "color": "#BC05BC"}
+    },
+    "vt100.foreground-color-cyan": {
+        "dark": { "color": "#11A8CD" },
+        "light": { "color": "#0598BC"}
+    },
+    "vt100.foreground-color-light-gray": {
+        "dark": { "color": "#A5A5A5" },
+        "light": { "color": "#777777"}
+    },
+    "vt100.foreground-color-dark-gray": {
+        "dark": { "color": "#888888" },
+        "light": { "color": "#555555"}
+    },
+    "vt100.foreground-color-light-red": {
+        "dark": { "color": "#F14C4C" },
+        "light": { "color": "#CD3131"}
+    },
+    "vt100.foreground-color-light-green": {
+        "dark": { "color": "#23D18B" },
+        "light": { "color": "#14CE14"}
+    },
+    "vt100.foreground-color-light-yellow": {
+        "dark": { "color": "#F5F543" },
+        "light": { "color": "#B5BA00"}
+    },
+    "vt100.foreground-color-light-blue": {
+        "dark": { "color": "#3B8EEA" },
+        "light": { "color": "#0451A5"}
+    },
+    "vt100.foreground-color-light-magenta": {
+        "dark": { "color": "#D670D6" },
+        "light": { "color": "#BC05BC"}
+    },
+    "vt100.foreground-color-light-cyan": {
+        "dark": { "color": "#29B8DB" },
+        "light": { "color": "#0598BC"}
+    },
+    "vt100.foreground-color-white": {
+        "dark": { "color": "#E5E5E5" },
+        "light": { "color": "#A5A5A5"}
+    },
 
     // Default background color and inverted default background color
-    "vt100.background-color-default": {},
-    "vt100.background-color-inverted": {},
+    "vt100.background-color-default": { },
+    "vt100.background-color-inverted": {
+        "dark": { "background-color": "#CCCCCC" },
+        "light": { "background-color": "#333333"}
+    },
 
     // Standard background colors
-    "vt100.background-color-black": { "background-color":  "#000000" },
-    "vt100.background-color-red": { "background-color":  "#770000" },
-    "vt100.background-color-green": { "background-color":  "#007700" },
-    "vt100.background-color-yellow": { "background-color":  "#777700" },
-    "vt100.background-color-blue": { "background-color":  "#000077" },
-    "vt100.background-color-magenta": { "background-color":  "#770077" },
-    "vt100.background-color-cyan": { "background-color":  "#007777" },
-    "vt100.background-color-light-gray": { "background-color":  "#666666" },
-    "vt100.background-color-dark-gray": { "background-color":  "#222222" },
-    "vt100.background-color-light-red": { "background-color":  "#773333" },
-    "vt100.background-color-light-green": { "background-color":  "#337733" },
-    "vt100.background-color-light-yellow": { "background-color":  "#777733" },
-    "vt100.background-color-light-blue": { "background-color":  "#333377" },
-    "vt100.background-color-light-magenta": { "background-color":  "#773377" },
-    "vt100.background-color-light-cyan": { "background-color":  "#337777" },
-    "vt100.background-color-white": { "background-color":  "#AAAAAA" },
+    "vt100.background-color-black": {
+        "dark": { "background-color": "#000000" },
+        "light": { "background-color": "#000000"}
+    },
+    "vt100.background-color-red": {
+        "dark": { "background-color": "#CD3131" },
+        "light": { "background-color": "#CD3131"}
+    },
+    "vt100.background-color-green": {
+        "dark": { "background-color": "#0DBC79" },
+        "light": { "background-color": "#00BC00"}
+    },
+    "vt100.background-color-yellow": {
+        "dark": { "background-color": "#E5E510" },
+        "light": { "background-color": "#949800"}
+    },
+    "vt100.background-color-blue": {
+        "dark": { "background-color": "#2472C8" },
+        "light": { "background-color": "#0451A5"}
+    },
+    "vt100.background-color-magenta": {
+        "dark": { "background-color": "#BC3FBC" },
+        "light": { "background-color": "#BC05BC"}
+    },
+    "vt100.background-color-cyan": {
+        "dark": { "background-color": "#11A8CD" },
+        "light": { "background-color": "#0598BC"}
+    },
+    "vt100.background-color-light-gray": {
+        "dark": { "background-color": "#A5A5A5" },
+        "light": { "background-color": "#777777"}
+    },
+    "vt100.background-color-dark-gray": {
+        "dark": { "background-color": "#666666" },
+        "light": { "background-color": "#555555"}
+    },
+    "vt100.background-color-light-red": {
+        "dark": { "background-color": "#F14C4C" },
+        "light": { "background-color": "#CD3131"}
+    },
+    "vt100.background-color-light-green": {
+        "dark": { "background-color": "#23D18B" },
+        "light": { "background-color": "#14CE14"}
+    },
+    "vt100.background-color-light-yellow": {
+        "dark": { "background-color": "#F5F543" },
+        "light": { "background-color": "#B5BA00"}
+    },
+    "vt100.background-color-light-blue": {
+        "dark": { "background-color": "#3B8EEA" },
+        "light": { "background-color": "#0451A5"}
+    },
+    "vt100.background-color-light-magenta": {
+        "dark": { "background-color": "#D670D6" },
+        "light": { "background-color": "#BC05BC"}
+    },
+    "vt100.background-color-light-cyan": {
+        "dark": { "background-color": "#29B8DB" },
+        "light": { "background-color": "#0598BC"}
+    },
+    "vt100.background-color-white": {
+        "dark": { "background-color": "#E5E5E5" },
+        "light": { "background-color": "#A5A5A5" }
+    },
+
+    // Separate style definitions for the editor and the preview panel are possible
+    // "vt100.background-color-white": {
+    //     "editor": {
+    //         "dark": { "background-color": "#E5E5E5" },
+    //         "light": { "background-color": "#A5A5A5" }
+    //     },
+    //     "preview": {
+    //         "background-color": "#FFFFFF"
+    //     }
+    // },
 
     // VT100 attributes
     "vt100.attribute-bold": { "font-weight": "bold" },
