@@ -1,6 +1,19 @@
 Changelog
 =========
 
+0.0.14
+------
+
+- Updated color palette to match default Microsoft terminal colors
+- Fixed dark / light color handling for editor
+- Fixed bug where leading zeroes in escape code were not stripped
+
+0.0.13
+------
+
+- Fixed bug in parsing of ESC[m code
+- Added foreground text colors for light mode
+
 0.0.12
 ------
 
