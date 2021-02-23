@@ -276,7 +276,10 @@ If no sub-configurations are defined the style is used for both views.
         //".vscode-dark .bg": {
         //  "color": "white"
         //}
-    }
+    },
+
+    // Enable synchronous scrolling for preview when scrolling in the editor
+    "vt100.synchronous-scrolling": false
 }
 ```
 

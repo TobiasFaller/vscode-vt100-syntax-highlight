@@ -6,10 +6,10 @@
 		"colors",
 		"escape code",
 		"terminal",
-		"vt100",
+		"ansi",
 		"console"
 	],
-	"version": "0.0.14",
+	"version": "0.0.15",
 	"author": {
 		"name": "Tobias Faller"
 	},
@@ -626,6 +626,12 @@
 						"title": "VT100 Font Weight (Only Preview)",
 						"default": null,
 						"description": "The font weight used for the VT100 preview (default: text editor font weight)"
+					},
+					"vt100.synchronous-scrolling": {
+						"type": "boolean",
+						"title": "VT100 Synchronous Scrolling for Preview",
+						"default": false,
+						"description": "Enables synchronous scrolling of the preview when changing the view window of the editor"
 					}
 				}
 			}
@@ -644,6 +650,12 @@
 				"icon": "$(open-preview)"
 			},
 			{
+				"command": "vt100.toggleSynchronousScrolling",
+				"title": "Toggle Synchronous Scrolling",
+				"category": "VT100",
+				"icon": "$(link)"
+			},
+			{
 				"command": "vt100.exportText",
 				"title": "Export to Text",
 				"category": "VT100",
@@ -660,9 +672,14 @@
 			"editor/title": [
 				{
 					"command": "vt100.showPreviewToSide",
-					"when": "editorLangId == vt100",
+					"when": "resourceLangId == vt100",
 					"alt": "vt100.showPreview",
 					"group": "navigation"
+				},
+				{
+					"command": "vt100.toggleSynchronousScrolling",
+					"when": "resourceLangId == vt100",
+					"group": "vt100"
 				},
 				{
 					"command": "vt100.exportText",
@@ -699,6 +716,11 @@
 					"group": "navigation"
 				},
 				{
+					"command": "vt100.toggleSynchronousScrolling",
+					"when": "resourceLangId == vt100",
+					"group": "vt100"
+				},
+				{
 					"command": "vt100.exportText",
 					"when": "resourceLangId == vt100",
 					"group": "vt100"
@@ -719,6 +741,11 @@
 					"command": "vt100.showPreviewToSide",
 					"when": "editorLangId == vt100",
 					"group": "navigation"
+				},
+				{
+					"command": "vt100.toggleSynchronousScrolling",
+					"when": "editorLangId == vt100",
+					"group": "vt100"
 				},
 				{
 					"command": "vt100.exportText",
@@ -766,6 +793,5 @@
 		"@typescript-eslint/parser": "^4.2.0",
 		"eslint": "^7.9.0",
 		"typescript": "^4.0.3"
-	},
-	"dependencies": {}
+	}
 }

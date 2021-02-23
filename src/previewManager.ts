@@ -68,6 +68,11 @@ export class PreviewManager implements vscode.Disposable, vscode.WebviewPanelSer
 		}
 	}
 
+	public async toggleSynchronousScrolling(): Promise<void> {
+		const configuration = vscode.workspace.getConfiguration('vt100');
+		await configuration.update('synchronous-scrolling', !configuration.get('synchronous-scrolling', false), vscode.ConfigurationTarget.Global);
+	}
+
 	private async _previewAllDocuments(uris: vscode.Uri[], sideBySide: boolean): Promise<void[]> {
 			return Promise.all(uris.map((uri) => this._previewDocument(uri, sideBySide)));
 	}
@@ -173,9 +178,9 @@ class VT100Preview {
 		vscode.window.onDidChangeActiveTextEditor(async (editor) => {
 			if (editor && editor.document.languageId === 'vt100') {
 				await this._update(editor.document.uri, true);
+				await this._updateRanges(editor.visibleRanges);
 			}
 		}, null, this._disposables);
-
 		vscode.workspace.onDidOpenTextDocument(async (document) => {
 			if (document.languageId === 'vt100') {
 				await this._update(document.uri, true);
@@ -187,6 +192,15 @@ class VT100Preview {
 		vscode.workspace.onDidChangeTextDocument(async (event) => {
 			if (event.document.uri.fsPath == this._uri.fsPath) {
 				await lazyUpdate(this._uri);
+			}
+		}, null, this._disposables);
+
+		// Debounce as the scroll event might be repeated quite fast
+		const lazyRangeUpdate = debounce(async (ranges) => await this._updateRanges(ranges), 250);
+		vscode.window.onDidChangeTextEditorVisibleRanges(async (event) => {
+			const editor = event.textEditor;
+			if (editor && editor.document.languageId === 'vt100') {
+				await lazyRangeUpdate(event.visibleRanges);
 			}
 		}, null, this._disposables);
 	}
@@ -244,6 +258,24 @@ class VT100Preview {
 		if (this._uri === uri) {
 			this._editor.webview.html = content;
 		}
+	}
+
+	private async _updateRanges(ranges: readonly vscode.Range[]): Promise<void> {
+		if (!vscode.workspace.getConfiguration('vt100').get('synchronous-scrolling', false))
+		{
+			return;
+		}
+
+		if (ranges.length < 1)
+		{
+			return;
+		}
+
+		const startLine = ranges[0].start.line;
+		this._editor.webview.postMessage({
+			'command': 'scroll-to',
+			'line': startLine
+		});
 	}
 
 	private static _getFilename(uri: vscode.Uri): string {

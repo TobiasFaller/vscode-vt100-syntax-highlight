@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.0.15
+------
+
+- Added support for synchronous scrolling in preview
+
 0.0.14
 ------
 

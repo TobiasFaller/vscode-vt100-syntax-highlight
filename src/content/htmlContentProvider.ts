@@ -160,6 +160,16 @@ export class HTMLContentProvider implements vscode.Disposable {
 		header += `<title>${this._getFilename(document.uri)}</title>`;
 		if (state != null) {
 			header += `<script type="text/javascript" nonce="${jsNonce}">acquireVsCodeApi().setState(${JSON.stringify(state)});</script>`;
+			header += `<script type="text/javascript" nonce="${jsNonce}">window.addEventListener('message', event => {
+				const message = event.data;
+				switch(message.command)
+				{
+					case 'scroll-to':
+						const lineElement = document.getElementById('ln-' + message.line);
+						lineElement.scrollIntoView();
+						break;
+				}
+			})</script>`
 		}
 		header += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._styles)}</style>`;
 		header += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._fontSettings)}</style>`;
@@ -195,7 +205,7 @@ export class HTMLContentProvider implements vscode.Disposable {
 			backgroundClasses.push(this._getShortKey('background'));
 			backgroundClasses.push(this._getShortKey(`background-color-${backgroundColor}`));
 
-			let line = `<span class="${backgroundClasses.join(' ')}">`;
+			let line = `<span id="ln-${range.start.line}" class="${backgroundClasses.join(' ')}">`;
 			line += `<span class="${foregroundClasses.join(' ')}">`;
 			line += this._escapeHtml(this._stripEscapeCodes(document.getText(range)));
 			line += '</span></span>';
