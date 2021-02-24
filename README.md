@@ -42,12 +42,23 @@ All `foreground-color`, `background-color` and `attribute` settings support defi
 The variant defined in the `editor` sub-configuration is used for the editor view, while the `preview` sub-configuration is used for the HTML preview.
 If no sub-configurations are defined the style is used for both views.
 
+All `color` and `background-color` options can be set to `native` to use the theme color when `vt100.use-native-theme` is set to `false`.
+This can be used to selectively override single colors.
+
+The native color theme currently does not work for HTML export (VS Code API limitation) and will use the colors for the preview option instead.
+
 ```jsonc
 {
     // Associate the VT100 extension with *.log files if you want to.
     // "files.associations": {
     //     "*.log": "vt100"
     // },
+
+    // Enable synchronous scrolling for preview when scrolling in the editor
+    "vt100.synchronous-scrolling": true,
+
+    // Enable native color theme support (overrides the user-defined colors)
+    "vt100.use-native-theme": true,
 
     // Default foreground color and inverted default foreground color
     "vt100.foreground-color-default": {
@@ -276,10 +287,7 @@ If no sub-configurations are defined the style is used for both views.
         //".vscode-dark .bg": {
         //  "color": "white"
         //}
-    },
-
-    // Enable synchronous scrolling for preview when scrolling in the editor
-    "vt100.synchronous-scrolling": false
+    }
 }
 ```
 

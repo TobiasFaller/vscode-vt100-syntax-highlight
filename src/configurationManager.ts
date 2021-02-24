@@ -203,29 +203,38 @@ export class ConfigurationManager implements vscode.Disposable {
 	}
 
 	private _applyNativeTheme(name: string, style: any, configuration: vscode.WorkspaceConfiguration, type: string): any {
-		style = {...style, ...this._applyNativeColor(name, style, configuration, type)};
+		const nativeColor = this._applyNativeColor(name, style, configuration, type);
+		if (nativeColor) {
+			style = {...style, ...nativeColor};
+		}
 
 		if ('dark' in style && typeof style['dark'] === 'object') {
-			style = {...style, ...{
-				'dark': this._applyNativeColor(name, style['dark'], configuration, type)
-			}};
+			const nativeDarkColor = this._applyNativeColor(name, style['dark'], configuration, type);
+			if (nativeDarkColor) {
+				style = {...style, ...{
+					'dark': nativeDarkColor
+				}};
+			}
 		}
 		if ('light' in style && typeof style['light'] === 'object') {
-			style = {...style, ...{
-				'light': this._applyNativeColor(name, style['light'], configuration, type)
-			}};
+			const nativeLightColor = this._applyNativeColor(name, style['light'], configuration, type);
+			if (nativeLightColor) {
+				style = {...style, ...{
+					'light': nativeLightColor
+				}};
+			}
 		}
 
 		return style;
 	}
 
-	private _applyNativeColor(name: string, style: any, configuration: vscode.WorkspaceConfiguration, type: string): object {
+	private _applyNativeColor(name: string, style: any, configuration: vscode.WorkspaceConfiguration, type: string): object | null {
 		const key = name.startsWith('foreground') ? 'color'
 			: name.startsWith('background') ? 'background-color' : null;
 		if (!key)
 		{
 			// Do not change configuration
-			return {};
+			return null;
 		}
 
 		if (configuration.get('use-native-theme', false)
@@ -241,14 +250,14 @@ export class ConfigurationManager implements vscode.Disposable {
 					case 'resolved-color':
 						return {
 							[key]: `var(--vscode-${nativeColor.replace('.', '-')})`,
-							[key + '-fallback']: (key in style) ? style[key] : undefined
+							[key + '-fallback']: (key in style) ? style[key] : null
 						};
 				}
 			}
 		}
 
 		// Do not change configuration
-		return {};
+		return null;
 	}
 
 	private _getNativeColor(name: string): string | undefined {
