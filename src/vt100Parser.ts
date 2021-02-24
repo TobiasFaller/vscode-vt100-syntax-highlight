@@ -23,6 +23,7 @@ export class VT100Parser {
 			const line = lines[i];
 
 			context.set('line-number', i);
+			context.set('line-start', 'yes');
 			context.set('line-end', 'no');
 
 			escapeRegex.lastIndex = 0;
@@ -40,6 +41,7 @@ export class VT100Parser {
 				await callback(new vscode.Range(i, match.index, i, escapeRegex.lastIndex), context);
 
 				lastIndex = escapeRegex.lastIndex;
+				context.set('line-start', 'no');
 			}
 
 			context.set('type', 'text');
@@ -49,7 +51,7 @@ export class VT100Parser {
 	}
 
     private static _getParams(params: string): string[] {
-		// ESC[m is eqivalent to ESC[0m
+		// ESC[m is equivalent to ESC[0m
 		if (typeof(params) == 'undefined') {
 			return ['0'];
 		}

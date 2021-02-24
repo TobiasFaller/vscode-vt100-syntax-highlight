@@ -109,6 +109,7 @@ export class HTMLContentProvider implements vscode.Disposable {
 				// Use the same style for all modes
 				styles.push([`.${shortKey}`, previewSettings]);
 			} else {
+				// Use separate style configurations
 				if (darkSettingsExist && typeof previewSettings['dark'] === 'object') {
 					styles.push([`.vscode-dark .${shortKey}`, previewSettings['dark']]);
 				} else {
@@ -138,7 +139,7 @@ export class HTMLContentProvider implements vscode.Disposable {
 
 	/**
 	 * Converts the source text to rendered HTML code.
-	 * The state parameter contains the editor state when genrating a preview
+	 * The state parameter contains the editor state when generating a preview
 	 * for the Webview in VS Code.
 	 * The state parameter is undefined, when exporting HTML to a file.
 	 *
@@ -149,6 +150,7 @@ export class HTMLContentProvider implements vscode.Disposable {
 	public async provideTextDocumentContent(document: vscode.TextDocument, callback: (data: string) => Promise<void>, state?: any): Promise<void> {
 		const cssNonce = this._generateNonce();
 		const jsNonce = this._generateNonce();
+		const inEditor = (state != null);
 
 		// Try to add at least a little bit of security with Content-Security-Policy so that
 		// the rendered file can not include arbitrary CSS code
@@ -158,8 +160,12 @@ export class HTMLContentProvider implements vscode.Disposable {
 		header += `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'nonce-${jsNonce}'; style-src 'nonce-${cssNonce}'"></meta>`;
 		header += '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
 		header += `<title>${this._getFilename(document.uri)}</title>`;
-		if (state != null) {
+		if (inEditor) {
+			// Store the state via the VSCode API as this can currently not be done from the extension itself
+			// The state is used to restore the window when closing and re-opening VS Code
 			header += `<script type="text/javascript" nonce="${jsNonce}">acquireVsCodeApi().setState(${JSON.stringify(state)});</script>`;
+
+			// Register event handler that is invoked when the extension sends a command to the preview panel
 			header += `<script type="text/javascript" nonce="${jsNonce}">window.addEventListener('message', event => {
 				const message = event.data;
 				switch(message.command)
@@ -171,15 +177,26 @@ export class HTMLContentProvider implements vscode.Disposable {
 				}
 			})</script>`
 		}
-		header += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._styles)}</style>`;
-		header += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._fontSettings)}</style>`;
-		header += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._customCss)}</style>`;
+		header += `<style type="text/css" nonce="${cssNonce}">.main-container {
+			display: block;
+			box-sizing: border-box;
+			width: 100%;
+			height: 100%;
+			position: fixed;
+			overflow-x: auto;
+			overflow-y: auto;
+		}</style>`;
+		header += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._styles, inEditor)}</style>`;
+		header += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._fontSettings, inEditor)}</style>`;
+		header += `<style type="text/css" nonce="${cssNonce}">${this._generateCss(this._customCss, inEditor)}</style>`;
 		header += '</head>';
 
-		if (state != null) {
+		if (inEditor) {
 			header += '<body>';
 		} else {
+			// TODO: Maybe add export option for different themes
 			header += '<body class="vscode-light">';
+			header += `<span class="main-container ${this._getShortKey('background-color-default')}">`;
 		}
 		await callback(header);
 
@@ -189,35 +206,42 @@ export class HTMLContentProvider implements vscode.Disposable {
 				return;
 			}
 
-			const [foregroundColor, backgroundColor] = this._getColors(context);
+			const text = document.getText(range);
+			if (text.length > 0)
+			{
+				const [foregroundColor, backgroundColor] = this._getColors(context);
 
-			const foregroundClasses: string[] = [ ];
-			foregroundClasses.push(this._getShortKey('foreground'));
-			foregroundClasses.push(this._getShortKey(context.get('type')!));
-			foregroundClasses.push(this._getShortKey(`foreground-color-${foregroundColor}`));
-			for (const attribute of ['bold', 'dim', 'underlined', 'blink', 'inverted', 'hidden']) {
-				if (context.get(attribute) === 'yes') {
-					foregroundClasses.push(this._getShortKey('attribute-' + attribute));
+				const foregroundClasses: string[] = [ ];
+				foregroundClasses.push(this._getShortKey('foreground'));
+				foregroundClasses.push(this._getShortKey(context.get('type')!));
+				foregroundClasses.push(this._getShortKey(`foreground-color-${foregroundColor}`));
+				for (const attribute of ['bold', 'dim', 'underlined', 'blink', 'inverted', 'hidden']) {
+					if (context.get(attribute) === 'yes') {
+						foregroundClasses.push(this._getShortKey('attribute-' + attribute));
+					}
 				}
+
+				const backgroundClasses: string[] = [ ];
+				backgroundClasses.push(this._getShortKey('background'));
+				backgroundClasses.push(this._getShortKey(`background-color-${backgroundColor}`));
+
+				let line = `<span id="ln-${context.get('line-number')}" class="${backgroundClasses.join(' ')}">`;
+				line += `<span class="${foregroundClasses.join(' ')}">`;
+				line += this._escapeHtml(this._stripEscapeCodes(text));
+				line += '</span></span>';
+				await callback(line);
 			}
-
-			const backgroundClasses: string[] = [ ];
-			backgroundClasses.push(this._getShortKey('background'));
-			backgroundClasses.push(this._getShortKey(`background-color-${backgroundColor}`));
-
-			let line = `<span id="ln-${range.start.line}" class="${backgroundClasses.join(' ')}">`;
-			line += `<span class="${foregroundClasses.join(' ')}">`;
-			line += this._escapeHtml(this._stripEscapeCodes(document.getText(range)));
-			line += '</span></span>';
 
 			if (context.get('line-end') == 'yes') {
-				line += '<br>\n';
+				await callback('<br>\n');
 			}
-
-			await callback(line);
 		});
 
-		let footer = '</body>';
+		let footer = '';
+		if (!inEditor) {
+			footer += '</span>';
+		}
+		footer += '</body>';
 		footer += '</html>';
 		await callback(footer);
 	}
@@ -249,19 +273,33 @@ export class HTMLContentProvider implements vscode.Disposable {
 		return [foregroundColor, backgroundColor];
 	}
 
-	private _generateCss(properties: any): string {
+	private _generateCss(properties: any, inEditor: boolean): string {
 		let css = '';
 
-		for (const [key, value] of Object.entries(properties)) {
-			if (value == null) {
+		for (let [key, value] of Object.entries(properties)) {
+			// Ignore fallback settings
+			if (key.endsWith('-fallback') || value == null || value == undefined) {
 				continue;
 			}
 
 			if (typeof value === 'object') {
 				css += `${key} {\n`;
-				css += this._generateCss(value);
+				css += this._generateCss(value, inEditor);
 				css += `}\n`;
 			} else if (typeof value === 'string') {
+				if (!inEditor && value.startsWith('var(--vscode-'))
+				{
+					// Use the fallback color values when not rendering for the editor.
+					// This is currently necessary as the raw color value
+					// from the theme can not be extracted with an official API.
+					css += `/* VS Code Theme color option ${value} currently not supported. */\n`;
+					if (key + '-fallback' in properties && properties[key + '-fallback']) {
+						css += '/* Using alternative value instead. */\n';
+						value = properties[key + '-fallback']; // Overwrite value with fallback setting
+					} else {
+						continue;
+					}
+				}
 				css += `${key}: ${value};\n`;
 			}
 		}

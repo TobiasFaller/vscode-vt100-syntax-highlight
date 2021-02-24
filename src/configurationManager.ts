@@ -163,6 +163,9 @@ export class ConfigurationManager implements vscode.Disposable {
 			}
 		}
 
+		editorSettings = this._applyNativeTheme(name, editorSettings, configuration, 'theme-color');
+		previewSettings = this._applyNativeTheme(name, previewSettings, configuration, 'resolved-color');
+
 		const editorStyle = this._convertCssToEditorRenderOptions(name, editorSettings);
 		this._styles.set(name, new StyleConfiguration(editorStyle, previewSettings));
 	}
@@ -197,6 +200,135 @@ export class ConfigurationManager implements vscode.Disposable {
 			"dark": darkStyle,
 			"light": lightStyle
 		};
+	}
+
+	private _applyNativeTheme(name: string, style: any, configuration: vscode.WorkspaceConfiguration, type: string): any {
+		style = {...style, ...this._applyNativeColor(name, style, configuration, type)};
+
+		if ('dark' in style && typeof style['dark'] === 'object') {
+			style = {...style, ...{
+				'dark': this._applyNativeColor(name, style['dark'], configuration, type)
+			}};
+		}
+		if ('light' in style && typeof style['light'] === 'object') {
+			style = {...style, ...{
+				'light': this._applyNativeColor(name, style['light'], configuration, type)
+			}};
+		}
+
+		return style;
+	}
+
+	private _applyNativeColor(name: string, style: any, configuration: vscode.WorkspaceConfiguration, type: string): object {
+		const key = name.startsWith('foreground') ? 'color'
+			: name.startsWith('background') ? 'background-color' : null;
+		if (!key)
+		{
+			// Do not change configuration
+			return {};
+		}
+
+		if (configuration.get('use-native-theme', false)
+			|| (key in style && style[key] === 'native')) {
+			// Override the color configuration on enabled native theme
+			const nativeColor = this._getNativeColor(name);
+			if (nativeColor)
+			{
+				switch (type)
+				{
+					case 'theme-color':
+						return { [key]: new vscode.ThemeColor(nativeColor) };
+					case 'resolved-color':
+						return {
+							[key]: `var(--vscode-${nativeColor.replace('.', '-')})`,
+							[key + '-fallback']: (key in style) ? style[key] : undefined
+						};
+				}
+			}
+		}
+
+		// Do not change configuration
+		return {};
+	}
+
+	private _getNativeColor(name: string): string | undefined {
+		switch (name)
+		{
+			case 'foreground-color-default':
+				return 'editor.foreground';
+			case 'foreground-color-inverted':
+				return 'editor.background';
+			case 'foreground-color-black':
+				return 'terminal.ansiBlack';
+			case 'foreground-color-red':
+				return 'terminal.ansiRed';
+			case 'foreground-color-green':
+				return 'terminal.ansiGreen';
+			case 'foreground-color-yellow':
+				return 'terminal.ansiYellow';
+			case 'foreground-color-blue':
+				return 'terminal.ansiBlue';
+			case 'foreground-color-magenta':
+				return 'terminal.ansiMagenta';
+			case 'foreground-color-cyan':
+				return 'terminal.ansiCyan';
+			case 'foreground-color-light-gray':
+				return 'terminal.ansiWhite';
+			case 'foreground-color-dark-gray':
+				return 'terminal.ansiBrightBlack';
+			case 'foreground-color-light-red':
+				return 'terminal.ansiBrightRed';
+			case 'foreground-color-light-green':
+				return 'terminal.ansiBrightGreen';
+			case 'foreground-color-light-yellow':
+				return 'terminal.ansiBrightYellow';
+			case 'foreground-color-light-blue':
+				return 'terminal.ansiBrightBlue';
+			case 'foreground-color-light-magenta':
+				return 'terminal.ansiBrightMagenta';
+			case 'foreground-color-light-cyan':
+				return 'terminal.ansiBrightCyan';
+			case 'foreground-color-white':
+				return 'terminal.ansiBrightWhite';
+			case 'background-color-default':
+				return 'editor.background';
+			case 'background-color-inverted':
+				return 'editor.foreground';
+			case 'background-color-black':
+				return 'terminal.ansiBlack';
+			case 'background-color-red':
+				return 'terminal.ansiRed';
+			case 'background-color-green':
+				return 'terminal.ansiGreen';
+			case 'background-color-yellow':
+				return 'terminal.ansiYellow';
+			case 'background-color-blue':
+				return 'terminal.ansiBlue';
+			case 'background-color-magenta':
+				return 'terminal.ansiMagenta';
+			case 'background-color-cyan':
+				return 'terminal.ansiCyan';
+			case 'background-color-light-gray':
+				return 'terminal.ansiWhite';
+			case 'background-color-dark-gray':
+				return 'terminal.ansiBrightBlack';
+			case 'background-color-light-red':
+				return 'terminal.ansiBrightRed';
+			case 'background-color-light-green':
+				return 'terminal.ansiBrightGreen';
+			case 'background-color-light-yellow':
+				return 'terminal.ansiBrightYellow';
+			case 'background-color-light-blue':
+				return 'terminal.ansiBrightBlue';
+			case 'background-color-light-magenta':
+				return 'terminal.ansiBrightMagenta';
+			case 'background-color-light-cyan':
+				return 'terminal.ansiBrightCyan';
+			case 'background-color-white':
+				return 'terminal.ansiBrightWhite';
+		}
+
+		return undefined;
 	}
 
 	private _convertObjectToRenderOptions(object: any): any {
