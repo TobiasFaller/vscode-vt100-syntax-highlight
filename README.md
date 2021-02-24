@@ -20,6 +20,8 @@ Select the file type "VT100 Terminal" on the lower right corner to enable highli
 
 ![Example Result](sample/ExampleResult.gif)
 
+![Example Result with Native Theme](sample/ExampleResultNativeTheme.gif)
+
 How to open the preview
 -----------------------
 

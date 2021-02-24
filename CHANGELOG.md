@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.0.16
+------
+
+- Added native theme support
+
 0.0.15
 ------
 
