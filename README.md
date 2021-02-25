@@ -1,7 +1,7 @@
-[![Visual Studio Marketplace](https://badgen.net/vs-marketplace/i/Tobias-Faller.vt100-syntax-highlighting?icon=visualstudio)](https://marketplace.visualstudio.com/items?itemName=Tobias-Faller.vt100-syntax-highlighting)
-[![GitHub](https://badgen.net/github/release/TobiasFaller/vscode-vt100-syntax-highlight?icon=github)](https://github.com/TobiasFaller/vscode-vt100-syntax-highlight)
-[![License](https://badgen.net/github/license/TobiasFaller/vscode-vt100-syntax-highlight)](LICENSE.md)
-[![Issues](https://badgen.net/github/open-issues/TobiasFaller/vscode-vt100-syntax-highlight?icon=github)](https://github.com/TobiasFaller/vscode-vt100-syntax-highlight/issues)
+[![Visual Studio Marketplace](https://flat.badgen.net/vs-marketplace/i/Tobias-Faller.vt100-syntax-highlighting?icon=visualstudio)](https://marketplace.visualstudio.com/items?itemName=Tobias-Faller.vt100-syntax-highlighting)
+[![GitHub](https://flat.badgen.net/github/release/TobiasFaller/vscode-vt100-syntax-highlight?icon=github)](https://github.com/TobiasFaller/vscode-vt100-syntax-highlight)
+[![License](https://flat.badgen.net/github/license/TobiasFaller/vscode-vt100-syntax-highlight)](LICENSE.md)
+[![Issues](https://flat.badgen.net/github/open-issues/TobiasFaller/vscode-vt100-syntax-highlight?icon=github)](https://github.com/TobiasFaller/vscode-vt100-syntax-highlight/issues)
 
 Terminal Color and Style Highlighting for VS Code
 =================================================
