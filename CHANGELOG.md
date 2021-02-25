@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.0.0
+-----
+
+- First feature-complete release
+- Updated preview images in repository
+
 0.0.16
 ------
 
