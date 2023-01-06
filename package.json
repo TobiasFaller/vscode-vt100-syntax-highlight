@@ -730,7 +730,7 @@
 							},
 							".bg": {
 								"display": "inline-block",
-								"padding": "0.1em"
+								"padding": "0.1em 0px 0.1em 0px"
 							},
 							"@keyframes blink-animation": {
 								"50%": {
