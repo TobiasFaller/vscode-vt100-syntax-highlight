@@ -9,7 +9,7 @@
 		"ansi",
 		"console"
 	],
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"author": {
 		"name": "Tobias Faller"
 	},
@@ -20,7 +20,7 @@
 		"url": "https://github.com/TobiasFaller/vscode-vt100-syntax-highlight"
 	},
 	"engines": {
-		"vscode": "^1.42.0"
+		"vscode": "^1.74.0"
 	},
 	"categories": [
 		"Programming Languages",
@@ -933,11 +933,11 @@
 		"watch": "tsc -watch -p ./"
 	},
 	"devDependencies": {
-		"@types/node": "^14.11.1",
-		"@types/vscode": "^1.42.0",
-		"@typescript-eslint/eslint-plugin": "^4.2.0",
-		"@typescript-eslint/parser": "^4.2.0",
-		"eslint": "^7.9.0",
-		"typescript": "^4.0.3"
+		"@types/node": "^18.11.18",
+		"@types/vscode": "^1.74.0",
+		"@typescript-eslint/eslint-plugin": "^5.48.0",
+		"@typescript-eslint/parser": "^5.48.0",
+		"eslint": "^8.31.0",
+		"typescript": "^4.9.4"
 	}
 }

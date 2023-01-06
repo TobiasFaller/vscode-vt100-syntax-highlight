@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.0.2
+-----
+
+- Updated dependencies
+- Fixed spacing issue with escape codes
+
 1.0.1
 -----
 

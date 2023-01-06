@@ -60,7 +60,7 @@ export class DecorationManager implements vscode.Disposable {
 		this._decorations.clear();
 	}
 
-	private async _applyDecorations(editors: vscode.TextEditor[]): Promise<void[]> {
+	private async _applyDecorations(editors: readonly vscode.TextEditor[]): Promise<void[]> {
 		const promises: Promise<void>[] = [];
 
 		for (const editor of editors) {
@@ -72,7 +72,7 @@ export class DecorationManager implements vscode.Disposable {
 		return Promise.all(promises);
 	}
 
-	private async _removeDecorations(editors: vscode.TextEditor[]): Promise<void[]> {
+	private async _removeDecorations(editors: readonly vscode.TextEditor[]): Promise<void[]> {
 		const promises: Promise<void>[] = [];
 
 		for (const editor of editors) {
@@ -86,7 +86,7 @@ export class DecorationManager implements vscode.Disposable {
 		return Promise.all(promises);
 	}
 
-	private async _updateDecorations(editors: vscode.TextEditor[]): Promise<void[]> {
+	private async _updateDecorations(editors: readonly vscode.TextEditor[]): Promise<void[]> {
 		const promises: Promise<void>[] = [];
 
 		for (const editor of editors) {
