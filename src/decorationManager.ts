@@ -60,11 +60,20 @@ export class DecorationManager implements vscode.Disposable {
 		this._decorations.clear();
 	}
 
+	private _shouldDecorate(language: string): boolean {
+		const configuration = vscode.workspace.getConfiguration('vt100');
+		const includes: string | null = configuration["decorate-includes"];
+		const excludes: string | null = configuration["decorate-excludes"];
+
+		return (includes == null || (language.match(includes) != null))
+			&& (excludes == null || (language.match(excludes) == null));
+	}
+
 	private async _applyDecorations(editors: readonly vscode.TextEditor[]): Promise<void[]> {
 		const promises: Promise<void>[] = [];
 
 		for (const editor of editors) {
-			if (editor != null && editor.document.languageId === 'vt100') {
+			if (editor != null && this._shouldDecorate(editor.document.languageId)) {
 				promises.push(this._decorator.apply(editor));
 			}
 		}
@@ -94,7 +103,7 @@ export class DecorationManager implements vscode.Disposable {
 				continue;
 			}
 
-			if (editor.document.languageId === 'vt100') {
+			if (this._shouldDecorate(editor.document.languageId)) {
 				promises.push(this._decorator.apply(editor));
 			} else {
 				promises.push(this._decorator.remove(editor));
@@ -148,6 +157,12 @@ class EditorDecorator {
 		progressView.dispose();
 
 		for (const [key, value] of appliedDecorations) {
+			const isDefaultColour = (key == "background-color-default")
+				|| (key == "foreground-color-default");
+			if (editor.document.languageId != "vt100" && isDefaultColour) {
+				continue;
+			}
+
 			editor.setDecorations(this._decorations.get(key)!, value);
 		}
 	}

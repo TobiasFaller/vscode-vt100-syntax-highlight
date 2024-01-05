@@ -33,14 +33,7 @@
 		"theme": "dark"
 	},
 	"homepage": "https://github.com/TobiasFaller/vscode-vt100-syntax-highlight",
-	"activationEvents": [
-		"onLanguage:vt100",
-		"onCommand:vt100.showPreview",
-		"onCommand:vt100.showPreviewToSide",
-		"onCommand:vt100.exportText",
-		"onCommand:vt100.exportHtml",
-		"onWebviewPanel:vt100.preview"
-	],
+	"activationEvents": [ "*" ],
 	"main": "./out/extension.js",
 	"contributes": {
 		"languages": [
@@ -778,6 +771,18 @@
 						"title": "Synchronize VT100 Theme with Terminal Theme",
 						"default": true,
 						"description": "Uses the active color theme as for the VT100 extension"
+					},
+					"vt100.decorate-includes": {
+						"type": "string",
+						"title": "VT100 Highlighting Language Includes",
+						"default": "vt100",
+						"description": "Enables highlighting of VT100 escape sequences for the files matched by the regex, use null for all"
+					},
+					"vt100.decorate-excludes": {
+						"type": "string",
+						"title": "VT100 Highlighting Language Excludes",
+						"default": null,
+						"description": "Disables highlighting of VT100 escape sequences for the files matched by the regex, use null to disable none"
 					}
 				}
 			}

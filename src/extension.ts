@@ -22,3 +22,9 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('vt100.exportText', exportManager.exportText, exportManager));
 	context.subscriptions.push(vscode.commands.registerCommand('vt100.exportHtml', exportManager.exportHtml, exportManager));
 }
+
+export function deactivate(context: vscode.ExtensionContext) {
+	context.subscriptions.forEach(element => {
+		element.dispose();
+	});
+}
