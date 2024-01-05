@@ -353,7 +353,7 @@ export class ConfigurationManager implements vscode.Disposable {
 	}
 
 	private _convertCssToRenderOptionKey(key: string): string {
-		return key.replace(/-[A-Za-z]/g, (letter) => letter.substr(1).toUpperCase());
+		return key.replace(/-[A-Za-z]/g, (letter) => letter.substring(1).toUpperCase());
 	}
 
 	private _getFallbackStyle(style: string, type: string): any {

@@ -322,7 +322,7 @@ export class HTMLContentProvider implements vscode.Disposable {
 		const separatorIndex = path.lastIndexOf('/');
 
 		if (separatorIndex !== -1) {
-			return path.substr(separatorIndex + 1);
+			return path.substring(separatorIndex + 1);
 		}
 
 		return path;
