@@ -61,9 +61,13 @@ export class DecorationManager implements vscode.Disposable {
 	}
 
 	private _shouldDecorate(language: string): boolean {
+		if (language == 'vt100') {
+			return true;
+		}
+
 		const configuration = vscode.workspace.getConfiguration('vt100');
-		const includes: string | null = configuration["decorate-includes"];
-		const excludes: string | null = configuration["decorate-excludes"];
+		const includes: string | null = configuration['decorate-includes'];
+		const excludes: string | null = configuration['decorate-excludes'];
 
 		return (includes == null || (language.match(includes) != null))
 			&& (excludes == null || (language.match(excludes) == null));
@@ -146,7 +150,7 @@ class EditorDecorator {
 		}
 
 		const progressView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right);
-		progressView.text = "Parsing file";
+		progressView.text = 'Parsing file';
 		progressView.show();
 
 		await VT100Parser.parse(editor.document, async (range, context) => {
@@ -157,9 +161,9 @@ class EditorDecorator {
 		progressView.dispose();
 
 		for (const [key, value] of appliedDecorations) {
-			const isDefaultColour = (key == "background-color-default")
-				|| (key == "foreground-color-default");
-			if (editor.document.languageId != "vt100" && isDefaultColour) {
+			const isDefaultColour = (key == 'background-color-default')
+				|| (key == 'foreground-color-default');
+			if (editor.document.languageId != 'vt100' && isDefaultColour) {
 				continue;
 			}
 

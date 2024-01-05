@@ -5,18 +5,16 @@
 [![Open Issues](https://flat.badgen.net/github/open-issues/TobiasFaller/vscode-vt100-syntax-highlight?icon=github)](https://github.com/TobiasFaller/vscode-vt100-syntax-highlight/issues)
 [![Closed Issues](https://flat.badgen.net/github/closed-issues/TobiasFaller/vscode-vt100-syntax-highlight?icon=github)](https://github.com/TobiasFaller/vscode-vt100-syntax-highlight/issues?q=is%3Aissue+is%3Aclosed)
 
-Terminal Color and Style Highlighting for VS Code
-=================================================
+# Terminal Color and Style Highlighting for VS Code
 
 This extension provides highlighting for **terminal color** escape sequences in the editor.
 The colors and styles can be customized via the configuration and light / dark theming is supported.
 The included preview feature can be used to view the source file like it would be shown in a terminal.
 With the export features the source file can be converted to text or to HTML.
 
-Features
---------
+## Features
 
-- **Editor**: Color and styling support
+- **Editor**: Color and styling support (full document and inline)
 - **Editor**: Snippets for escape sequences
 - **Preview**: Terminal-like preview of the file
 - **Export**: Text export with removed escape sequences
@@ -31,8 +29,7 @@ Select the file type "VT100 Terminal" on the lower right corner to enable highli
 
 ![Example Result with Light Theme](sample/ExampleResultLightTheme.gif)
 
-How to open the preview
------------------------
+## How to open the preview
 
 Make sure that the extension is currently active for the selected file.
 This is done by selecting the file type `VT100 Terminal` on the bottom right of the editor.
@@ -44,8 +41,20 @@ You can also use the `Open Preview to Side` command, which has the shortcut `Ctr
 
 ![Set Language Mode and Open the Preview](images/preview.png)
 
-Extension Settings
-------------------
+## Inline Highlighting
+
+This extension supports highlighting inline escape sequences.
+Enable / disable this feature for specific languages via the `decorate-include` and `decorate-exclude` options. Below is an example enabling this feature for python and shell files. Further below is an example of what this could look like in the editor.
+
+```json
+{
+    "vt100.decorate-includes": "python|shellscript"
+}
+```
+
+![Set Language Mode and Open the Preview](sample/ExampleInline.png)
+
+## Extended Extension Settings
 
 Edit the global or workspace configuration and apply your custom colors.
 The configuration values shown below are the default values set by the plugin.
@@ -378,8 +387,7 @@ Below is the list with all class names and the abbreviations which are used in t
 - **text**: te
 - **escape-sequence**: es
 
-Test the Extension with an Example
-----------------------------------
+## Test the Extension with an Example
 
 Use the python program below to generate a sample file which contains VT100 escape sequences.
 
@@ -414,8 +422,7 @@ The output looks similar to the image shown below on a terminal.
 
 ![Example Result on a Terminal](sample/ExampleSource.png)
 
-Requirements for Build
-----------------------
+## Requirements for Build
 
 Typescript for plugin development.
 This extension does not need any other dependencies.
