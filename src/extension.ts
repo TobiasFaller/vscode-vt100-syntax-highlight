@@ -21,6 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('vt100.toggleSynchronousScrolling', previewManager.toggleSynchronousScrolling, previewManager));
 	context.subscriptions.push(vscode.commands.registerCommand('vt100.exportText', exportManager.exportText, exportManager));
 	context.subscriptions.push(vscode.commands.registerCommand('vt100.exportHtml', exportManager.exportHtml, exportManager));
+	context.subscriptions.push(vscode.commands.registerCommand('vt100.cancelExport', exportManager.cancelExport, exportManager));
 }
 
 export function deactivate(context: vscode.ExtensionContext) {

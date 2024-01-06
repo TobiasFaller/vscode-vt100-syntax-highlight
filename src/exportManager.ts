@@ -22,14 +22,14 @@ export class ExportManager implements vscode.Disposable {
 	}
 
 	public dispose(): void {
-		this._cancelCurrentExport();
+		this.cancelExport();
 		this._htmlContentProvider.dispose();
 		this._textContentProvider.dispose();
 		this._statusBarItem.dispose();
 	}
 
 	public async exportText(param: vscode.Uri, params: vscode.Uri[]): Promise<void> {
-		this._cancelCurrentExport();
+		this.cancelExport();
 		this._cancelSource = new vscode.CancellationTokenSource();
 		const cancelToken = this._cancelSource?.token;
 
@@ -47,7 +47,7 @@ export class ExportManager implements vscode.Disposable {
 	}
 
 	public async exportHtml(param: vscode.Uri, params: vscode.Uri[]): Promise<void> {
-		this._cancelCurrentExport();
+		this.cancelExport();
 		this._cancelSource = new vscode.CancellationTokenSource();
 		const cancelToken = this._cancelSource?.token;
 
@@ -67,7 +67,7 @@ export class ExportManager implements vscode.Disposable {
 		}
 	}
 
-	public async _cancelCurrentExport(): Promise<void> {
+	public async cancelExport(): Promise<void> {
 		if (this._cancelSource != null) {
 			this._cancelSource.cancel();
 			this._cancelSource.dispose();

@@ -935,6 +935,24 @@
 				"language": "vt100",
 				"path": "./snippets/vt100.json"
 			}
+		],
+		"customEditors": [
+			{
+				"viewType": "vt100.preview",
+				"displayName": "VT100 Preview",
+				"selector": [
+					{
+						"filenamePattern": "*.vt100"
+					},
+					{
+						"filenamePattern": "*.log"
+					},
+					{
+						"filenamePattern": "*.txt"
+					}
+				],
+				"priority": "option"
+			}
 		]
 	},
 	"scripts": {

@@ -5,7 +5,7 @@ import { debounce } from './util';
 import { ConfigurationManager } from './configurationManager';
 import { HTMLContentProvider } from './content/htmlContentProvider';
 
-export class PreviewManager implements vscode.Disposable, vscode.WebviewPanelSerializer {
+export class PreviewManager implements vscode.Disposable, vscode.WebviewPanelSerializer, vscode.CustomTextEditorProvider {
 
 	private _configuration: ConfigurationManager;
 	private _contentProvider: HTMLContentProvider;
@@ -20,6 +20,7 @@ export class PreviewManager implements vscode.Disposable, vscode.WebviewPanelSer
 			this._previews.forEach((preview) => preview.rerender());
 		}, null, this._disposables);
 
+		this._disposables.push(vscode.window.registerCustomEditorProvider('vt100.preview', this));
 		this._disposables.push(vscode.window.registerWebviewPanelSerializer('vt100.preview', this));
 
 		// Only the side by side preview needs update.
@@ -88,6 +89,19 @@ export class PreviewManager implements vscode.Disposable, vscode.WebviewPanelSer
 		const index = state.index;
 		const preview = this._createPreview(panel, uri, index);
 		await preview.update(uri);
+	}
+
+	public async resolveCustomTextEditor(document: vscode.TextDocument, panel: vscode.WebviewPanel, token: vscode.CancellationToken): Promise<void> {
+		const uri = document.uri;
+		const index = document.uri.toString();
+		const preview = this._createPreview(panel, uri, index);
+
+		const cancel = token.onCancellationRequested((event) => preview.cancelCurrentUpdate());
+		try {
+			await preview.update(uri);
+		} finally {
+			cancel.dispose();
+		}
 	}
 
 	private async _showPreview(param: vscode.Uri, params: vscode.Uri[], sideBySide: boolean): Promise<void> {
@@ -164,7 +178,7 @@ class VT100Preview {
 	}
 
 	public dispose(): void {
-		this._cancelCurrentUpdate();
+		this.cancelCurrentUpdate();
 		this._onDisposeEmitter.fire();
 		this._onDisposeEmitter.dispose();
 		this._panel.dispose();
@@ -173,7 +187,7 @@ class VT100Preview {
 	}
 
 	public async rerender(): Promise<void> {
-		this._cancelCurrentUpdate();
+		this.cancelCurrentUpdate();
 		this._cancelSource = new vscode.CancellationTokenSource();
 		const cancelToken = this._cancelSource.token;
 
@@ -181,7 +195,7 @@ class VT100Preview {
 	}
 
 	public async update(uri: vscode.Uri): Promise<void> {
-		this._cancelCurrentUpdate();
+		this.cancelCurrentUpdate();
 		this._cancelSource = new vscode.CancellationTokenSource();
 		const cancelToken = this._cancelSource.token;
 
@@ -203,7 +217,7 @@ class VT100Preview {
 		return indices.findIndex((value, _index, _obj) => (value == this._index)) != -1;
 	}
 
-	public async _cancelCurrentUpdate(): Promise<void> {
+	public async cancelCurrentUpdate(): Promise<void> {
 		if (this._cancelSource != null) {
 			this._cancelSource.cancel();
 			this._cancelSource.dispose();
