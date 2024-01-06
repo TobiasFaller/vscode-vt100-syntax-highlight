@@ -147,10 +147,14 @@ export class HTMLContentProvider implements vscode.Disposable {
 	 * @param callback A callback to receive the generated data
 	 * @param state The state information, when in preview mode
 	 */
-	public async provideTextDocumentContent(document: vscode.TextDocument, callback: (data: string) => Promise<void>, state?: any): Promise<void> {
+	public async provideTextDocumentContent(document: vscode.TextDocument, options: Map<string, any>, callback: (data: string) => Promise<void>, cancel: vscode.CancellationToken | null): Promise<void> {
+		if (cancel?.isCancellationRequested) {
+			return;
+		}
+
 		const cssNonce = this._generateNonce();
 		const jsNonce = this._generateNonce();
-		const inEditor = (state != null);
+		const inEditor = options.get('is-editor') || false;
 
 		// Try to add at least a little bit of security with Content-Security-Policy so that
 		// the rendered file can not include arbitrary CSS code
@@ -161,10 +165,6 @@ export class HTMLContentProvider implements vscode.Disposable {
 		header += '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
 		header += `<title>${this._getFilename(document.uri)}</title>`;
 		if (inEditor) {
-			// Store the state via the VSCode API as this can currently not be done from the extension itself
-			// The state is used to restore the window when closing and re-opening VS Code
-			header += `<script type="text/javascript" nonce="${jsNonce}">acquireVsCodeApi().setState(${JSON.stringify(state)});</script>`;
-
 			// Register event handler that is invoked when the extension sends a command to the preview panel
 			header += `<script type="text/javascript" nonce="${jsNonce}">window.addEventListener('message', event => {
 				const message = event.data;
@@ -174,8 +174,11 @@ export class HTMLContentProvider implements vscode.Disposable {
 						const lineElement = document.getElementById('ln-' + message.line);
 						lineElement.scrollIntoView();
 						break;
+					case 'set-state':
+						acquireVsCodeApi().setState(message.state);
+						break;
 				}
-			})</script>`
+			})</script>`;
 		}
 		header += `<style type="text/css" nonce="${cssNonce}">.main-container {
 			display: block;
@@ -200,7 +203,15 @@ export class HTMLContentProvider implements vscode.Disposable {
 		}
 		await callback(header);
 
+		if (cancel?.isCancellationRequested) {
+			return;
+		}
+
 		await VT100Parser.parse(document, async (range, context) => {
+			if (cancel?.isCancellationRequested) {
+				return;
+			}
+
 			// Just ignore escape sequences and don't render them
 			if (context.get('type') === 'escape-sequence') {
 				return;
@@ -235,7 +246,11 @@ export class HTMLContentProvider implements vscode.Disposable {
 			if (context.get('line-end') == 'yes') {
 				await callback('<br>\n');
 			}
-		});
+		}, cancel);
+
+		if (cancel?.isCancellationRequested) {
+			return;
+		}
 
 		let footer = '';
 		if (!inEditor) {
@@ -276,7 +291,7 @@ export class HTMLContentProvider implements vscode.Disposable {
 	private _generateCss(properties: any, inEditor: boolean): string {
 		let css = '';
 
-		for (let [key, value] of Object.entries(properties)) {
+		for (const [key, value] of Object.entries(properties)) {
 			// Ignore fallback settings
 			if (key.endsWith('-fallback') || value == null || value == undefined) {
 				continue;
@@ -287,6 +302,7 @@ export class HTMLContentProvider implements vscode.Disposable {
 				css += this._generateCss(value, inEditor);
 				css += `}\n`;
 			} else if (typeof value === 'string') {
+				let cssValue = value;
 				if (!inEditor && value.startsWith('var(--vscode-'))
 				{
 					// Use the fallback color values when not rendering for the editor.
@@ -295,12 +311,12 @@ export class HTMLContentProvider implements vscode.Disposable {
 					css += `/* VS Code Theme color option ${value} currently not supported. */\n`;
 					if (key + '-fallback' in properties && properties[key + '-fallback']) {
 						css += '/* Using alternative value instead. */\n';
-						value = properties[key + '-fallback']; // Overwrite value with fallback setting
+						cssValue = properties[key + '-fallback']; // Overwrite value with fallback setting
 					} else {
 						continue;
 					}
 				}
-				css += `${key}: ${value};\n`;
+				css += `${key}: ${cssValue};\n`;
 			}
 		}
 

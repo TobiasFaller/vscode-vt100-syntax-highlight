@@ -12,8 +12,12 @@ export class TextContentProvider implements vscode.Disposable {
 		// Do nothing
 	}
 
-	public async provideTextDocumentContent(document: vscode.TextDocument, callback: (data: string) => Promise<void>): Promise<void> {
+	public async provideTextDocumentContent(document: vscode.TextDocument, callback: (data: string) => Promise<void>, cancel: vscode.CancellationToken | null): Promise<void> {
 		for (let lineNumber = 0; lineNumber < document.lineCount; lineNumber++) {
+			if (cancel?.isCancellationRequested) {
+				return;
+			}
+
 			const text = document.lineAt(lineNumber).text;
 
 			// See http://ascii-table.com/ansi-escape-sequences-vt-100.php

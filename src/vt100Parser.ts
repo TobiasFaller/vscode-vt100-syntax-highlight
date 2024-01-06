@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 
 export class VT100Parser {
 
-	public static async parse(document: vscode.TextDocument, callback: (range: vscode.Range, context: Map<string, any>) => Promise<void>): Promise<void> {
+	public static async parse(document: vscode.TextDocument, callback: (range: vscode.Range, context: Map<string, any>) => Promise<void>, cancelToken: vscode.CancellationToken | null): Promise<void> {
 		const context = new Map<string, any>();
 
 		// Initialize defaults
@@ -20,6 +20,10 @@ export class VT100Parser {
 
 		const lines = document.getText().split(/\r\n|\r|\n/);
 		for (let i = 0; i < lines.length; i++) {
+			if (cancelToken?.isCancellationRequested) {
+				return;
+			}
+
 			const line = lines[i];
 
 			context.set('line-number', i);

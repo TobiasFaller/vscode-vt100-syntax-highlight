@@ -10,55 +10,86 @@ export class ExportManager implements vscode.Disposable {
 	private _htmlContentProvider: HTMLContentProvider;
 	private _textContentProvider: TextContentProvider;
 	private _statusBarItem: vscode.StatusBarItem;
+	private _cancelSource: vscode.CancellationTokenSource | null;
 
 	constructor(configuration: ConfigurationManager) {
 		this._htmlContentProvider = new HTMLContentProvider(configuration);
 		this._textContentProvider = new TextContentProvider(configuration);
+		this._cancelSource = null;
 
 		this._statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
+		this._statusBarItem.command = 'vt100.cancelExport';
 	}
 
 	public dispose(): void {
+		this._cancelCurrentExport();
 		this._htmlContentProvider.dispose();
 		this._textContentProvider.dispose();
 		this._statusBarItem.dispose();
 	}
 
 	public async exportText(param: vscode.Uri, params: vscode.Uri[]): Promise<void> {
-		const editor = vscode.window.activeTextEditor;
-		const contentProvider: ContentProvider = (document, callback) =>
-			this._textContentProvider.provideTextDocumentContent(document, callback);
+		this._cancelCurrentExport();
+		this._cancelSource = new vscode.CancellationTokenSource();
+		const cancelToken = this._cancelSource?.token;
 
+		const contentProvider: ContentProvider = (document, callback) =>
+			this._textContentProvider.provideTextDocumentContent(document, callback, cancelToken);
+
+		const editor = vscode.window.activeTextEditor;
 		if (Array.isArray(params)) {
-			await this._exportAllUris(params, { type: "text", extension: "txt" }, contentProvider);
+			await this._exportAllUris(params, { type: "text", extension: "txt" }, contentProvider, cancelToken);
 		} else if (param && (param instanceof vscode.Uri)) {
-			await this._exportAllUris([ param ], { type: "text", extension: "txt" }, contentProvider);
+			await this._exportAllUris([ param ], { type: "text", extension: "txt" }, contentProvider, cancelToken);
 		} else if (editor != null && editor.document.languageId === 'vt100') {
-			await this._exportDocument(editor.document, { type: "text", extension: "txt" }, contentProvider);
+			await this._exportDocument(editor.document, { type: "text", extension: "txt" }, contentProvider, cancelToken);
 		}
 	}
 
 	public async exportHtml(param: vscode.Uri, params: vscode.Uri[]): Promise<void> {
-		const editor = vscode.window.activeTextEditor;
-		const contentProvider: ContentProvider = (document, callback) =>
-			this._htmlContentProvider.provideTextDocumentContent(document, callback);
+		this._cancelCurrentExport();
+		this._cancelSource = new vscode.CancellationTokenSource();
+		const cancelToken = this._cancelSource?.token;
 
+		const options: Map<string, any> = new Map([
+			['is-editor', false]
+		]);
+		const contentProvider: ContentProvider = (document, callback) =>
+			this._htmlContentProvider.provideTextDocumentContent(document, options, callback, cancelToken);
+
+		const editor = vscode.window.activeTextEditor;
 		if (Array.isArray(params)) {
-			await this._exportAllUris(params, { type: "HTML", extension: "html" }, contentProvider);
+			await this._exportAllUris(params, { type: "HTML", extension: "html" }, contentProvider, cancelToken);
 		} else if (param && (param instanceof vscode.Uri)) {
-			await this._exportAllUris([ param ], { type: "HTML", extension: "html" }, contentProvider);
+			await this._exportAllUris([ param ], { type: "HTML", extension: "html" }, contentProvider, cancelToken);
 		} else if (editor != null && editor.document.languageId === 'vt100') {
-			await this._exportDocument(editor?.document, { type: "HTML", extension: "html" }, contentProvider);
+			await this._exportDocument(editor?.document, { type: "HTML", extension: "html" }, contentProvider, cancelToken);
 		}
 	}
 
-	private async _exportAllUris(uris: vscode.Uri[], options: ExportOptions, contentProvider: ContentProvider): Promise<void> {
-			for (const uri of uris) {
-				await this._exportDocument(await vscode.workspace.openTextDocument(uri), options, contentProvider);
-			}
+	public async _cancelCurrentExport(): Promise<void> {
+		if (this._cancelSource != null) {
+			this._cancelSource.cancel();
+			this._cancelSource.dispose();
+			this._cancelSource = null;
+		}
 	}
 
-	private async _exportDocument(document: vscode.TextDocument, options: ExportOptions, contentProvider: ContentProvider): Promise<void> {
+	private async _exportAllUris(uris: vscode.Uri[], options: ExportOptions, contentProvider: ContentProvider, cancelToken: vscode.CancellationToken | null): Promise<void> {
+		for (const uri of uris) {
+			if (cancelToken?.isCancellationRequested) {
+				return;
+			}
+
+			await this._exportDocument(await vscode.workspace.openTextDocument(uri), options, contentProvider, cancelToken);
+		}
+	}
+
+	private async _exportDocument(document: vscode.TextDocument, options: ExportOptions, contentProvider: ContentProvider, cancelToken: vscode.CancellationToken | null): Promise<void> {
+		if (cancelToken?.isCancellationRequested) {
+			return;
+		}
+
 		const path = document.uri.fsPath + '.' + options.extension;
 		const name = this._getFilename(path);
 
@@ -73,6 +104,10 @@ export class ExportManager implements vscode.Disposable {
 				const fileHandle = file;
 				let size = 0;
 				await contentProvider(document, async (data: string) => {
+					if (cancelToken?.isCancellationRequested) {
+						return;
+					}
+
 					const buffer = Buffer.from(data, 'utf8');
 					await fileHandle.write(buffer);
 

@@ -42,10 +42,7 @@ export class ConfigurationManager implements vscode.Disposable {
 
 	dispose(): void {
 		this._onReloadEmitter.dispose();
-
-		for (const disposable of this._disposables) {
-			disposable.dispose();
-		}
+		this._disposables.forEach((disposable) => disposable.dispose());
 		this._disposables = [];
 	}
 

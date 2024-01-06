@@ -49,14 +49,9 @@ export class DecorationManager implements vscode.Disposable {
 	}
 
 	public dispose(): void {
-		for (const disposable of this._disposables) {
-			disposable.dispose();
-		}
+		this._disposables.forEach((disposable) => disposable.dispose());
 		this._disposables = [];
-
-		for (const [_key, value] of this._decorations) {
-			value.dispose();
-		}
+		this._decorations.forEach((value, _key, _map) => value.dispose());
 		this._decorations.clear();
 	}
 
@@ -153,9 +148,13 @@ class EditorDecorator {
 		progressView.text = 'Parsing file';
 		progressView.show();
 
+		// The callback only calls synchronous methods. A cancellation token
+		// will not do anything, as the method never awaits and therefore
+		// never enables the extension host to fire an event cancelling the process.
+		// Note: Correct me if I'm wrong here and it makes sense to have a cancellation token.
 		await VT100Parser.parse(editor.document, async (range, context) => {
 			this._applyDecoration(range, context, appliedDecorations);
-		});
+		}, null);
 
 		progressView.hide();
 		progressView.dispose();
@@ -173,8 +172,8 @@ class EditorDecorator {
 
 	public async remove(editor: vscode.TextEditor): Promise<void> {
 		// Undecorate editor if decorated
-		for (const decoration of this._decorations.values()) {
-			editor.setDecorations(decoration, []);
+		for (const decorations of this._decorations.values()) {
+			editor.setDecorations(decorations, []);
 		}
 	}
 

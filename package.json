@@ -817,6 +817,12 @@
 				"title": "Export to Html",
 				"category": "VT100",
 				"icon": "$(file-code)"
+			},
+			{
+				"command": "vt100.cancelExport",
+				"title": "Cancel the currently running export",
+				"category": "VT100",
+				"icon": "$(file-code)"
 			}
 		],
 		"menus": {
