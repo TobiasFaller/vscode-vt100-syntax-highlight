@@ -52,7 +52,25 @@ Enable / disable this feature for specific languages via the `decorate-include` 
 }
 ```
 
-![Set Language Mode and Open the Preview](sample/ExampleInline.png)
+![Escape Sequence Highlighting in Python File](sample/ExampleInline.png)
+
+## Open Preview Directly (or by Default)
+
+By default the extension is configured to show files via an editor view.
+For txt and log files the preview view can be activated in-place by running the command `View: Toggle Editor Type`.
+To always show txt and log files via the preview add the following to your configuration.
+To get back to the default text editor run the command `View: Toggle Editor Type` again.
+
+```json
+{
+    "workbench.editorAssociations": {
+        "*.txt": "vt100.preview",
+        "*.log": "vt100.preview"
+    }
+}
+```
+
+![Editor Preview Opened by Default](sample/ExampleEditor.png)
 
 ## Extended Extension Settings
 
