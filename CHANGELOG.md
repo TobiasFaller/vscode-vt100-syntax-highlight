@@ -2,7 +2,10 @@
 
 ## 1.1.0
 
-- Added support for inline escape sequence highlighting
+- Added support for inline escape sequence highlighting (with includes and excludes)
+- Added support for opening files with custom editor (by default)
+- Improved handling of previews (side-by-side vs dedicated)
+- Fixed bug on text export where escape sequences were not removed
 
 ## 1.0.2
 
